@@ -1,0 +1,33 @@
+<h2>Virtualisation de Moodle</h2>
+<p><b>Template de chargement</b></p>
+
+<p>Lorsqu'un moodle est instancié virtuellement, la partie
+contextuelle de la plate-forme peut être initialisée avec un modèle de
+données prédéfini et un jeu de fichiers d'exploitation déjà constitué.</p>
+<p>Ce chargement permet de mettre en service une plate-forme Moodle
+dans un état déjà configuré</p>
+<p>Le paramètre "Template de chargement" permet de choisir une des
+configurations disponibles.</p>
+<p>Les configurations préréglées des instances doivent être formées
+de deux répertoires :</p>
+<ul>
+	<li>Le premier contient deux scripts SQL appelés :
+	"moodle_master.&lt;base&gt;.sql" et
+	"moodle_setup_template.&lt;base&gt;.sql". &lt;base&gt; peut être soit
+	"mysql" ou "postgres", selon la plate-forme qui a servi de modèle au
+	template. Le premier script permet de charger la base avec un modèle de
+	donnée type, issu de l'export d'une plate-forme modèle. Le deuxième
+	fichier permet d'exécuter des requêtes SQL contextualisées utilisant
+	quelques paramètres spécifiques récoltés dans le formulaire de création
+	de l'instance.</li>
+	<li>Le deuxième contient une copie d'un répertoire moodledata
+	préconstitué. Ce répertoire peut contenir n'importe quel jeu de
+	fichiers issus de l'utilisation de la plate forme qui a servi de modèle
+	au template.</li>
+</ul>
+<p>Afin d'effectuer une correction de tous les chemins absolus qui
+pourraient être inscrits par la plate-forme modèle, le template demande
+la présence d'un fichier "manifest" supplémentaire, indiquant les
+racines Web et Système de fichiers de la plate-forme modèle. Cette
+indication permet à l'algorithme de déploiement de corriger les
+éventuels chemins absolus de la nouvelle instance.</p>

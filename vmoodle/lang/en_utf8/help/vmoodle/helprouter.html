@@ -1,0 +1,16 @@
+<?php
+// Checking context
+if (!isset($CFG))
+	exit();
+
+// Getting parameters
+$library = required_param('library', PARAM_TEXT);
+$helpitem = required_param('helpitem', PARAM_TEXT);
+
+// Getting sub-plugin help file
+$helpfile = $CFG->dirroot.'/blocks/vmoodle/plugins/libs/'.$library.'/lang/'.$lang.'/help/'.$helpitem;
+if (is_readable($helpfile)) {
+	include $helpfile;
+} else {
+	notify('Help file "'.$helpitem.'" could not be found!');
+}
