@@ -1,0 +1,162 @@
+Important requirements for VMoodling :
+
+Summary of prerequisites
+################################################################
+
+0.1 Making the master patch for block subplugins handling
+0.2 Making the master patch for block rpc function calls handling
+
+1. Installing vmoodle block in codebase
+2. Installing the master moodle as usual browsing to Administration -> notifications
+3. Installing the config.php hook to vconfig.php
+4. Configuring the VMoodle common parameters
+
+Post install procedure
+----------------------------------------------------------------
+5. Having names resolved for all the virtual moodles, through an explicit DNS binding OR a wildcard dns binding
+(local resolutions on the webserver could make it possible also).
+6. Setting up the master Moodle with relevant startup settigns (including MNET activation).
+7. Snapshoting the master Moodle as template for virtual moodling (may be long)
+8. Deploying vmoodle instances (may be long).
+
+0.1 Add possibility to blocks to handle subplugins and install them:
+################################################################
+
+The vmoodle block construction is using subplugins, that are plugins 
+handled inside the vmoodle block scope. 
+
+The generic block upgrade function of Moodle core DOES NOT KNOW about 
+subplugins. For correct installation to be performed, lib/blocklib.php
+
+core block management library has to be added the following patch adding
+the appropriate hook at install and upgrade time : 
+
+// PATCH : (Generic) Block subplugins detection and auto upgrade
+if (method_exists($blockobj, 'update_subplugins')) {
+    $blockobj->update_subplugins($continueto);
+}
+// /PATCH
+
+Location is in function upgrade_blocks_plugins($continueto) at the quite end of the function : 
+
+                error('Block '. $block->name .' tables could NOT be set up successfully!');
+            }
+        }
+
+        $blocktitles[$block->name] = $blocktitle;
+        
+        <<<<<<< PATCH INSERTION POINT >>>>>>>>>
+    }
+
+    if(!empty($notices)) {
+        upgrade_log_start();
+        foreach($notices as $notice) {
+            notify($notice);
+        }
+    }
+
+
+0.2 Add possibility for blocks to handle xmlrpc the same way Moodle modules do :
+################################################################################
+
+This is an important patch needed for the VMoodle bloc to invoke XML-RPC functions
+between Moodle instances. It fixes an inconsistancy of the MNET implementation was
+lacking blocks to exchange information using network communications.
+
+Patch point is : 
+
+file : /mnet/xmlrpc/server.php
+line : near 478
+location : before (or after, no case, but an additional case) the handling of modules.
+
+    // PATCH : Add RPC support to blocks 
+	////////////////////////////////////// STRICT BLOCKS/*
+    } elseif ($callstack[0] == 'blocks') {
+        list($base, $block, $filename, $functionname) = $callstack;
+        $includefile = '/blocks/'.$block.'/rpclib.php';
+        $response = mnet_server_invoke_method($includefile, $functionname, $method, $payload);
+        $response = mnet_server_prepare_response($response);
+        echo $response;
+	// /PATCH
+    ////////////////////////////////////// STRICT MOD/*
+    } elseif ($callstack[0] == 'mod' || 'dangerous' == $CFG->mnet_dispatcher_mode) {
+        list($base, $module, $filename, $functionname) = $callstack;
+
+
+1. Master configuration changes : Installing the config.php hook to vconfig.php
+###############################################################################
+
+Main config.php file must be changed in order to plug virtualization hooking.
+
+config must have an include call to vconfig.php virtualization configuration router.
+You can obtain this file from the vconfig-dist.php template, making your own 
+vconfig.php file in blocks/vmoodle and then install the hook point in the standard 
+config.php of Moodle.
+
+/// VMOODLE Hack
+include $CFG->dirroot.'/blocks/vmoodle/vconfig.php';
+/// /VMOODLE Hack
+
+must be located BEFORE the call to lib/setup.php include and AFTER the static configuration. 
+
+Setting up Apache configuration for virtual Moodling
+####################################################
+
+Moodle virtualization assumes correct routing of each instance to the same RootDirectory inthe server.
+
+A way to do this is using VirtualDirectory. Here comes a sample of Apache configuration that allows
+this kind of generic binding.
+
+<VirtualHost 127.0.0.1>
+    ServerAdmin webmaster@eisti.fr
+    ServerName %mastermoodlehost%
+    ServerAlias *.%mastermoodledomain%
+	VirtualDocumentRoot "D:/wwwroot/%moodledir%"
+    ErrorLog logs/vmoodle_common-error_log
+    CustomLog logs/vmoodle_common-access_log common
+</VirtualHost>
+
+For example : 
+
+the master moodle site could be : 
+
+%mastermoodlehost% = moodle.mydomain.edu
+%moodledomain% = mydomain.edu
+
+Using a wildcard DNS
+####################
+
+Defining wildcard DNS record say, to resolve *.mydomain.edu
+avoids having to bind each virtual moodle within the DNS server
+before using it. 
+
+Any undefined moodle will respond with an error message.
+
+Cron handling by virtualization
+###############################
+
+VMoodle provides from now an automated handling of cron execution 
+for virtualized hosts. It will be not any more needed to manually 
+edit the cron tab for each new VMoodle instance. A single cron call 
+to vcron.php in the VMoodle block implementation will schedule and 
+rotate all VMoodle crons. The VMoodle cron should be run at sufficiant 
+frequence so each VMoodle has the expected turnover.  
+
+The ROUND_ROBIN mode runs a VMoodle per turn scannnig the VMoodle 
+definitions in order.
+
+The LOWEST_POSSIBLE_GAP mode guarantees a nominal period for each 
+VMoodle by dispatching defined VMoodle on available cron ticks 
+(still in table order).  
+
+The VMoodle interface adds three additional attributes in the display 
+for VMoodles : 
+
+•amount of passed crons
+•date of last cron
+•time elapsed (in secs) since the last cron was run
+
+On large implementations running heavy moodle cron jobs or a lot 
+of VMoodles, it can be a good idea to make cron run on a spare little 
+server that can run the codebase and has access to the database pool.
+
