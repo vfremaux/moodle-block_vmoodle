@@ -110,8 +110,9 @@ class Vmoodle_Command_Form extends moodleform {
 				if ($this->mode == self::MODE_DISPLAY_COMMAND) {
 					$mform->setDefault($parameter->getName(), $parameter->getValue());
 					$mform->freeze($parameter->getName());
-				} else if (!is_null($parameter->getDefault()))
-					$mform->setDefault($parameter->getName(), $parameter->getDefault());		
+				} else if (!is_null($parameter->getDefault())){
+					$mform->setDefault($parameter->getName(), $parameter->getDefault());
+				}
 			}
 		}
 		
@@ -124,6 +125,5 @@ class Vmoodle_Command_Form extends moodleform {
 				$mform->addElement('submit', 'submitbutton', get_string('retrieveplatforms', 'block_vmoodle'));
 				break;
 		}
-			
 	}
 }

@@ -16,11 +16,15 @@ include_once $CFG->libdir."/pear/HTML/AJAX/JSON.php";
 function vmoodle_get_remote_config($mnethost, $configkey, $domain = ''){
 	global $CFG, $USER;
 
-	if (!isset($USER->username)){
-		$USER = get_guest();
+	// we should NOT alter the $USER global as this causes anonymous login fake effect.
+	$user = clone($USER);
+	
+	if (!isset($user->username)){
+		$user = get_guest();
+		$resetnulluser = true;
 	}	
-	$user->username = $USER->username;
-	$userhost = get_record('mnet_host', 'id', $USER->mnethostid);
+	$user->username = $user->username;
+	$userhost = get_record('mnet_host', 'id', $user->mnethostid);
 	$user->remoteuserhostroot = $userhost->wwwroot;
 	$user->remotehostroot = $CFG->wwwroot;
 	

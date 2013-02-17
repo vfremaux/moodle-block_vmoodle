@@ -448,7 +448,7 @@ function vmoodle_load_database_from_template($vmoodledata) {
 	    return false;
     }
 
-	// Change the tables prefix if requjired prefix does not match manifest's one (sql template).
+	// Change the tables prefix if required prefix does not match manifest's one (sql template).
 	if ($manifest['templatevdbprefix'] != $vmoodledata->vdbprefix){
 		$dumptxt = str_replace($manifest['templatevdbprefix'], $vmoodledata->vdbprefix, $dumptxt);
 	}
@@ -578,6 +578,9 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 
     	fwrite($FILE, "--\n-- Create a disposable key for renewing new host's keys.  \n--\n");
     	fwrite($FILE, "INSERT INTO {$PREFIX}config (name, value) VALUES ('bootstrap_init', '{$this_as_host->wwwroot}');\n");
+
+    	fwrite($FILE, "--\n-- Disable the VMoodle block in child.  \n--\n");
+    	fwrite($FILE, "UPDATE INTO {$PREFIX}config (name, value) VALUES ('');\n");
     }
     fclose($FILE);
     debug_trace('fixing_database ; setup script written');

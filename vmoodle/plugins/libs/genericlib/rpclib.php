@@ -25,6 +25,7 @@ function dataexchange_rpc_fetch_config($user, $configkey, $module = '', $json_re
 	global $CFG, $USER;
 
 	// Invoke local user and check his rights
+	debug_trace("/$configkey/, $CFG->dataexchangesafekeys $CFG->wwwroot");
 	if (!preg_match("/$configkey/", @$CFG->dataexchangesafekeys)){
 		if ($auth_response = invoke_local_user((array)$user)){
 			if ($json_response){

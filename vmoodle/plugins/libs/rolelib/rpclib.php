@@ -721,7 +721,7 @@ function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $
 		$response->user->userknownhost = get_field_select('mnet_host', 'wwwroot', " id = {$userhostid} AND deleted = 0 ");			
 	} else {
 		// Make remote call
-		debug_trace('check remotely at '.$whereroot);
+		// debug_trace('check remotely at '.$whereroot);
 	    $userhostroot = get_field_select('mnet_host', 'wwwroot', " id = $USER->mnethostid AND deleted = 0 "); 
 
 	    if (!$userhostroot){

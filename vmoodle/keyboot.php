@@ -29,16 +29,23 @@ if(!$test)
 // avoid shooting in yourself
 if (((!empty($masterpk) && $remotehost = get_record_select('mnet_host', " public_key = '$masterpk' AND id > 1"))) || $test){
 
+	// $CFG->bootstrap_init is a key that has been added by master when postprocessing the deployment template
+	// We check that the public key given matches the identity of the master who initiated the platform restoring.
+
     if ($test || (@$CFG->bootstrap_init == $remotehost->wwwroot)){
     
+    	// at this time, the local platform may not have self key, or may inherit 
+    	// an obsolete key from the template SQL backup.
+    	// we must fix that forcing a local key replacement
         $MNET = new mnet_environment();
         $MNET->init();        
         $MNET->name = '';
-        if ($test)
+        if ($test){
         // print_object($MNET);
+	    }
         $oldkey = $MNET->public_key;
         $MNET->replace_keys();
-        debug_trace("REMOTE : Replaced keys from \n$oldkey\nto\n{$MNET->public_key}\n");
+        // debug_trace("REMOTE : Replaced keys from \n{$oldkey}\nto\n{$MNET->public_key}\n");
 
     } else {
         echo "ERROR : Master host don't match ".@$CFG->bootstrap_init;
@@ -47,4 +54,5 @@ if (((!empty($masterpk) && $remotehost = get_record_select('mnet_host', " public
     echo "ERROR : Master host not found or master host key is empty";
 }
 
+// Finally we disable the keyboot script locking definitively the door.
 set_config('bootstrap_init', '');

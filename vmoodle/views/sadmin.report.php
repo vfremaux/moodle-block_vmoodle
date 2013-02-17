@@ -71,9 +71,9 @@
 				echo '&nbsp;';
 			echo 	'</td>' .
 				'</tr>' .
-				'<tr class="r'.$i.'">' .
+				'<tr class="r'.$i.'" valign="top">' .
 					'<td>'.get_string('details', 'block_vmoodle').'</td>' .
-					'<td colspan="2">'.$command->getResult($host, 'error').'</td>' .
+					'<td colspan="2">'.implode('<br/>', $command->getResult($host, 'errors')).'</td>' .
 				'</tr>';
 			$i = ($i+1)%2;
 		}

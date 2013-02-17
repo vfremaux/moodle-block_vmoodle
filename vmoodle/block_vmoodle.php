@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Declare Vmoodle block.
  * 

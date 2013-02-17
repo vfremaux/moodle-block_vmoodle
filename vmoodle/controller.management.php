@@ -204,6 +204,17 @@ if ($action == 'doadd'){
 			}
 
 		/// Fix remote database for Mnet operations.
+		
+		// Fixing database will rewrite and prepare the remote mnet_host table for having 
+		// consistant identity of the VMoodle Master node.
+		// Additionnaly, some data from instance addition form should be forced into 
+		// the SQL template, whatever the configuration of the original Moodle was.
+		// 
+		// A script backup is available in vmoodle data directory as 
+		// 
+		// vmoodle_setup_template.temp.sql 
+		// 
+		// with all fixing SQL instructions processed.
 
 			if ($vmoodlestep == 1){
 				debug_trace("step 1 : fixing DB");
@@ -591,6 +602,8 @@ if ($action == 'snapshot'){
 	$hostname	= str_replace(':', '_', $hostname);
 	$hostname	= str_replace('.', '_', $hostname);
 	$hostname	= str_replace('-', '_', $hostname);
+	$hostname	= str_replace('/', '_', $hostname);
+	$hostname	= str_replace('\\', '_', $hostname);
 
 	// Make template directory (files and SQL).
 	$templatefoldername	=	'vmoodle';
@@ -611,12 +624,12 @@ if ($action == 'snapshot'){
     if ($vmoodlestep == 0){
         	// Create directories, if necessary.
         	if (!filesystem_is_dir($relative_datadir, $CFG->dataroot)){
-        		mkdir($absolute_datadir);
+        		mkdir($absolute_datadir, 0777, true);
         	} else {
         		filesystem_clear_dir($relative_datadir, false, $CFG->dataroot);
         	}
         	if (!filesystem_is_dir($relative_sqldir, $CFG->dataroot)){
-        		mkdir($absolute_sqldir);
+        		mkdir($absolute_sqldir, 0777, true);
         	}
     		print_box(get_string('vmoodlesnapshot1', 'block_vmoodle'));
     		print_continue($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=snapshot&amp;step=1&amp;wwwroot='.$wwwroot);

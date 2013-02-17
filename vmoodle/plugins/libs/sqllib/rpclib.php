@@ -89,6 +89,7 @@ function mnetadmin_rpc_run_sql_command($user, $command, $return=false) {
 	// Runnning command
 	ob_clean();	ob_start();	// Used to prevent HTML output from dmllib methods and capture errors
 	if ((!$return && !execute_sql($command, false)) || ($return && !($record = get_record_sql($command)))) {
+		// debug_trace("Remote VMoodle SQL Run : $command");
 		$response->status = RPC_FAILURE_RUN;
 		$error = parse_wlerror();
 		if (empty($error))
@@ -97,6 +98,7 @@ function mnetadmin_rpc_run_sql_command($user, $command, $return=false) {
 		ob_end_clean();
 		return json_encode($response);
 	}
+	// debug_trace("Remote VMoodle SQL Run success : $command");
 	ob_end_clean();
 	
 	// Returning response

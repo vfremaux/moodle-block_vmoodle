@@ -1,7 +1,7 @@
 /**
  * Pop-up testing connection with database.
  */
-function opencnxpopup() {
+function opencnxpopup(wwwroot) {
 
 	// Inputted data.
 	var dbtype = document.getElementById('id_vdbtype').value;
@@ -11,7 +11,7 @@ function opencnxpopup() {
 	var dbname = document.getElementById('id_vdbname').value;
 
 	// PHP file linked the pop-up, and name.
-	var url = "/blocks/vmoodle/views/management.testcnx.php" + "?" + "vdbtype="
+	var url = wwwroot+"/blocks/vmoodle/views/management.testcnx.php" + "?" + "vdbtype="
 			+ dbtype + "&" + "vdbhost=" + dbhost + "&" + "vdblogin=" + dblogin
 			+ "&" + "vdbpass=" + dbpass + "&" + "vdbname" + dbname;
 
@@ -27,13 +27,13 @@ function opencnxpopup() {
 /**
  * Pop-up testing connection with database.
  */
-function opendatapathpopup() {
+function opendatapathpopup(wwwroot) {
 
 	// Input data.
 	var datapath = document.getElementById('id_vdatapath').value;
 
 	// PHP file linked the pop-up, and name.
-	var url = "/blocks/vmoodle/views/management.testdatapath.php?dataroot=" + escape(datapath);
+	var url = wwwroot + "/blocks/vmoodle/views/management.testdatapath.php?dataroot=" + escape(datapath);
 
 	// Pop-up's options.
 	var options = "width=500,height=300,toolbar=no,menubar=no,location=no,scrollbars=no,status=no";

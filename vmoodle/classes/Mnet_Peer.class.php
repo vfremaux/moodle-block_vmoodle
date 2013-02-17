@@ -47,7 +47,7 @@ class vmoodle_mnet_peer extends mnet_peer {
 
             // TODO: In reality, this will be prohibitively slow... need another
             // default - maybe blank string
-            $homepage = file_get_contents($wwwroot);
+            $homepage = @file_get_contents($wwwroot);
             if (!empty($homepage)) {
                 $count = preg_match("@<title>(.*)</title>@siU", $homepage, $matches);
                 if ($count > 0) {
@@ -77,7 +77,7 @@ class vmoodle_mnet_peer extends mnet_peer {
             if(empty($pubkey)) {
                 // This is the key difference : force the exchange using vmoodle RPC keyswap !!
                 if (empty($pubkeytemp)){
-                    $pubkeytemp = clean_param(vmoodle_mnet_get_public_key($this->wwwroot, $this->application, $force), PARAM_PEM);
+                    $pubkeytemp = clean_param(mnet_get_public_key($this->wwwroot, $this->application, $force), PARAM_PEM);
                 }
             } else {
                 $pubkeytemp = clean_param($pubkey, PARAM_PEM);

@@ -7,4 +7,5 @@
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  */
 $string['generic'] = 'Fonctions génériques';
+
  

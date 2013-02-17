@@ -30,7 +30,7 @@ class Vmoodle_Host_Form extends moodleform {
 		// Settings mode and data.
 		$this->mode			    = $mode;
 		$this->platform_form	= $platform_form;
-			
+		
 		// Calling parent's constructor.
 		parent::__construct('view.php?view=management&what=do'.$this->mode.'&page='.$this->mode);
 	}
@@ -91,7 +91,7 @@ class Vmoodle_Host_Form extends moodleform {
 		// Database password.
 		$mform->addElement('password', 'vdbpass', get_string('vdbpass', 'block_vmoodle'));
 		// Button for testing database connection.
-		$mform->addElement('button', 'testconnection', get_string('testconnection', 'block_vmoodle'), 'onclick="opencnxpopup(); return true;"');
+		$mform->addElement('button', 'testconnection', get_string('testconnection', 'block_vmoodle'), 'onclick="opencnxpopup(\''.$CFG->wwwroot.'\'); return true;"');
 		// Database name.
 		$mform->addElement('text', 'vdbname', get_string('vdbname', 'block_vmoodle'));
 		$mform->setHelpButton('vdbname', array('vdbname', get_string('vdbname', 'block_vmoodle'), 'block_vmoodle'));
@@ -114,7 +114,7 @@ class Vmoodle_Host_Form extends moodleform {
 		$mform->setHelpButton('vdatapath', array('vdatapath', get_string('vdatapath', 'block_vmoodle'), 'block_vmoodle'));
 
 		// Button for testing datapath.
-		$mform->addElement('button', 'testdatapath', get_string('testdatapath', 'block_vmoodle'), 'onclick="opendatapathpopup(); return true;"');
+		$mform->addElement('button', 'testdatapath', get_string('testdatapath', 'block_vmoodle'), 'onclick="opendatapathpopup(\''.$CFG->wwwroot.'\'); return true;"');
 
 		// MNET activation.
 		/*
@@ -318,9 +318,7 @@ class Vmoodle_Host_Form extends moodleform {
 					
 					if($resultsqlrequest->deleted == 0) {
 						$errors['vhostname']	= get_string('badhostnamealreadyused', 'block_vmoodle');
-					}
-					else {
-						
+					} else {
 						//Id the plateforme is deleted and the user want to reactivate the vhostname
 						if($data['vtemplate'] == 0) {
 							$sqlrequest = 'SELECT
