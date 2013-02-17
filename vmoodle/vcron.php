@@ -88,7 +88,7 @@ function fire_vhost_cron($vhost){
     $vhost->lastcron = $timestamp_send;
     $vhost->croncount++;
 
-	$DB->update_record('block_vmoodle', addslashes_object($vhost));
+	$DB->update_record('block_vmoodle', $vhost);
 
 }
 
