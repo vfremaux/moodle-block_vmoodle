@@ -90,7 +90,7 @@ class Vmoodle_XmlRpc_Client extends mnet_xmlrpc_client {
      * @param $host				mnet_peer			A mnet_peer object with details of the remote host we're connecting to.
      * @return					boolean				True if the request is successfull, False otherwise.
      */
-	public function send(mnet_peer $host) {
+	public function send($host) {
 		global $CFG;
 		// Defining result
 		$return = false;
