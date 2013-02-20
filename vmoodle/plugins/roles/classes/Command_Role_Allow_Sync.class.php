@@ -8,10 +8,10 @@ require_once VMOODLE_CLASSES_DIR.'Command_Parameter.class.php';
  * 
  * @package block-vmoodle
  * @category blocks
- * @author Bruce Bujon (bruce.bujon@gmail.com)
+ * @author Bruce Bujon (valery.fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-class Vmoodle_Command_Role_Sync extends Vmoodle_Command {
+class Vmoodle_Command_Role_Allow_Sync extends Vmoodle_Command {
 	/**
 	 * Constructor.
 	 * @throws				Vmoodle_Command_Exception.
@@ -20,17 +20,26 @@ class Vmoodle_Command_Role_Sync extends Vmoodle_Command {
 		global $DB;
 		
 		// Getting command description
-		$cmd_name = vmoodle_get_string('cmdsyncname', 'vmoodleadminset_roles');
-		$cmd_desc = vmoodle_get_string('cmdsyncdesc', 'vmoodleadminset_roles');
+		$cmd_name = vmoodle_get_string('cmdallowsyncname', 'vmoodleadminset_roles');
+		$cmd_desc = vmoodle_get_string('cmdallowsyncdesc', 'vmoodleadminset_roles');
+
 		// Creating platform parameter
 		$platform_param = new Vmoodle_Command_Parameter('platform',	'enum', vmoodle_get_string('platformparamsyncdesc', 'vmoodleadminset_roles'), null, get_available_platforms());
+
+		// Creating table parameter
+		$tables['assign'] = vmoodle_get_string('assigntable', 'vmoodleadminset_roles');
+		$tables['override'] = vmoodle_get_string('overridetable', 'vmoodleadminset_roles');
+		$tables['switch'] = vmoodle_get_string('switchtable', 'vmoodleadminset_roles');
+		$table_param = new Vmoodle_Command_Parameter('table', 'enum', vmoodle_get_string('tableparamdesc', 'vmoodleadminset_roles'), null, $tables);
+
 		// Creating role parameter
 		$records = $DB->get_records('role', null, 'name', 'name,shortname');
 		foreach($records as $record)
 			$roles[$record->shortname] = $record->name;
 		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamsyncdesc', 'vmoodleadminset_roles'), null, $roles);
+
 		// Creating command
-		parent::__construct($cmd_name, $cmd_desc, array($platform_param, $role_param));
+		parent::__construct($cmd_name, $cmd_desc, array($platform_param, $table_param, $role_param));
 	}
 	/**
 	 * Execute the command.
@@ -46,6 +55,8 @@ class Vmoodle_Command_Role_Sync extends Vmoodle_Command {
 			throw new Vmoodle_Command_Exception('insuffisantcapabilities');
 		// Getting role
 		$role = $this->getParameter('role')->getValue();
+		// Getting table
+		$table = $this->getParameter('table')->getValue();
 		// Checking hosts
 		$platform = $this->getParameter('platform')->getValue();
 		if (array_key_exists($platform, $hosts)) {
@@ -63,10 +74,12 @@ class Vmoodle_Command_Role_Sync extends Vmoodle_Command {
 				$this->results[$host] = $response;
 			return;
 		}
-		// Creating XMLRPC client to read role configuration
+		// Creating XMLRPC client to read role configuration in self
 		$rpc_client = new Vmoodle_XmlRpc_Client();
-		$rpc_client->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_get_role_capabilities');
+		$rpc_client->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_get_role_allow_table');
+		$rpc_client->add_param($table, 'string');
 		$rpc_client->add_param($role, 'string');
+
 		// Checking result
 		if (!($rpc_client->send($mnet_host) && ($response = json_decode($rpc_client->response)) && $response->status == RPC_SUCCESS)) {
 			// Creating response
@@ -87,16 +100,12 @@ class Vmoodle_Command_Role_Sync extends Vmoodle_Command {
 				$this->results[$host] = $response;
 			return;
 		}
-		// Getting role configuration
-		$role_capabilities = (array)$response->value;		// Beware ! xmlrpc fails to return associativ array. Should be casted !
+
+		/// cleaning up some memory
 		unset($response);
-		// Removing not set capabilities for the role
-		foreach($role_capabilities as $role_capability_name => $role_capability) {
-			if (is_null($role_capability))
-				unset($role_capabilities[$role_capability_name]);
-		}
-		// Initializing responses
+
 		$responses = array();
+
 		// Creating peers
 		$mnet_hosts = array();
 		foreach ($hosts as $host => $name) {
@@ -111,9 +120,9 @@ class Vmoodle_Command_Role_Sync extends Vmoodle_Command {
 		}
 		// Creating XMLRPC client
 		$rpc_client = new Vmoodle_XmlRpc_Client();
-		$rpc_client->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_set_role_capabilities');
+		$rpc_client->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_get_role_allow_table');
+		$rpc_client->add_param($table, 'string');
 		$rpc_client->add_param($role, 'string');
-		$rpc_client->add_param($role_capabilities, 'array');
 		$rpc_client->add_param(true, 'boolean');
 		// Sending requests
 		foreach($mnet_hosts as $mnet_host) {

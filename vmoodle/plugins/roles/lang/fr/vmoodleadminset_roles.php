@@ -15,9 +15,14 @@ $string['cmdsynccapabilitydesc'] = 'Synchronise une capacité d\'un rôle.';
 $string['cmdsynccapabilityname'] = 'Synchronisation d\'une capacité d\'un rôle';
 $string['cmdsyncdesc'] = 'Synchronise les capacités d\'un rôle.';
 $string['cmdsyncname'] = 'Synchronisation d\'un rôle';
+$string['cmdallowsyncdesc'] = 'Synchroniser une table d\'autorisation d\'assignation, surcharge ou changement de role.';
+$string['cmdallowsyncname'] = 'Synchronization des autorisations d\'assignation, surcharge ou changement de role';
+$string['cmdallowcomparedesc'] = 'Comparer la table de permission d\'assignation, surcharge ou changement de role.';
+$string['cmdallowcomparename'] = 'Comparaison des autorisations d\'assignation, surcharge ou changement de role.';
 $string['comparerole'] = 'Comparaison du role "{$a}"';
 $string['confirmrolecapabilitysync'] = 'Vous êtes sur le point de modifier une capacité de rôle sur plusieurs plate-formes. Voulez-vous continuer ?';
 $string['editrole'] = 'Editer le rôle';
+$string['editallowtable'] = 'Editer une table de permissions de role';
 $string['mnetadmin_name'] = 'Meta Administration Réseau Moodle';
 $string['mnetadmin_description'] = 'Fournit des fonctions pour exécuter des commandes d\'administration à travers le réseau MNET, telles que la synchronisation de configuration ou de roles.';
 $string['nocapability'] = 'Pas de capacité sélectionnée.';
@@ -30,6 +35,10 @@ $string['roleparamsyncdesc'] = 'Le rôle à synchroniser';
 $string['roles'] = 'Rôles';
 $string['synchronize'] = 'Synchroniser';
 $string['syncwithitself'] = 'Synchronisation du rôle "{$a->role}" de la plate-forme "{$a->platform}" avec elle-même.';
+$string['assigntable'] = 'Autorisations d\'assignation de rôles';
+$string['overridetable'] = 'Autorisations de surcharge de rôles';
+$string['switchtable'] = 'Autorisations de changement de rôle';
+$string['tableparamdesc'] = 'Table d\'autorisations';
 
 $string['rolecompare_help'] = '
 <h2>Comparaison d\'un rôle</h2>

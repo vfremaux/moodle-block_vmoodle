@@ -70,9 +70,9 @@ $param1 = new Vmoodle_Command_Parameter(
 	'The enum choice',
 	null,
 	array(
-		'value1' => get_string('value1', 'vmoodleadminset_test'),
-		'value2' => get_string('value2', 'vmoodleadminset_test'),
-		'value3' => get_string('value3', 'vmoodleadminset_test'),
+		'value1' => vmoodle_get_string('value1', 'vmoodleadminset_test'),
+		'value2' => vmoodle_get_string('value2', 'vmoodleadminset_test'),
+		'value3' => vmoodle_get_string('value3', 'vmoodleadminset_test'),
 	)
 );
 $cmd = new Vmoodle_Command_Sql(
@@ -91,9 +91,9 @@ $param1 = new Vmoodle_Command_Parameter(
 	'The enum choice values 2 by default',
 	'value2',
 	array(
-		'value1' => get_string('value1', 'vmoodleadminset_test'),
-		'value2' => get_string('value2', 'vmoodleadminset_test'),
-		'value3' => get_string('value3', 'vmoodleadminset_test'),
+		'value1' => vmoodle_get_string('value1', 'vmoodleadminset_test'),
+		'value2' => vmoodle_get_string('value2', 'vmoodleadminset_test'),
+		'value3' => vmoodle_get_string('value3', 'vmoodleadminset_test'),
 	)
 );
 $cmd = new Vmoodle_Command_Sql(
@@ -180,9 +180,9 @@ $param2 = new Vmoodle_Command_Parameter(
 	'The enum choice values 2 by default',
 	'value2',
 	array(
-		'value1' => get_string('value1', 'vmoodleadminset_test'),
-		'value2' => get_string('value2', 'vmoodleadminset_test'),
-		'value3' => get_string('value3', 'vmoodleadminset_test'),
+		'value1' => vmoodle_get_string('value1', 'vmoodleadminset_test'),
+		'value2' => vmoodle_get_string('value2', 'vmoodleadminset_test'),
+		'value3' => vmoodle_get_string('value3', 'vmoodleadminset_test'),
 	)
 );
 $param3 = new Vmoodle_Command_Parameter(
@@ -216,9 +216,9 @@ $param2 = new Vmoodle_Command_Parameter(
 	'The enum choice values 2 by default',
 	'value2',
 	array(
-		'value1' => get_string('value1', 'vmoodleadminset_test'),
-		'value2' => get_string('value2', 'vmoodleadminset_test'),
-		'value3' => get_string('value3', 'vmoodleadminset_test'),
+		'value1' => vmoodle_get_string('value1', 'vmoodleadminset_test'),
+		'value2' => vmoodle_get_string('value2', 'vmoodleadminset_test'),
+		'value3' => vmoodle_get_string('value3', 'vmoodleadminset_test'),
 	)
 );
 $param3 = new Vmoodle_Command_Parameter_Internal(

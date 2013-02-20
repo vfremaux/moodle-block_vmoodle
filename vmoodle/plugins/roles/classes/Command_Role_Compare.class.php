@@ -25,15 +25,15 @@ class Vmoodle_Command_Role_Compare extends Vmoodle_Command {
 		global $DB;
 		
 		// Getting command description
-		$cmd_name = get_string('cmdcomparename', 'vmoodleadminset_roles');
-		$cmd_desc = get_string('cmdcomparedesc', 'vmoodleadminset_roles');
+		$cmd_name = vmoodle_get_string('cmdcomparename', 'vmoodleadminset_roles');
+		$cmd_desc = vmoodle_get_string('cmdcomparedesc', 'vmoodleadminset_roles');
 
 		// Getting role parameter
 		$records = $DB->get_records('role', null, 'name', 'name,shortname');
 		$roles = array();
 		foreach($records as $record)
 			$roles[$record->shortname] = $record->name;
-		$role_param = new Vmoodle_Command_Parameter('role', 'enum', get_string('roleparamcomparedesc', 'vmoodleadminset_roles'), null, $roles);
+		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamcomparedesc', 'vmoodleadminset_roles'), null, $roles);
 
 		// Creating command
 		parent :: __construct($cmd_name, $cmd_desc, $role_param);

@@ -21,6 +21,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
 }
+
 /**
  * Get role capabilities of a virtual platform.
  * @param	$user					array or object		The calling user.
@@ -270,6 +271,136 @@ function mnetadmin_rpc_set_role_capabilities($user, $role, $role_capabilities, $
 			}
 		}
 	}
+	// Returning response
+	if ($json_response){
+		return json_encode($response);
+	} else {
+		return $response;
+	}
+}
+
+/**
+ * Get role allowances of a virtual platform.
+ * As being a cross platform match, do only rely on shortnames and never on ids
+ * @param	$user					array or object		The calling user.
+ * @param	$table					string				'assign' or 'override'.
+ * @param	$rolename					string				The role shortname to get allowance from.
+ */
+function mnetadmin_rpc_get_role_allow_table($user, $table, $rolename = '', $json_response = true) {
+	global $CFG, $USER, $DB;
+
+	// Invoke local user and check his rights
+	if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')){
+		if ($json_response){
+		    return $auth_response;
+		} else {
+		    return json_decode($auth_response);
+		}
+	}
+	$response->errors = array();
+	$response->error = '';
+	// Creating response
+	$response = new stdclass;
+	$response->status = RPC_SUCCESS;
+	// Getting allowance records
+	if ($rolename){
+		if (!$role = $DB->get_record('role', array('shortname' => $rolename))){
+			$response->status = RPC_FAILURE_RECORD;
+			$response->errors[] = "Unknown role $rolename in remote.";
+			$response->error = "Unknown role $rolename in remote.";
+			if ($json_response){
+				return json_encode($response);
+			} else {
+				return $response;
+			}
+		}
+		$allows = $DB->get_records('role_allow_'.$table, array('roleid', $role->id));
+	} else {
+		$allows = $DB->get_records('role_allow_'.$table, array());
+	}
+	$result = array();
+	if ($allows){
+		foreach($allows as $a){
+			$rolename = $DB->get_field('role', 'shortname', array('id' => $a->roleid));
+			$key = 'allow'.$table;
+			$targetname = $DB->get_field('role', 'shortname', array('id' => $a->$key));
+			$result[$rolename][] = $targetname;
+		}
+	}
+
+	// Setting value
+	$response->value = $result;
+	// Returning response
+	if ($json_response){
+		return json_encode($response);
+	} else {
+		return $response;
+	}
+}
+
+/**
+ * Get role allowances of a virtual platform.
+ * @param	$user					array or object		The calling user.
+ * @param	$table					string				'assign' or 'override'.
+ * @param	$rolename				string				The role shortname to get allowance from.
+ * @param	$targetrolenames		string				comma separated lists of role shortnames.
+ */
+function mnetadmin_rpc_set_role_allow($user, $table, $rolename, $targetrolenames, $json_response = true) {
+	global $CFG, $USER, $DB;
+
+	// Invoke local user and check his rights
+	if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')){
+		if ($json_response){
+		    return $auth_response;
+		} else {
+		    return json_decode($auth_response);
+		}
+	}
+	$response->errors = array();
+	$response->error = '';
+	// Creating response
+	$response = new stdclass;
+	$response->status = RPC_SUCCESS;
+	// Getting allowance records
+	if ($rolename){
+		if($role = $DB->get_record('role', array('shortname' => $rolename))){
+			$DB->delete_records('role_allow_'.$table, array('roleid' => $role->id));
+			$targets = explode(',', $targetrolenames);
+			foreach($targets as $targetname){
+				if ($targetrole = $DB->get_record('role', array('shortname' => $targetname))){
+					$key = 'allow'.$table;
+					$roleallow = new StdClass;
+					$roleallow->roleid = $role->id;
+					$roleallow->$key = $targetrole->id;
+					$DB->insert_record('role_allow_'.$table, $roleallow);
+				} else {
+					$response->errors[] = "Bad target role shortname $targetname.";
+					$response->error = "Some target role shortname error.";
+				}
+			}
+		} else {
+			$response->status = RPC_FAILURE_RECORD;
+			$response->errors[] = "Bad source role shortname $rolename.";
+			$response->error = "Bad source role shortname $rolename.";
+			if ($json_response){
+				return json_encode($response);
+			} else {
+				return $response;
+			}
+		}
+	} else {
+		$response->status = RPC_FAILURE_RECORD;
+		$response->errors[] = 'Bad role id.';
+		$response->error = 'Unable to retrieve assign allowance table on source host.';
+		if ($json_response){
+			return json_encode($response);
+		} else {
+			return $response;
+		}
+	}
+
+	// Setting value
+	$response->value = '';
 	// Returning response
 	if ($json_response){
 		return json_encode($response);

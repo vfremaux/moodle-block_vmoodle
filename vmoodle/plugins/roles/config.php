@@ -14,6 +14,8 @@ $category = new Vmoodle_Command_Category('roles');
 // Adding commands
 $category->addCommand(new Vmoodle_Command_Role_Sync());
 $category->addCommand(new Vmoodle_Command_Role_Compare());
+$category->addCommand(new Vmoodle_Command_Role_Allow_Sync());
+$category->addCommand(new Vmoodle_Command_Role_Allow_Compare());
 					
 // Returning the category
 return $category;

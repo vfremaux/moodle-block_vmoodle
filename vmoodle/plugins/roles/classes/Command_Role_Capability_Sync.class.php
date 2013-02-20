@@ -21,22 +21,22 @@ class Vmoodle_Command_Role_Capability_Sync extends Vmoodle_Command {
 		global $DB;
 		
 		// Getting command description
-		$cmd_name = get_string('cmdsynccapabilityname', 'vmoodleadminset_roles');
-		$cmd_desc = get_string('cmdsynccapabilitydesc', 'vmoodleadminset_roles');
+		$cmd_name = vmoodle_get_string('cmdsynccapabilityname', 'vmoodleadminset_roles');
+		$cmd_desc = vmoodle_get_string('cmdsynccapabilitydesc', 'vmoodleadminset_roles');
 		// Creating platform parameter
-		$platform_param = new Vmoodle_Command_Parameter('platform',	'enum', get_string('platformparamsyncdesc', 'vmoodleadminset_roles'), null, get_available_platforms());
+		$platform_param = new Vmoodle_Command_Parameter('platform',	'enum', vmoodle_get_string('platformparamsyncdesc', 'vmoodleadminset_roles'), null, get_available_platforms());
 		// Getting role parameter
 		$records = $DB->get_records('role', null, 'name', 'name,shortname');
 		foreach($records as $record)
 			$roles[$record->shortname] = $record->name;
-		$role_param = new Vmoodle_Command_Parameter('role', 'enum', get_string('roleparamsyncdesc', 'vmoodleadminset_roles'), null, $roles);
+		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamsyncdesc', 'vmoodleadminset_roles'), null, $roles);
 		// Creating capability parameter
 		$records = $DB->get_records('capabilities', null, 'name', 'name');
 		$capabilities = array();
 		foreach($records as $record)
 			$capabilities[$record->name] = get_capability_string($record->name);
 		asort($capabilities);
-		$capability_param = new Vmoodle_Command_Parameter('capability', 'enum', get_string('capabilityparamsyncdesc', 'vmoodleadminset_roles'), null, $capabilities);
+		$capability_param = new Vmoodle_Command_Parameter('capability', 'enum', vmoodle_get_string('capabilityparamsyncdesc', 'vmoodleadminset_roles'), null, $capabilities);
 		// Creating command
 		parent::__construct($cmd_name, $cmd_desc, array($platform_param, $role_param, $capability_param));
 	}

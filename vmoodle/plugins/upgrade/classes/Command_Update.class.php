@@ -20,10 +20,10 @@ class Vmoodle_Command_Update extends Vmoodle_Command {
 	 */
 	public function __construct() {
 		// Getting command description
-		$cmd_name = get_string('cmdupgradename', 'vmoodleadminset_upgrade');
-		$cmd_desc = get_string('cmdupgradedesc', 'vmoodleadminset_upgrade');
+		$cmd_name = vmoodle_get_string('cmdupgradename', 'vmoodleadminset_upgrade');
+		$cmd_desc = vmoodle_get_string('cmdupgradedesc', 'vmoodleadminset_upgrade');
 		// Creating max request parameter
-		$max_request_param = new Vmoodle_Command_Parameter('max_request', 'text', get_string('maxrequestupgradedesc', 'vmoodleadminset_upgrade'), 10);
+		$max_request_param = new Vmoodle_Command_Parameter('max_request', 'text', vmoodle_get_string('maxrequestupgradedesc', 'vmoodleadminset_upgrade'), 10);
 		// Creating command
 		parent::__construct($cmd_name, $cmd_desc, array($max_request_param));
 	}
@@ -66,7 +66,7 @@ class Vmoodle_Command_Update extends Vmoodle_Command {
 				if ($return === FALSE) {
 					$responses[$wwwroot] = (object) array(
 						'status' => RPC_FAILURE,
-						'error' => get_string('curlexecutionfailed', 'vmoodleadminset_upgrade', curl_error($ch))
+						'error' => vmoodle_get_string('curlexecutionfailed', 'vmoodleadminset_upgrade', curl_error($ch))
 					);
 					break;
 				}
@@ -75,7 +75,7 @@ class Vmoodle_Command_Update extends Vmoodle_Command {
 				if ($httpcode != 200 && $httpcode != 303) {
 					$responses[$wwwroot] = (object) array(
 						'status' => RPC_FAILURE,
-						'error' => get_string('httperror', 'vmoodleadminset_upgrade', $http_code)
+						'error' => vmoodle_get_string('httperror', 'vmoodleadminset_upgrade', $http_code)
 					);
 					break;
 				}
@@ -92,7 +92,7 @@ class Vmoodle_Command_Update extends Vmoodle_Command {
 			if ($nbr_request == $max_request) {
 				$response[$wwwroot] = (object) array(
 					'status' => RPC_FAILURE,
-					'error' => get_string('maxcurlexecution', 'vmoodleadminset_upgrade')
+					'error' => vmoodle_get_string('maxcurlexecution', 'vmoodleadminset_upgrade')
 				);
 			}
 		}

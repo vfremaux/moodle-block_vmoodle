@@ -17,7 +17,7 @@ class Vmoodle_Command_Parameter {
 	/** Parameter's name */
 	protected $name;
 	/** Parameter's type */
-	protected $type;
+	protected $type; // boolean | enum | text | ltext | internal
 	/** Parameter's description : uses for label or choices of enum parameter */
 	protected $description;
 	/** Parameter's default value (optional) */
