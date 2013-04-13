@@ -75,11 +75,13 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
 
                 if (($peer->id == $CFG->mnet_all_hosts_id) || ($peer->id == $CFG->mnet_localhost_id)) continue;
 
+                $application = get_record('mnet_application', 'id', $peer->applicationid);
+
                 $mnet_peer = new mnet_peer();
                 $mnet_peer->set_wwwroot($peer->wwwroot);
                 // get the sessions for each vmoodle that have same ID Number
                 // we use a force parameter to force fetching the key remotely anyway
-                $currentkey = mnet_get_public_key($mnet_peer->wwwroot, null, 1);
+                $currentkey = mnet_get_public_key($mnet_peer->wwwroot, $application, 1);
                 if ($currentkey){
                     $mnet_peer->public_key = clean_param($currentkey, PARAM_PEM);
                     $mnet_peer->updateparams->public_key = clean_param($currentkey, PARAM_PEM);

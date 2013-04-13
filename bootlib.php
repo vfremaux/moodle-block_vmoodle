@@ -57,7 +57,7 @@ function vmoodle_boot_configuration(){
 	           WHERE
 	              vhostname = '$CFG->vmoodleroot'
 	        ";
-	        DebugBreak(); 
+
 	        $res = mysql_query($sql, $side_cnx);
 	        if ($res){
 	            if (mysql_num_rows($res)){

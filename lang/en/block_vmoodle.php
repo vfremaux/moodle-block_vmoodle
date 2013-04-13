@@ -109,6 +109,7 @@ $string['elements'] = 'element(s)';
 $string['errorbindingmnet'] = 'Error binding MNET services';
 $string['errorreactivetemplate'] = 'Check moodle data path et database name from the host';
 $string['errorsetupdb'] = 'Error when setting up the DB';
+$string['errorbaddirectorylocation'] = 'moodledata path should not contain blank spaces. Relocate dump template location by changing your moodledata location in the filesystem';
 $string['failedplatforms'] = 'Failed platforms:';
 $string['filter'] = 'Filter';
 $string['fixcommand'] = 'Fix command';

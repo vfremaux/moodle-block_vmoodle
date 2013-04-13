@@ -3,9 +3,6 @@
 // Moodle form's library.
 require_once ($CFG->libdir.'/formslib.php');
 
-
-
-
 /**
  * Define form for adding or editing a vmoodle host.
  * @package block-vmoodle
@@ -247,7 +244,7 @@ class Vmoodle_Host_Form extends moodleform {
 	 * Test connection validation.
 	 * @see lib/moodleform#validation($data, $files)
 	 */
-	function validation($data) {
+	function validation($data, $files = null) {
 		global $CFG;
 
 		// Empty array.
