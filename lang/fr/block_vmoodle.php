@@ -204,6 +204,7 @@ $string['runnewcommand'] = 'Exécuter une nouvelle commande';
 $string['runothercommand'] = 'Exécuter une autre commande sur ces plates-formes';
 $string['runotherplatforms'] = 'Ré-exécuter la commande sur d\'autres plates-formes';
 $string['selected'] = 'Sélectionnée(s)';
+$string['services'] = 'Services';
 $string['servicesformselection'] = 'Patron des services par défaut pour les nouvelles instances';
 $string['servicesstrategy'] = 'Stratégie de services';
 $string['servicesstrategydefault']    = 'Stratégie de services par défaut';

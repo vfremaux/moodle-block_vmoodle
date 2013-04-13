@@ -51,14 +51,14 @@ if ($action == 'add') {
 		// Default configuration (automated schema).
 		if (@$CFG->block_vmoodle_automatedschema) {
 			$platform_form = new StdClass();
-			$platform_form->vhostname	= $CFG->block_vmoodle_vmoodlehost;
-			$platform_form->vdbtype		= $CFG->block_vmoodle_vdbtype;
-			$platform_form->vdbhost		= $CFG->block_vmoodle_vdbhost;
+			$platform_form->vhostname	= (@$CFG->block_vmoodle_vmoodlehost) ? $CFG->block_vmoodle_vmoodlehost : 'localhost' ;
+			$platform_form->vdbtype		= (@$CFG->block_vmoodle_vdbtype) ? $CFG->block_vmoodle_vdbtype : 'mysqli' ;
+			$platform_form->vdbhost		= (@$CFG->block_vmoodle_vdbhost) ? $CFG->block_vmoodle_vdbhost : 'localhost' ;
 			$platform_form->vdblogin	= $CFG->block_vmoodle_vdblogin;
 			$platform_form->vdbpass		= $CFG->block_vmoodle_vdbpass;
 			$platform_form->vdbname		= $CFG->block_vmoodle_vdbbasename;
-			$platform_form->vdbprefix	= $CFG->block_vmoodle_vdbprefix;
-			$platform_form->vdbpersist	= $CFG->block_vmoodle_vdbpersist;
+			$platform_form->vdbprefix	= (@$CFG->block_vmoodle_vdbprefix) ? $CFG->block_vmoodle_vdbprefix : 'mdl_' ;
+			$platform_form->vdbpersist	= (@$CFG->block_vmoodle_vdbpersist) ? 1 : 0 ;
 			$platform_form->vdatapath	= stripslashes($CFG->block_vmoodle_vdatapathbase);
 
 			// Try to get crontab (Linux).
