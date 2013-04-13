@@ -67,7 +67,7 @@ function fire_vhost_cron($vhost){
 				fclose($CRONTRACE);
 	    	}
 	    }
-		mtrace("VCron start on $vhost->vhostname : $timestamp_send\n" );
+		mtrace("VCron started on $vhost->vhostname : $timestamp_send\n" );
 		mtrace("VCron Error : $error \n");
 		mtrace("VCron stop on $vhost->vhostname : $timestamp_receive\n#################\n\n" );
 	    return false;
@@ -80,10 +80,10 @@ function fire_vhost_cron($vhost){
     		fputs($CRONTRACE, "VCron stop on $vhost->vhostname : $timestamp_receive\n#################\n\n" );
 			fclose($CRONTRACE);    
     	}
-		mtrace("VCron start on $vhost->vhostname : $timestamp_send\n" );
-		mtrace($rawresponse."\n");
-		mtrace("VCron stop on $vhost->vhostname : $timestamp_receive\n#################\n\n" );
     }
+	mtrace("VCron start on $vhost->vhostname : $timestamp_send\n" );
+	mtrace($rawresponse."\n");
+	mtrace("VCron stop on $vhost->vhostname : $timestamp_receive\n#################\n\n" );
     $vhost->lastcrongap = time() - $vhost->lastcron;
     $vhost->lastcron = $timestamp_send;
     $vhost->croncount++;

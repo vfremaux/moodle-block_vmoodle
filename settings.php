@@ -2,6 +2,10 @@
 
 if (!defined('MOODLE_INTERNAL')) die ("You cannot use this script this way");
 
+if (!$DB->get_records('block', array('name' => 'vmoodle'))) return;
+
+$ADMIN->add('server', new admin_externalpage('vmoodle', get_string('vmoodleadministration', 'block_vmoodle'), $CFG->wwwroot . '/blocks/vmoodle/view.php'), 'block/vmoodle:managevmoodles');
+
 if ($ADMIN->fulltree) {
 	$yesnoopts[0] = get_string('no');
 	$yesnoopts[1] = get_string('yes');

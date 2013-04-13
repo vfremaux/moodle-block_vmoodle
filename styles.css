@@ -8,7 +8,13 @@
 	visibility:hidden;
 }
 
+
 .vmoodle-block_hidden{
      display:none;
     visibility:hidden;   
+}
+
+.content.hidden
+{
+    display:none;
 }

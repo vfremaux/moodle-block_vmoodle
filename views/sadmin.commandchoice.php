@@ -28,6 +28,7 @@
 		try {
 			$vmoodle_category = load_vmplugin($category);
 			// Displaying a command's form
+  
 			print_collapsable_bloc_start($vmoodle_category->getPluginName(), $vmoodle_category->getName(), null, false);
 			foreach ($vmoodle_category->getCommands() as $command) {
 				$command_form = new Vmoodle_Command_Form($command, Vmoodle_Command_Form::MODE_COMMAND_CHOICE);

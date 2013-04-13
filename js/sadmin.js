@@ -10,14 +10,12 @@
 function elementToggleHide(el, persistent, elementFinder, strShow, strHide) {
 
    
- /*   if(!elementFinder) {
+	if(!elementFinder) {
         var obj = el;  //el:container
         el = document.getElementById('togglehide_'+obj.id);
-    }
-    else {
+    } else {
         var obj = elementFinder(el);  //el:button.
     }
-    */
     
     obj = $(el).parent().parent().parent().find('.content');
     obj.className=$(obj).attr('class');
@@ -31,8 +29,7 @@ function elementToggleHide(el, persistent, elementFinder, strShow, strHide) {
         }
         $(obj).attr('class', obj.className);
         var shown = 0;
-    }
-    else {
+    } else {
         obj.className = obj.className.replace(new RegExp(' ?hidden'), '');
         if (el.src) {
             el.src = el.src.replace('switch_plus', 'switch_minus');

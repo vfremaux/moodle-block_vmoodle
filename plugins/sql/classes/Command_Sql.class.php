@@ -80,8 +80,6 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 			}
 		}
         
-        // DebugBreak();
-        
 		// Getting command
 		$command = $this->isReturned();
 		// Creating XMLRPC client

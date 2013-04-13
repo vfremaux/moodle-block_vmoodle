@@ -28,7 +28,7 @@ class Vmoodle_Command_Category {
 	    global $CFG;
 	    
 		// Checking category's name
-		$this->name = get_string('pluginname', 'vmoodleadminset_'.$plugin_name);
+		$this->name = vmoodle_get_string('pluginname', 'vmoodleadminset_'.$plugin_name);
 		// Checking category's plugin name
 		if (!is_string($plugin_name) || empty($plugin_name))
 			throw new Vmoodle_Command_Exception('categorywrongpluginname', $name);

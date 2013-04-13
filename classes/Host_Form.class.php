@@ -3,9 +3,6 @@
 // Moodle form's library.
 require_once ($CFG->libdir.'/formslib.php');
 
-
-
-
 /**
  * Define form for adding or editing a vmoodle host.
  * @package block-vmoodle
@@ -90,7 +87,7 @@ class Vmoodle_Host_Form extends moodleform {
 		// Database password.
 		$mform->addElement('password', 'vdbpass', get_string('vdbpass', 'block_vmoodle'));
 		// Button for testing database connection.
-		$mform->addElement('button', 'testconnection', get_string('testconnection', 'block_vmoodle'), 'onclick="opencnxpopup(); return true;"');
+		$mform->addElement('button', 'testconnection', get_string('testconnection', 'block_vmoodle'), 'onclick="opencnxpopup(\''.$CFG->wwwroot.'\'); return true;"');
 		// Database name.
 		$mform->addElement('text', 'vdbname', get_string('vdbname', 'block_vmoodle'));
 		$mform->addHelpButton('vdbname', 'vdbname', 'block_vmoodle');
@@ -113,7 +110,7 @@ class Vmoodle_Host_Form extends moodleform {
 		$mform->addHelpButton('vdatapath', 'vdatapath', 'block_vmoodle');
 
 		// Button for testing datapath.
-		$mform->addElement('button', 'testdatapath', get_string('testdatapath', 'block_vmoodle'), 'onclick="opendatapathpopup(); return true;"');
+		$mform->addElement('button', 'testdatapath', get_string('testdatapath', 'block_vmoodle'), 'onclick="opendatapathpopup(\''.$CFG->wwwroot.'\'); return true;"');
 
 		// MNET activation.
 		/*
@@ -247,7 +244,7 @@ class Vmoodle_Host_Form extends moodleform {
 	 * Test connection validation.
 	 * @see lib/moodleform#validation($data, $files)
 	 */
-	function validation($data) {
+	function validation($data, $files = null) {
 		global $CFG;
 
 		// Empty array.

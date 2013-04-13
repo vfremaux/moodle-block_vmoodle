@@ -1,5 +1,14 @@
 <?php
 
+// Capabilities
+
+$string['vmoodle:execute'] = 'Execute meta-administration commands';
+$string['vmoodle:managevmoodles'] = 'Manage moodle satellites';
+$string['vmoodle:myaddinstance'] = 'Can add instance to my pages';
+$string['vmoodle:addinstance'] = 'Can add instance';
+
+// Block strings
+
 $string['addall'] = 'Add all';
 $string['addformdbgroup'] = 'Database ';
 $string['addformdescription'] = 'Description ';
@@ -100,6 +109,7 @@ $string['elements'] = 'element(s)';
 $string['errorbindingmnet'] = 'Error binding MNET services';
 $string['errorreactivetemplate'] = 'Check moodle data path et database name from the host';
 $string['errorsetupdb'] = 'Error when setting up the DB';
+$string['errorbaddirectorylocation'] = 'moodledata path should not contain blank spaces. Relocate dump template location by changing your moodledata location in the filesystem';
 $string['failedplatforms'] = 'Failed platforms:';
 $string['filter'] = 'Filter';
 $string['fixcommand'] = 'Fix command';
@@ -249,8 +259,6 @@ $string['vdbtype'] = 'Database type ';
 $string['vdbtype_desc'] = 'Actually supported mysqli and postgres. Old mysql (Moodle 1.9) not supported any more.';
 $string['vhostname'] = 'Site\'s host';
 $string['virtualplatforms'] = 'Virtual hosts';
-$string['vmoodle:execute'] = 'Execute meta-administration commands';
-$string['vmoodle:managevmoodles'] = 'Manage moodle satellites';
 $string['vmoodleadministration'] = 'Moodle virtual instances administration';
 $string['vmoodleappname'] = 'Moodle Virtualization';
 $string['vmoodledoadd1'] = 'STEP 1 on 4 : The new virtual platform database is being loaded. Next step will treat it.';
