@@ -12,12 +12,17 @@
 require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
 
 function vmoodle_get_remote_config($mnethost, $configkey, $domain = ''){
-	global $CFG, $USER,$DB;
+	global $CFG, $USER, $DB, $OUTPUT;
 
 	if (!isset($USER->username)){
-		$USER = get_guest();
+		$USER = $DB->get_record('user', array('username' => 'guest'));
 	}	
-	$user->username = $USER->username;
+	$user = new StdClass();
+	if ($USER){
+		$user->username = $USER->username;
+	} else {
+		$user->username = 'guest';
+	}
 	$userhost = $DB->get_record('mnet_host', array('id' => $USER->mnethostid));
 	$user->remoteuserhostroot = $userhost->wwwroot;
 	$user->remotehostroot = $CFG->wwwroot;

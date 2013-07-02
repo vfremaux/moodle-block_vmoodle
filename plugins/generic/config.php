@@ -1,6 +1,6 @@
 <?php
 /**
- * Description of assisted commands for Pairform@ance.
+ * Description of assisted commands for administrating configs.
  * 
  * @package block-vmoodle
  * @category blocks
@@ -28,6 +28,33 @@ function vmoodle_config_get_params() {
 
 $category = new Vmoodle_Command_Category('generic');
 
+// Set on/off the maintenance mode
+$param1 = new Vmoodle_Command_Parameter(
+	'source1',
+	'boolean',
+	'Maintenance mode',
+	null,
+	null
+);
+
+$param2 = new Vmoodle_Command_Parameter(
+	'source2',
+	'ltext',
+	'Maintenance message',
+	null,
+	null
+);
+
+$cmd = new Vmoodle_Command_Sql(
+	'Vmoodle Maintenance',
+	'Setting on/off the maintenance mode',
+	'UPDATE [[prefix]]config SET value = \'[[?source1]]\' WHERE name = \'maintenance_enabled\'; UPDATE [[prefix]]config SET value = \'[[?source2]]\' WHERE name = \'maintenance_message\'',
+	array($param1,$param2)
+);
+$category->addCommand($cmd);
+
+
+// Distribute a config value to all nodes
 $param1 = new Vmoodle_Command_Parameter(
 	'source1',
 	'enum',

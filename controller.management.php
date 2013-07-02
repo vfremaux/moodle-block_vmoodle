@@ -31,7 +31,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 // Confirmation message.
-$message_object	= new stdclass();
+$message_object	= new StdClass();
 $message_object->message = '';
 $message_object->style = 'notifyproblem';
 
@@ -50,14 +50,15 @@ if ($action == 'add') {
 
 		// Default configuration (automated schema).
 		if (@$CFG->block_vmoodle_automatedschema) {
-			$platform_form->vhostname	= $CFG->block_vmoodle_vmoodlehost;
-			$platform_form->vdbtype		= $CFG->block_vmoodle_vdbtype;
-			$platform_form->vdbhost		= $CFG->block_vmoodle_vdbhost;
+			$platform_form = new StdClass();
+			$platform_form->vhostname	= (@$CFG->block_vmoodle_vmoodlehost) ? $CFG->block_vmoodle_vmoodlehost : 'localhost' ;
+			$platform_form->vdbtype		= (@$CFG->block_vmoodle_vdbtype) ? $CFG->block_vmoodle_vdbtype : 'mysqli' ;
+			$platform_form->vdbhost		= (@$CFG->block_vmoodle_vdbhost) ? $CFG->block_vmoodle_vdbhost : 'localhost' ;
 			$platform_form->vdblogin	= $CFG->block_vmoodle_vdblogin;
 			$platform_form->vdbpass		= $CFG->block_vmoodle_vdbpass;
 			$platform_form->vdbname		= $CFG->block_vmoodle_vdbbasename;
-			$platform_form->vdbprefix	= $CFG->block_vmoodle_vdbprefix;
-			$platform_form->vdbpersist	= $CFG->block_vmoodle_vdbpersist;
+			$platform_form->vdbprefix	= (@$CFG->block_vmoodle_vdbprefix) ? $CFG->block_vmoodle_vdbprefix : 'mdl_' ;
+			$platform_form->vdbpersist	= (@$CFG->block_vmoodle_vdbpersist) ? 1 : 0 ;
 			$platform_form->vdatapath	= stripslashes($CFG->block_vmoodle_vdatapathbase);
 
 			// Try to get crontab (Linux).
@@ -103,7 +104,7 @@ if ($action == 'doadd'){
     }
 
     if ($submitteddata){	
-		debug_trace("entering doadd case");
+		// debug_trace("entering doadd case");
 		if($submitteddata->vtemplate === 0) {
 			$sqlrequest = 'UPDATE 
 								{mnet_host}
@@ -138,6 +139,7 @@ if ($action == 'doadd'){
 			}
 			$message_object->message = get_string('plateformreactivate', 'block_vmoodle');
 			$message_object->style = 'notifysuccess';
+
 			$SESSION->vmoodle_ma['confirm_message'] = $message_object;
 			header('Location: view.php?view=management');
 			return;
@@ -166,7 +168,7 @@ if ($action == 'doadd'){
 				}
 			}
 			// Do we have a "self" host record ?
-			debug_trace("getting this_host");
+			// debug_trace("getting this_host");
 			if(!$this_as_host = $DB->get_record('mnet_host', array('wwwroot' => $CFG->wwwroot))){
 				// If loading this host's data has failed.
 				$message_object->message = get_string('badthishostdata', 'block_vmoodle');
@@ -178,7 +180,7 @@ if ($action == 'doadd'){
 		/// Creates database from template.
 
 			if ($vmoodlestep == 0){
-				debug_trace("step 0 : loading");
+				// debug_trace("step 0 : loading");
 				if(!vmoodle_load_database_from_template($submitteddata, $CFG->dataroot.'/vmoodle')){
 					// If loading database from template has failed.
 					unset($SESSION->vmoodledata);
@@ -207,7 +209,7 @@ if ($action == 'doadd'){
 		// with all fixing SQL instructions processed.
 
 			if ($vmoodlestep == 1){
-				debug_trace("step 1 : fixing DB");
+				// debug_trace("step 1 : fixing DB");
 				if(!vmoodle_fix_database($submitteddata, $this_as_host, $CFG->dataroot.'/vmoodle')){
 					// If fixing database has failed.
 					unset($SESSION->vmoodledata);
@@ -233,7 +235,7 @@ if ($action == 'doadd'){
 		/// Get fileset for moodledata
 
 			if ($vmoodlestep == 2){
-				debug_trace("step 2 : dumping files");
+				// debug_trace("step 2 : dumping files");
 				vmoodle_dump_files_from_template($submitteddata->vtemplate, $submitteddata->vdatapath);
 				echo $OUTPUT->box(get_string('vmoodledoadd3', 'block_vmoodle'));
 				echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=3');
@@ -244,7 +246,7 @@ if ($action == 'doadd'){
 		/// Insert proper vmoodle record
 
 			if ($vmoodlestep == 3){
-				debug_trace("step 3 : registering");
+				// debug_trace("step 3 : registering");
 				// Adds the new virtual instance record, with all data if everything is done
 				$submitteddata->timecreated	= time();
 				$submitteddata->vhostname = preg_replace("/\/$/", '', $submitteddata->vhostname); // fix possible misslashing
@@ -269,7 +271,7 @@ if ($action == 'doadd'){
 				$newmnet_host =	new vmoodle_mnet_peer();
 				$newmnet_host->set_wwwroot($submitteddata->vhostname);
 
-				debug_trace("step 4 : configuring MNET");
+				// debug_trace("step 4 : configuring MNET");
 				// If the new host is not using MNET, we discard it from us. There will be no more MNET contact with this host.
 				// vmoodle_fix_database should have disabled all mnet operations in the remote moodle.
 				if($submitteddata->mnet == -1){
@@ -314,7 +316,7 @@ if ($action == 'doadd'){
 				curl_close($ch);
 
 				// Force new virtual host to renew our key and send his own to us.
-				debug_trace("step 4.2 : exchanging keys");
+				// debug_trace("step 4.2 : exchanging keys");
              
 				if(!$newmnet_host->bootstrap($submitteddata->vhostname, null, 'moodle', 1)){
 					// If bootstraping the new host has failed.
@@ -330,7 +332,7 @@ if ($action == 'doadd'){
 
 				$newmnet_host->commit();
 
-				debug_trace("step 4.3 : setting mnetadmin remote side");
+				// debug_trace("step 4.3 : setting mnetadmin remote side");
 				// Service 'mnetadmin' is needed to speak with new host. Set it our side.
 				$slavehost = $DB->get_record('mnet_host', array('wwwroot' => $submitteddata->vhostname));
 				$mnetadminservice = $DB->get_record('mnet_service', array('name' => 'mnetadmin'));
@@ -417,7 +419,7 @@ if ($action == 'doedit') {
 
 	// If there is submitted data (no errors).
 	if($submitteddata = $platform_form->get_data()){
-
+		
 		// Updates the block, with all data.
 		$olddata = $DB->get_record('block_vmoodle', array('id' => $submitteddata->id));
 		$success = false;
@@ -493,7 +495,7 @@ if ($action == 'doedit') {
     			// peer to unbind from
 			    $rpc_client->add_param($edited_host->wwwroot, 'string');
 				foreach($lastsubnetwork_hosts as $lastsubnetwork_host){
-				    debug_trace("unbind -> $lastsubnetwork_host");
+				    // debug_trace("unbind -> $lastsubnetwork_host");
 					$temp_member = new vmoodle_mnet_peer();
 					$temp_member->set_wwwroot($lastsubnetwork_host->wwwroot);
 					// RPC error.
@@ -507,7 +509,7 @@ if ($action == 'doedit') {
 				    }
 
                     // unbind other from edited
-				    debug_trace("unbind <- $lastsubnetwork_host");
+				    // debug_trace("unbind <- $lastsubnetwork_host");
     				// Call to 'disconnect_from_subnetwork'.
     				$rpc_client_2 = new Vmoodle_XmlRpc_Client();
     				$rpc_client_2->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_unbind_peer');
@@ -601,7 +603,7 @@ if ($action == 'snapshot'){
 	$absolute_sqldir 	=	$CFG->dataroot.$separator.$relative_sqldir;
 
 	if (preg_match('/ /', $absolute_sqldir)){
-	    error('moodledata path should not contain blank spaces. Relocate dump template location by changing your moodledata location in the filesystem');
+	    print_error('errorbaddirectorylocation', 'block_vmoodle');
 	}
 
 	if (!filesystem_is_dir('vmoodle', $CFG->dataroot)){

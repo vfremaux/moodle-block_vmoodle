@@ -11,6 +11,13 @@
  */
 // Adding requirements
  require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
+ 
+ if (get_config('block_vmoodle_late_install')){
+	set_config('block_vmoodle_late_install', 0);
+	require_once $CFG->dirroot.'/blocks/vmoodle/db/install.php';
+	xmldb_block_vmoodle_late_install();
+}
+
 /**
  * Vmoodle block displays virtual platforms and link to the settings.
  */

@@ -70,7 +70,8 @@ function get_available_platforms() {
 		}
 	} else {
 		$id = 'wwwroot';
-		$records = $DB->get_records('mnet_host', array('deleted' => 0), 'name', $id.', name');
+		$moodleapplication = $DB->get_record('mnet_application', array('name' => 'moodle'));
+		$records = $DB->get_records('mnet_host', array('deleted' => 0, 'applicationid' => $moodleapplication->id), 'name', $id.', name');
 		foreach ($records as $key => $record) {
 			if ($record->name == '' || $record->name == 'All Hosts')
 			unset($records[$key]);
@@ -140,6 +141,7 @@ function replace_parameters_values($matches, $data, $parameters_replace=true, $c
  */
 function print_collapsable_bloc_start($id, $caption, $classes='', $displayed=true) {
 	global $CFG, $OUTPUT;
+
 	$caption = strip_tags($caption);
 
 	$pixpath = ($displayed) ? '/t/switch_minus' : '/t/switch_plus' ;
@@ -148,14 +150,17 @@ function print_collapsable_bloc_start($id, $caption, $classes='', $displayed=tru
 				'<div class="title">' .
 					'<input ' .
 						'type="image" class="hide-show-image" ' .
-						'onclick="elementToggleHide(this, false, function(el) {return findParentNode(el, \'DIV\', \'bvmc\'); }, \''.get_string('show').' '.$caption.'\', \''.get_string('hide').' '.$caption.'\'); return false;" ' .
+						'onclick="elementToggleHide(this, false, function(el) {
+                                return findParentNode(el, \'DIV\', \'bvmc\'); 
+                                }, \''.get_string('show').' '.$caption.'\', \''.get_string('hide').' '.$caption.'\');                              return false;" ' .
 						'src="'.$OUTPUT->pix_url($pixpath).'" ' .
 						'alt="'.get_string('show').' '.strip_tags($caption).'" ' .
 						'title="'.get_string('show').' '.strip_tags($caption).'"/>' .
 					'<h2>'.strip_tags($caption).'</h2>' .
 				'</div>' .
-			'</div>' .
-			'<div class="content" class="bvmc'.($displayed ? '' : ' hidden').'">';
+			'</div>';
+			$hidden = ($displayed) ? '' : ' hidden';
+			echo '<div class="content bvmc '.$hidden.'">';
 }
 
 /**
@@ -913,5 +918,68 @@ if (!function_exists('print_error_class')){
 				}
 			}
 		}
+	}
+}
+
+function vmoodle_get_string($identifier, $subplugin, $a = '', $lang = ''){
+	global $CFG;
+	
+	static $string = array();
+	
+	if (empty($lang)) $lang = current_language();
+
+	list($type, $plug) = explode('_', $subplugin);
+	
+	include $CFG->dirroot.'/blocks/vmoodle/db/subplugins.php';
+	
+	if (!isset($plugstring[$plug])){
+		if (file_exists($CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/en/'.$subplugin.'.php')){
+			include $CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/en/'.$subplugin.'.php';
+		} else {
+            debugging("English lang file must exist", DEBUG_DEVELOPER);
+		}
+
+		// override with lang file if exists
+		if (file_exists($CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/'.$lang.'/'.$subplugin.'.php')){
+			include $CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/'.$lang.'/'.$subplugin.'.php';
+		} else {
+			$string = array();
+		}
+		$plugstring[$plug] = $string;
+	}
+
+	if (array_key_exists($identifier, $plugstring[$plug])){
+		$result = $plugstring[$plug][$identifier];
+        if ($a !== NULL) {
+            if (is_object($a) or is_array($a)) {
+                $a = (array)$a;
+                $search = array();
+                $replace = array();
+                foreach ($a as $key=>$value) {
+                    if (is_int($key)) {
+                        // we do not support numeric keys - sorry!
+                        continue;
+                    }
+                    $search[]  = '{$a->'.$key.'}';
+                    $replace[] = (string)$value;
+                }
+                if ($search) {
+                    $result = str_replace($search, $replace, $result);
+                }
+            } else {
+                $result = str_replace('{$a}', (string)$a, $result);
+            }
+        }
+	    // Debugging feature lets you display string identifier and component
+	    if (!empty($CFG->debugstringids) && optional_param('strings', 0, PARAM_INT)) {
+	        $result .= ' {' . $identifier . '/' . $subplugin . '}';
+	    }
+	    return $result;
+	}
+
+	if (!empty($CFG->debugstringids) && optional_param('strings', 0, PARAM_INT)) {
+		return "[[$identifier/$subplugin]]";
+	} else {
+		return "[[$identifier]]";
 	}
 }

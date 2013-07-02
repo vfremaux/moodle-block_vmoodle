@@ -36,6 +36,7 @@
 	// Checking login
     $system_context = context_system::instance();
 	require_login();
+
                                                        
 	$plugins = get_list_of_plugins('/blocks/vmoodle/plugins');
 	foreach($plugins as $plugin) {
@@ -51,7 +52,9 @@
 	$strtitle = get_string('vmoodlemanager', 'block_vmoodle');
 
 	$CFG->stylesheets[] = $CFG->wwwroot.'/blocks/vmoodle/theme/styles.php';
+
 	// Generating header
+	
 	ob_start();
 	$PAGE->set_context($system_context);
 	$PAGE->set_pagelayout('admin');
@@ -65,11 +68,11 @@
 	$PAGE->set_button('');
 	$PAGE->set_headingmenu('');
 	
-    $url = new moodle_url('/blocks/vmoodle/view.php');
-    $PAGE->set_url($url,array('view'=>$view,'what'=>$action));
+    $url = new moodle_url('/blocks/vmoodle/adminview.php');
+    $PAGE->set_url($url,array('view' => $view,'what' => $action));
     
     echo $OUTPUT->header(); 
-
+	
     // Checking rights
 	if (!has_capability('block/vmoodle:managevmoodles', context_system::instance()))
 		print_error('onlyadministrators', 'block_vmoodle');
@@ -78,11 +81,11 @@
 	echo $OUTPUT->heading(get_string('vmoodleadministration', 'block_vmoodle'));
 	// Adding tabs
 	$tabname = get_string('tabpoolmanage', 'block_vmoodle');
-	$row[] = new tabobject('management', $CFG->wwwroot."/blocks/vmoodle/view.php?view=management", $tabname);
+	$row[] = new tabobject('management', $CFG->wwwroot."/blocks/vmoodle/adminview.php?view=management", $tabname);
 	$tabname = get_string('tabpoolsadmin', 'block_vmoodle');
-	$row[] = new tabobject('sadmin', $CFG->wwwroot."/blocks/vmoodle/view.php?view=sadmin", $tabname);
+	$row[] = new tabobject('sadmin', $CFG->wwwroot."/blocks/vmoodle/adminview.php?view=sadmin", $tabname);
 	$tabname = get_string('tabpoolservices', 'block_vmoodle');
-	$row[] = new tabobject('services', $CFG->wwwroot."/blocks/vmoodle/view.php?view=services", $tabname);
+	$row[] = new tabobject('services', $CFG->wwwroot."/blocks/vmoodle/adminview.php?view=services", $tabname);
 	$tabrows[] = $row;
 	print_tabs($tabrows, $view);
 

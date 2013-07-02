@@ -1,5 +1,12 @@
 <?php
 
+// Capabilities
+
+$string['vmoodle:execute'] = 'Exécuter des méta-commandes';
+$string['vmoodle:managevmoodles'] = 'Gérer les satellites moodle';
+
+// Block Strings
+
 $string['addall'] = 'Tout ajouter';
 $string['addformdbgroup'] = 'Base de données ';
 $string['addformdescription'] = 'Description ';
@@ -195,6 +202,7 @@ $string['runnewcommand'] = 'Exécuter une nouvelle commande';
 $string['runothercommand'] = 'Exécuter une autre commande sur ces plates-formes';
 $string['runotherplatforms'] = 'Ré-exécuter la commande sur d\'autres plates-formes';
 $string['selected'] = 'Sélectionnée(s)';
+$string['services'] = 'Services';
 $string['servicesformselection'] = 'Patron des services par défaut pour les nouvelles instances';
 $string['servicesstrategy'] = 'Stratégie de services';
 $string['servicesstrategydefault']    = 'Stratégie de services par défaut';
@@ -240,8 +248,6 @@ $string['vdbprefix'] = 'Préfixe des tables ';
 $string['vdbtype'] = 'Type de la base de données ';
 $string['vhostname'] = 'Hôte du site';
 $string['virtualplatforms'] = 'Plates-formes virtuelles';
-$string['vmoodle:execute'] = 'Exécuter des méta-commandes';
-$string['vmoodle:managevmoodles'] = 'Gérer les satellites moodle';
 $string['vmoodleadministration'] = 'Administration des plates-formes virtuelles ';
 $string['vmoodleappname'] = 'Virtualisation Moodle';
 $string['vmoodledoadd1'] = 'ETAPE 1 de 4 : La base de données de la nouvelle plate-forme est chargée. La prochaine étape va traiter la nouvelle base de données.';
