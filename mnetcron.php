@@ -77,7 +77,7 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
 
                 if (($peer->id == $CFG->mnet_all_hosts_id) || ($peer->id == $CFG->mnet_localhost_id)) continue;
 
-                $application = get_record('mnet_application', 'id', $peer->applicationid);
+                $application = $DB->get_record('mnet_application', array('id' => $peer->applicationid));
 
                 $mnet_peer = new mnet_peer();
                 $mnet_peer->set_wwwroot($peer->wwwroot);

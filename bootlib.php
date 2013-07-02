@@ -41,7 +41,7 @@ function vmoodle_boot_configuration(){
 	if ($CFG->vmoodleroot != $CFG->wwwroot){    
 	
 	    if ($CFG->vmasterdbtype == 'mysql'){
-	    	
+	    	$vmaster = new StdClass();
 	        $vmaster->vdbtype = $CFG->vmasterdbtype;
 	        $vmaster->vdbhost = $CFG->vmasterdbhost;
 	        $vmaster->vdblogin = $CFG->vmasterdblogin;
@@ -82,6 +82,7 @@ function vmoodle_boot_configuration(){
 	        }
 	    } elseif ($CFG->vmasterdbtype == 'mysqli'){
 	    	
+	    	$vmaster = new StdClass();
 	        $vmaster->vdbtype = $CFG->vmasterdbtype;
 	        $vmaster->vdbhost = $CFG->vmasterdbhost;
 	        $vmaster->vdblogin = $CFG->vmasterdblogin;
@@ -121,6 +122,7 @@ function vmoodle_boot_configuration(){
 	            die ("VMoodling : Could not fetch virtual moodle configuration");
 	        }
 	    } elseif ($CFG->vmasterdbtype == 'postgres' || $CFG->vmasterdbtype == 'postgres7'){
+	    	$vmaster = new StdClass();
 	        $vmaster->vdbtype = $CFG->vmasterdbtype;
 	        $vmaster->vdbhost = $CFG->vmasterdbhost;
 	        $vmaster->vdblogin = $CFG->vmasterdblogin;
@@ -220,4 +222,3 @@ function vmoodle_make_connection(&$vmoodle, $binddb = false){
     }
 }
 
-?>
