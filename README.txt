@@ -1,7 +1,7 @@
 VMoodle block
 #############
 
-Implements a packaged virtuaization control feature for large "Moodle Arrays" 
+Implements a packaged virtualization control feature for large "Moodle Arrays" 
 
 Important requirements for VMoodling :
 
