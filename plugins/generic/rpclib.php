@@ -47,3 +47,48 @@ function dataexchange_rpc_fetch_config($user, $configkey, $module = '', $json_re
 		return $response;
 	}
 }
+
+/**
+ * Set on or off maintenance mode.
+ * @param		$user		object		The calling user, containing mnethostroot reference and hostroot reference.
+ * @param		$message	string		If empty, asks for a maintenance switch off.
+ */
+function mnetadmin_rpc_set_maintenance($user, $message, $hardmaintenance = false, $json_response = true) {
+	global $CFG, $USER;
+
+    debug_trace('RPC '.json_encode($user));
+
+	if ($auth_response = invoke_local_user((array)$user)){
+		if ($json_response){
+		    return $auth_response;
+		} else {
+		    return json_decode($auth_response);
+		}
+	}
+
+	// Creating response.
+	$response = new stdClass;
+	$response->status = RPC_SUCCESS;
+
+	// keep old hard signalled maintenance mode of 1.9. Can be usefull in case database stops
+	// but needs a patch in config to catch this real case.
+	$filename = $CFG->dataroot.'/maintenance.html';
+
+	if ($message != 'OFF'){
+	    debug_trace('RPC : Setting maintenance on');
+        $file = fopen($filename, 'w');
+        fwrite($file, stripslashes($message));
+        fclose($file);
+        set_config('maintenance_enabled', 1);
+        set_config('maintenance_message', $message);
+	} else {
+	    debug_trace('RPC : Setting maintenance off');
+        unlink($filename);
+        set_config('maintenance_enabled', 0);
+        set_config('maintenance_message', null);
+	}
+
+    debug_trace('RPC Bind : Sending response');
+	// Returns response (success or failure).
+	return json_encode($response);
+}

@@ -13,6 +13,7 @@
  * @usecase snapshot
  * @usecase delete
  * @usecase renewall
+ * @usecase generateconfigs
  *
  * @package block-vmoodle
  * @category blocks
@@ -810,6 +811,56 @@ if ($action == 'renewall'){
 		echo $raw."\n\n";
 	}
 	echo '</pre>';
+}
+/********************* Generates physical configs ************/
+if ($action == 'generateconfigs'){
+
+	$allvmoodles = $DB->get_records('block_vmoodle', array());
+
+/// prepare generation dir
+
+	$configpath = $CFG->dataroot.'/vmoodle_configs';
+	
+	if (!is_dir($configpath)){
+		mkdir($configpath, 0777);
+	}
+
+/// generate
+
+	$configtemplate = implode('', file($CFG->dirroot.'/config.php'));
+	
+	$generated = array();
+	
+	$result = 'generating';
+
+	foreach($allvmoodles as $vm){
+		
+		$configvm = $configtemplate;
+
+		assert(preg_match("#CFG->wwwroot\s+=\s+'.*?';#", $configvm));
+		
+		$configvm = preg_replace("#CFG->wwwroot\s+=\s+['\"].*?['\"];#s", 'CFG->wwwroot = \''.$vm->vhostname."';", $configvm);
+		$configvm = preg_replace("#CFG->dataroot\s+=\s+['\"].*?['\"];#s", 'CFG->dataroot = \''.$vm->vdatapath."';", $configvm);
+		$configvm = preg_replace("#CFG->dbhost\s+=\s+['\"].*?['\"];#s", 'CFG->dbhost = \''.$vm->vdbhost."';", $configvm);
+		$configvm = preg_replace("#CFG->dbname\s+=\s+['\"].*?['\"];#s", 'CFG->dbname = \''.$vm->vdbname."';", $configvm);
+		$configvm = preg_replace("#CFG->dbuser\s+=\s+['\"].*?['\"];#s", 'CFG->dbuser = \''.$vm->vdblogin."';", $configvm);
+		$configvm = preg_replace("#CFG->dbpass\s+=\s+['\"].*?['\"];#s", 'CFG->dbpass = \''.$vm->vdbpass."';", $configvm);
+		$configvm = preg_replace("#CFG->prefix\s+=\s+['\"].*?['\"];#s", 'CFG->prefix = \''.$vm->vdbprefix."';", $configvm);
+		if ($vm->vdbpersist){
+			$configvm = preg_replace("#'dbpersist'\s+=\s+.*?,#", "'dbpersist' = true,", $configvm);
+		}
+		
+		if ($CONFIG = fopen($configpath.'/config-'.$vm->shortname.'.php', 'w')){
+			$generated[] = 'config-'.$vm->shortname.'.php';
+			fputs($CONFIG, $configvm);
+			fclose($CONFIG);
+		}
+	}
+	if (!empty($generated)){
+		$result = implode("\n", $generated);
+		$controllerresult = get_string('generatedconfigs', 'block_vmoodle', $result);
+	}
+
 }
 
 // Return to initial 'max_execution_time' value, in every case.

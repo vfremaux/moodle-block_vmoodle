@@ -103,4 +103,19 @@ $cmd = new Vmoodle_Command_Sql(
 );
 $category->addCommand($cmd);
 
+$param1 = new Vmoodle_Command_Parameter(
+	'message',
+	'ltext',
+	'Maintenance message',
+	null,
+	null
+);
+
+$cmd = new Vmoodle_Command_Maintenance(
+	'Vmoodle Maintenance Setup',
+	'Setting Maintenance Mode on Remote Moodles',
+	$param1
+);
+$category->addCommand($cmd);
+
 return $category;
