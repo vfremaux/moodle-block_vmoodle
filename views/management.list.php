@@ -16,6 +16,13 @@ if (isset($SESSION->vmoodle_ma['confirm_message'])) {
 	unset($SESSION->vmoodle_ma['confirm_message']);
 }
 
+// if controller results, print them
+if (!empty($controllerresult)){
+	echo '<pre>';
+	echo $controllerresult;
+	echo '</pre>';
+}
+
 // Retrieves all virtuals hosts.
 $vmoodles = $DB->get_records('block_vmoodle', null, 'name,enabled');
 
@@ -67,7 +74,7 @@ else {
 	echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'snapshot', 'wwwroot' => $CFG->wwwroot)), get_string('snapshotmaster', 'block_vmoodle'), 'get');
 }
 
-// Displays buttons for adding a new virtual host and renewing all keys. 
+// Displays buttons for adding a new virtual host and renewing all keys.
 echo '<br/>';
 $templates = vmoodle_get_available_templates();
 if(empty($templates)) {
@@ -76,6 +83,8 @@ if(empty($templates)) {
 else {
 	echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'add')), get_string('addvmoodle', 'block_vmoodle'), 'get');
 }
+echo '<br/>';
+echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'generateconfigs')), get_string('generateconfigs', 'block_vmoodle'), 'get');
 echo '<br/>';
 echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'renewall')), get_string('renewallbindings', 'block_vmoodle'), 'get');
 echo '</center>';
