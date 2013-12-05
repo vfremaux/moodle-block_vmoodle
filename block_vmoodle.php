@@ -158,8 +158,19 @@ class block_vmoodle extends block_base {
 	 * @param	$return			string			The URL to prompt to the user to continue. 
 	 */
 	public function update_subplugins($verbose) {
+		global $DB;
+		
 		upgrade_plugins('vmoodlelib', '', '', $verbose);
+
+		// fix wrongly twicked rpc paths
+        if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset%' ", array())){
+        	foreach($rpc_shifted_defines as $rpc){
+        		$rpc->xmlrpcpath = str_replace('vmoodleadminset', 'blocks/vmoodle/plugins');
+        		$DB->update_record('mnet_rpc', $rpc);
+        	}
+        }
 	}
+
     public function cron(){
         global $CFG;
         global $MNET;

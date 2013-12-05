@@ -12,3 +12,8 @@ $string['upgrade'] = 'Code upgrade notifications';
 $string['cmdupgradename'] = 'Command name for upgrade';
 $string['cmdupgradedesc'] = 'Command name for upgrade';
 $string['maxrequestupgradedesc'] = 'Max request bounces for upgrade';
+$string['maxcurlexecution'] = 'Max url bounce reached';
+$string['isuptodate'] = 'Remote is up to date';
+$string['environmentissues'] = 'Environment issues when upgrading. Check local upgrade messages. ';
+$string['upgradecomplete'] = 'Upgrade completed to version [{$a}]. ';
+

@@ -83,14 +83,13 @@ class Vmoodle_Command_Maintenance extends Vmoodle_Command {
 		
 		// Creating XMLRPC client
 		$rpc_client = new Vmoodle_XmlRpc_Client();
-		$rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_set_maintenance');
+		$rpc_client->set_method('blocks/vmoodle/plugins/generic/rpclib.php/mnetadmin_rpc_set_maintenance');
 		$rpc_client->add_param($this->getParameter('message')->getValue(), 'string');
 		$rpc_client->add_param($command, 'boolean');
 		
 		// Sending requests
 		foreach($mnet_hosts as $mnet_host) {
 			// Sending request
-			echo "throwing command "; 
 			if (!$rpc_client->send($mnet_host)) {
 				$response = new StdClass();
 				$response->status = MNET_FAILURE;

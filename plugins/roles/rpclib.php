@@ -13,13 +13,16 @@ require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
 require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
 
 if (!defined('RPC_SUCCESS')) {
-    define('RPC_TEST', 100);
-    define('RPC_SUCCESS', 200);
-    define('RPC_FAILURE', 500);
-    define('RPC_FAILURE_USER', 501);
-    define('RPC_FAILURE_CONFIG', 502);
-    define('RPC_FAILURE_DATA', 503);
-    define('RPC_FAILURE_CAPABILITY', 510);
+	define('RPC_TEST', 100);
+	define('RPC_SUCCESS', 200);
+	define('RPC_FAILURE', 500);
+	define('RPC_FAILURE_USER', 501);
+	define('RPC_FAILURE_CONFIG', 502);
+	define('RPC_FAILURE_DATA', 503); 
+	define('RPC_FAILURE_CAPABILITY', 510);
+	define('MNET_FAILURE', 511);
+	define('RPC_FAILURE_RECORD', 520);
+	define('RPC_FAILURE_RUN', 521);
 }
 
 /**
@@ -597,6 +600,7 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	$response->status = RPC_SUCCESS;
 	$response->errors = array();
 	$response->error = '';
+	$response->message = '';
 
 	// Invoke local user and check his rights
 	if ($auth_response = invoke_local_user((array)$callinguser, 'block/vmoodle:execute')){
@@ -606,22 +610,72 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 			return json_decode($auth_response);
 		}
 	}
-	// Getting role
-	$unassign = (strstr($rolename, '-') !== false);
+
+/// Getting true role
+
+	$unassign = (strstr($rolename, '-') !== false);	
 	$rolename = str_replace('-', '', $rolename);
+
+	$siteadmin = (strstr($rolename, '+') !== false);
+	$rolename = str_replace('+', '', $rolename);
+
+/// Process site admin operation
+
+	if ($siteadmin){
+		if (function_exists('debug_trace')) debug_trace("Setting $targetuser->username as site admin");
+		$response->message .= '<br/>'.fullname($targetuser).' is now site administrator ';
+        $admins = array();
+        foreach(explode(',', $CFG->siteadmins) as $admin) {
+            $admin = (int)$admin;
+            if ($admin) {
+                $admins[$admin] = $admin;
+            }
+        }
+
+        if (!isset($admins[$targetuser->id])) {
+        	$admins[$targetuser->id] = $targetuser->id;
+            set_config('siteadmins', implode(',', $admins));
+        }
+	} else {
+		if (preg_match('/\b'.$targetuser->id.'\b/', $CFG->siteadmins)){
+			if (function_exists('debug_trace')) debug_trace("Unset $targetuser->username as site admin");
+			// ensure user IS NOT in admins
+	        $admins = array();
+	        foreach(explode(',', $CFG->siteadmins) as $admin) {
+	            $admin = (int)$admin;
+	            if ($admin != $targetuser->id) {
+	                $admins[$admin] = $admin;
+	            }
+	        }
+	        set_config('siteadmins', implode(',', $admins));
+			$response->message .= '<br/>'.fullname($targetuser).' discarded from site administrators ';
+	    }
+	}
+	
+	// we admit null role operations for site admin only changes
+	if (empty($rolename)){
+		if ($json_response){
+		    return json_encode($response);
+		} else {
+			return $response;
+		}
+	}
+	
 
 	$record_role = $DB->get_record('role', array('shortname' => $rolename));
 	if (!$record_role) {
 		$response->status = RPC_FAILURE_RECORD;
-		$response->errors[] = 'Unkown role '.$rolename.'.';
-		$response->error = 'Unkown role '.$rolename.'.';
+		$response->errors[] = ' Unkown role '.$rolename.'.';
+		$response->error = ' Unkown role '.$rolename.'.';
 		if ($json_response){
 			return json_encode($response);
 		} else {
 			return $response;
 		}
 	}
-	// Check context target
+
+/// Check context target
+
 	switch($contextlevel){
 	    case CONTEXT_SYSTEM :{
 	        $context = context_system::instance();
@@ -630,8 +684,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	    case CONTEXT_COURSE :{
 	    	if (!preg_match('/id|shortname|idnumber/', $contextidentityfield)){
         		$response->status = RPC_FAILURE_RECORD;
-        		$response->errors[] = 'This fieldname does\'nt apply for this context level.';
-        		$response->error = 'This fieldname does\'nt apply for this context level.';
+        		$response->errors[] = ' This fieldname does\'nt apply for this context level.';
+        		$response->error = ' This fieldname does\'nt apply for this context level.';
         		if ($json_response){
 	        		return json_encode($response);
 	        	} else {
@@ -640,8 +694,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	    	}
 	        if(!$course = $DB->get_record('course', array($contextidentityfield => $contextidentity))){
         		$response->status = RPC_FAILURE_RECORD;
-        		$response->errors[] = 'Course Context not found.';
-        		$response->error = 'Course Context not found.';
+        		$response->errors[] = ' Course Context not found.';
+        		$response->error = ' Course Context not found.';
         		if ($json_response){
 	        		return json_encode($response);
 	        	} else {
@@ -654,8 +708,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	    case CONTEXT_MODULE :{
 	    	if (!preg_match('/id|idnumber/', $contextidentityfield)){
         		$response->status = RPC_FAILURE_RECORD;
-        		$response->errors[] = 'This fieldname does\'nt apply for this context level.';
-        		$response->error = 'This fieldname does\'nt apply for this context level.';
+        		$response->errors[] = ' This fieldname does\'nt apply for this context level.';
+        		$response->error = ' This fieldname does\'nt apply for this context level.';
         		if ($json_response){
 	        		return json_encode($response);
 	        	} else {
@@ -664,8 +718,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	    	}
 	        if(!$cm = $DB->get_record('course_modules', array($contextidentityfield => $contextidentity))){
         		$response->status = RPC_FAILURE_RECORD;
-        		$response->errors[] = 'Course Module not found.';
-        		$response->error = 'Course Module not found.';
+        		$response->errors[] = ' Course Module not found.';
+        		$response->error = ' Course Module not found.';
         		if ($json_response){
 	        		return json_encode($response);
 	        	} else {
@@ -674,8 +728,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	        }
 	        if (!$context = context_module::instance($cm->id)){
         		$response->status = RPC_FAILURE_RECORD;
-        		$response->errors[] = 'Course Module context not found.';
-        		$response->error = 'Course Module context not found.';
+        		$response->errors[] = ' Course Module context not found.';
+        		$response->error = ' Course Module context not found.';
         		if ($json_response){
 	        		return json_encode($response);
 	        	} else {
@@ -687,8 +741,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	    case CONTEXT_USER :{
 	    	if (!preg_match('/id|username|email|idnumber', $contextidentityfield)){
         		$response->status = RPC_FAILURE_RECORD;
-        		$response->errors[] = 'This fieldname does\'nt apply for this context level.';
-        		$response->error = 'This fieldname does\'nt apply for this context level.';
+        		$response->errors[] = ' This fieldname does\'nt apply for this context level.';
+        		$response->error = ' This fieldname does\'nt apply for this context level.';
         		if ($json_response){
 	        		return json_encode($response);
 	        	} else {
@@ -697,8 +751,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	    	}
 	        if(!$user = $DB->get_record('user', array($contextidentityfield => $contextidentity))){
         		$response->status = RPC_FAILURE_RECORD;
-        		$response->errors[] = 'User not found.';
-        		$response->error = 'User not found.';
+        		$response->errors[] = ' User not found.';
+        		$response->error = ' User not found.';
         		if ($json_response){
 	        		return json_encode($response);
 	        	} else {
@@ -707,8 +761,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	        }
 	        if (!$context = context_user::instance($cm)){
         		$response->status = RPC_FAILURE_RECORD;
-        		$response->errors[] = 'User context not found.';
-        		$response->error = 'User context not found.';
+        		$response->errors[] = ' User context not found.';
+        		$response->error = ' User context not found.';
         		if ($json_response){
 	        		return json_encode($response);
 	        	} else {
@@ -719,8 +773,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	    }
 	    default:{
     		$response->status = RPC_FAILURE_RECORD;
-    		$response->errors[] = 'Context not implemented.';
-    		$response->error = 'Context not implemented.';
+    		$response->errors[] = ' Context not implemented.';
+    		$response->error = ' Context not implemented.';
     		if ($json_response){
         		return json_encode($response);
         	} else {
@@ -732,8 +786,8 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 
     if (!$targetuser = $DB->get_record('user', array('username' => $targetuser))){
 		$response->status = RPC_FAILURE_RECORD;
-		$response->errors[] = 'Not such target user.';
-		$response->error = 'Not such target user.';
+		$response->errors[] = ' Not such target user.';
+		$response->error = ' Not such target user.';
 		if ($json_response){
     		return json_encode($response);
     	} else {
@@ -743,9 +797,9 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 
 	if ($unassign){
 		if (function_exists('debug_trace')) debug_trace("role_unassign($record_role->id, $targetuser->id, null, $context->id)");
-		if (role_unassign($record_role->id, $targetuser->id, null, $context->id)){
+		if (role_unassign($record_role->id, $targetuser->id, $context->id)){
 			$response->status = RPC_SUCCESS;
-			$response->message = "Role $record_role->name unassigned from ". fullname($targetuser);
+			$response->message = "<br/>Role $record_role->name unassigned from ". fullname($targetuser);
 			if (function_exists('debug_trace')) debug_trace("Role $record_role->name unassigned for ". fullname($targetuser));
 		} else {
 			$response->status = RPC_FAILURE_RECORD;
@@ -761,9 +815,9 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 			$response->error = "Cannot assign when starttime is above endtime";
 			if (function_exists('debug_trace')) debug_trace("Bad times for role assign");
 		} else {		
-			if (role_assign($record_role->id, $targetuser->id, null, $context->id, $starttime, $endtime)){
+			if (role_assign($record_role->id, $targetuser->id, $context->id, '', 0, $starttime, $endtime)){
 				$response->status = RPC_SUCCESS;
-				$response->message = "Role $record_role->name assigned to ". fullname($targetuser);
+				$response->message .= "<br/>Role $record_role->name assigned to ". fullname($targetuser);
 				if (function_exists('debug_trace')) debug_trace("Role $record_role->name assigned to ". fullname($targetuser));
 			} else {
 				$response->status = RPC_FAILURE_RECORD;
@@ -773,6 +827,7 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 			}
 		}
 	}
+	
 	if ($json_response){
 		return json_encode($response);
 	} else {
@@ -860,6 +915,7 @@ function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $
 	    }
         $rpcclient = new mnet_xmlrpc_client();
 		$rpcclient->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_user_exists');
+		$caller = new StdClass();
 		$caller->username = $USER->username;
 		$caller->remoteuserhostroot = $userhostroot;
 		$caller->remotehostroot = $CFG->wwwroot;
@@ -869,6 +925,7 @@ function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $
         $mnet_host = new mnet_peer();
         $mnet_host->set_wwwroot($whereroot);
         if (!$response = $rpcclient->send($mnet_host)){
+            $extresponse = new StdClass();
             $extresponse->status = RPC_FAILURE;
             $extresponse->errors[] = "REMOTE RPC ERRORS \n";
             $extresponse->error = 'Remote rpc error.';        
@@ -880,6 +937,7 @@ function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $
         }
         $response = json_decode($rpcclient->response);
         if ($response->status != RPC_SUCCESS){
+        	$extresponse = new StdClass();
         	$extresponse->status = $response->status;
 		    $extresponse->errors[] = 'Remote application error : ';
 		    $extresponse->errors[] = $response->errors;
@@ -1088,6 +1146,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
 	    		$rpc_client = new Vmoodle_XmlRpc_Client();
 	    		$rpc_client->reset_method();
 	    		$rpc_client->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_create_user');
+	    		$caller = new StdClass();
 	    		$caller->username = $USER->username;
 	    		$caller->remoteuserhostroot = $userhostroot;
 	    		$caller->remotehostroot = $CFG->wwwroot;
@@ -1234,6 +1293,7 @@ function mnetadmin_rpc_remote_enrol($callinguser, $targetuser, $rolename, $where
 		}
         $rpcclient = new mnet_xmlrpc_client();
 		$rpcclient->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_remote_enrol');
+		$caller = new StdClass();
 		$caller->username = $USER->username;
 		$caller->remoteuserhostroot = $userhostroot;
 		$caller->remotehostroot = $CFG->wwwroot;

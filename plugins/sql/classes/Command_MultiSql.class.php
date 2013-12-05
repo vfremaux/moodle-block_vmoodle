@@ -3,18 +3,24 @@
 require_once VMOODLE_CLASSES_DIR.'Command.class.php';
 
 /**
- * Describes meta-administration plugin's SQL command.
+ * Describes meta-administration multiple SQL (script) command.
  * 
  * @package block-vmoodle
  * @category blocks
- * @author Bruce Bujon (bruce.bujon@gmail.com)
+ * @author Valery Fremaux (valery.Fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-class Vmoodle_Command_Sql extends Vmoodle_Command {	
+class Vmoodle_Command_MultiSql extends Vmoodle_Command {	
+
 	/** SQL command */
-	private $sql;
+	private $sqls;
+
 	/** If command's result should be returned */
 	private $returned;
+
+	/** if commands has place holders, they are converted into Moodle SQL named variables **/
+	private $values;
+
 	/**
 	 * Constructor.
 	 * @param	$name				string				Command's name.
@@ -24,16 +30,16 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 	 * @param	$rpcommand			Vmoodle_Command			Retrieve platforms command (optional / could be null or Vmoodle_Command object).
 	 * @throws	Vmoodle_Command_Exception
 	 */
-	public function __construct($name, $description, $sql, $parameters=null, $rpcommand=null) {
+	public function __construct($name, $description, $sqls, $parameters=null, $rpcommand=null) {
 		global $vmcommands_constants;
 		// Creating Vmoodle_Command
 		parent::__construct($name, $description, $parameters, $rpcommand);
 		// Checking SQL command
-		if (empty($sql))
+		if (empty($sqls))
 			throw new Vmoodle_Command_Sql_Exception('sqlemtpycommand', $this->name);
 		else {
 			// Looking for parameters
-			preg_match_all(Vmoodle_Command::placeholder, $sql, $sql_vars);
+			preg_match_all(Vmoodle_Command::placeholder, $sqls, $sql_vars);
 			// Checking parameters to show
 			foreach($sql_vars[2] as $key => $sql_var) {
 				$is_param = !(empty($sql_vars[1][$key]));
@@ -42,8 +48,10 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 				else if ($is_param && !array_key_exists($sql_var, $this->parameters))
 					throw new Vmoodle_Command_Sql_Exception('sqlparameternotgiven', (object)array('parameter_name' => $sql_var, 'command_name' => $this->name));
 			}
-			$this->sql = $sql;
+			$this->sqls = $sqls;
 		}
+
+		$this->values = array();
 	}
 	/**
 	 * Execute the command.
@@ -54,12 +62,15 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 		global $CFG, $USER;
 		// Adding constants
 		require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
+
 		// Checking host
-		if (!is_array($hosts))
+		if (!is_array($hosts)){
 			$hosts = array($hosts => 'Unnamed host');
+		}
 		// Checking capabilities
-		if (!has_capability('block/vmoodle:execute', context_system::instance()))
+		if (!has_capability('block/vmoodle:execute', context_system::instance())){
 			throw new Vmoodle_Command_Sql_Exception('insuffisantcapabilities');
+		}
 		// Initializing responses
 		$responses = array();
 		// Creating peers
@@ -77,15 +88,15 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 			}
 		}
         
-        // DebugBreak();
-        
 		// Getting command
 		$command = $this->isReturned();
 		// Creating XMLRPC client
 		$rpc_client = new Vmoodle_XmlRpc_Client();
 		$rpc_client->set_method('blocks/vmoodle/plugins/sql/rpclib.php/mnetadmin_rpc_run_sql_command');                              
         $rpc_client->add_param($this->_getGeneratedCommand(), 'string');
-        $rpc_client->add_param($command, 'boolean');    
+        $rpc_client->add_param($this->values, 'array');
+        $rpc_client->add_param($command, 'boolean');
+        $rpc_client->add_param(true, 'boolean'); // telling other side we are a multiple command
 		// Sending requests
      
 		foreach($mnet_hosts as $mnet_host) {
@@ -104,7 +115,7 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 			$responses[$mnet_host->wwwroot] = $response;
 		}
 		// Saving results
-		$this->results = $responses + $this->results;
+		$this->results = $responses + $this->results;		
 	}
 	/**
 	 * Get the result of command execution for one host.
@@ -133,7 +144,7 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 	 * @return							SQL command.
 	 */
 	public function getSql() {
-		return $this->sql;
+		return $this->sqls;
 	}
 	/**
 	 * Get if the command's result is returned.
@@ -163,6 +174,11 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 	 */
 	private function _replaceParametersValues($matches) {
 
-		return replace_parameters_values($matches, $this->getParameters(), true, false);
+		list($paramname, $paramvalue) = replace_parameters_values($matches, $this->getParameters(), true, false);
+	
+		$this->values[$paramname] = $paramvalue;
+
+		// return the named placeholder	
+		return ':'.$paramname;
 	}
 }

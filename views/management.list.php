@@ -87,4 +87,6 @@ echo '<br/>';
 echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'generateconfigs')), get_string('generateconfigs', 'block_vmoodle'), 'get');
 echo '<br/>';
 echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'renewall')), get_string('renewallbindings', 'block_vmoodle'), 'get');
+echo '<br/>';
+echo $OUTPUT->single_button(new moodle_url($CFG->wwwroot.'/blocks/vmoodle/vcron.php'), get_string('runvcron', 'block_vmoodle'), 'get');
 echo '</center>';

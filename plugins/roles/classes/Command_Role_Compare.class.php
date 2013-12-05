@@ -29,11 +29,12 @@ class Vmoodle_Command_Role_Compare extends Vmoodle_Command {
 		$cmd_desc = vmoodle_get_string('cmdcomparedesc', 'vmoodleadminset_roles');
 
 		// Getting role parameter
-		$records = $DB->get_records('role', null, 'name', 'name,shortname');
-		$roles = array();
-		foreach($records as $record)
-			$roles[$record->shortname] = $record->name;
-		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamcomparedesc', 'vmoodleadminset_roles'), null, $roles);
+		$roles = role_fix_names(get_all_roles(), context_system::instance(), ROLENAME_ORIGINAL);
+		$rolemenu = array();
+		foreach($roles as $r){
+			$rolemenu[$r->shortname] = $r->localname;
+		}
+		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamcomparedesc', 'vmoodleadminset_roles'), null, $rolemenu);
 
 		// Creating command
 		parent :: __construct($cmd_name, $cmd_desc, $role_param);
@@ -73,7 +74,7 @@ class Vmoodle_Command_Role_Compare extends Vmoodle_Command {
 				$mnet_hosts[] = $mnet_host;
 			else
 				$responses[$host] = (object) array(
-					'status' => MNET_FAILURE,
+					'status' => RPC_FAILURE,
 					'error' => get_string('couldnotcreateclient', 'block_vmoodle', $host)
 				);
 		}
@@ -83,7 +84,7 @@ class Vmoodle_Command_Role_Compare extends Vmoodle_Command {
 			// Sending request
 			if (!$rpc_client->send($mnet_host)) {
 				$response = new stdclass;
-				$response->status = MNET_FAILURE;
+				$response->status = RPC_FAILURE;
 				$response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
 				if (debugging()) {
 					echo '<pre>';
@@ -137,7 +138,7 @@ class Vmoodle_Command_Role_Compare extends Vmoodle_Command {
 	}
 
 	/**
-	 * Process the role comparision.
+	 * Process the role comparison.
 	 * @throws			Vmoodle_Commmand_Exception.
 	 */
 	private function _process() {

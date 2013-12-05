@@ -6,6 +6,6 @@
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  */
-$plugin = new stdclass;
-$plugin->version = 2012062900;
+$plugin = new Stdclass();
+$plugin->version = 2013092009;
 $plugin->component = 'vmoodleadminset_upgrade';

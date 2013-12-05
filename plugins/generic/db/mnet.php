@@ -28,7 +28,7 @@
 $publishes = array(
     'dataexchange' => array(
 		'servicename' => 'dataexchange',
-		'description' => get_string('dataexchange_name', 'vmoodleadminset_generic'),
+		'description' => vmoodle_get_string('dataexchange_name', 'vmoodleadminset_generic'),
         'apiversion' => 1,
         'classname'  => '',
         'filename'   => 'rpclib.php',
@@ -36,9 +36,22 @@ $publishes = array(
             'dataexchange_rpc_fetch_config',
         ),
     ),
+	'mnetadmin' => array(
+		'servicename' => 'mnetadmin',
+		'description' => get_string('mnetadmin_name', 'block_vmoodle'),
+		'apiversion' => 1,
+		'classname'  => '',
+		'filename'   => 'rpclib.php',
+		'methods'    => array(
+            'mnetadmin_rpc_set_maintenance',
+            'mnetadmin_rpc_purge_caches'
+		),
+	),
 );
 $subscribes = array(
     'dataexchange' => array(
         'dataexchange_rpc_fetch_config' => 'blocks/vmoodle/plugins/generic/rpclib.php/dataexchange_rpc_fetch_config',
+        'mnetadmin_rpc_set_maintenance' => 'blocks/vmoodle/plugins/generic/rpclib.php/mnetadmin_rpc_set_maintenance',
+        'mnetadmin_rpc_purge_caches' => 'blocks/vmoodle/plugins/generic/rpclib.php/mnetadmin_rpc_purge_caches',
     ),
 );

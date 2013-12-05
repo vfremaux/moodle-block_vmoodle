@@ -10,10 +10,12 @@
  	$PAGE->requires->js('/blocks/vmoodle/js/sadmin.js');
  
 	// Declaring parameters
-	if (isset($SESSION->vmoodle_sa['wizardnow']))
+	if (isset($SESSION->vmoodle_sa['wizardnow'])){
 		$wizardnow = $SESSION->vmoodle_sa['wizardnow'];
-	else
+	} else {
 		$wizardnow = 'commandchoice';
+	}
+
 	// Include the step wizard
 	switch($wizardnow) {
 		case 'commandchoice': {
