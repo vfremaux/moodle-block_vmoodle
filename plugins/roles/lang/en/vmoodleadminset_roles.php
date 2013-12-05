@@ -33,7 +33,7 @@ $string['pluginname'] = 'Role related commands';
 $string['problematiccomponent'] = 'Unknown capabilities';
 $string['roleparamcomparedesc'] = 'The role to compare';
 $string['roleparamsyncdesc'] = 'The role to synchronize';
-$string['roles'] = 'Roles';
+$string['pluginname'] = 'Role dedicated commands';
 $string['synchronize'] = 'Synchronize';
 $string['tableparamdesc'] = 'Authorisation table';
 $string['syncwithitself'] = 'Synchronizing "{$a->role}" role from "{$a->platform}" platform with itself.';
@@ -47,77 +47,73 @@ $string['rolecompare_help'] = '
   <caption>Legend of comparison table:</caption>
   <thead>
     <tr>
-      <th style="width: 16px;">Icon</th>
+      <th style="width:16px;">Icon</th>
       <th>Legend</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="2" style="font-size 1.2 em; font-style: italic;">Permissions:</td>
+      <td colspan="2" style="font-size:1.2em; font-style:italic;">Permissions:</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/permissionallow.png" alt="Permettre"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/permissionallow.png" alt="Allow"/></td>
       <td>Means that capability is allowed.</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/permissionprevent.png" alt="Empécher"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/permissionprevent.png" alt="Prevent"/></td>
       <td>Means that capability is prevent.</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/permissionforbid.png" alt="Interdire"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/permissionforbid.png" alt="Forbid"/></td>
       <td>Means that capability is forbidden.</td>
     </tr>
     <tr>
-      <td colspan="2" style="font-size 1.2 em; font-style: italic;">Contexts:</td>
+      <td colspan="2" style="font-size:1.2em; font-style:italic;">Contexts:</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextB.png" alt="Contexte B"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextB.png" alt="Block Context"/></td>
       <td>Means that capability is "block" context.</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextC.png" alt="Contexte C"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextC.png" alt="Course Context"/></td>
       <td>Means that capability is "course" context.</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextCC.png" alt="Contexte CC"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextCC.png" alt="Categroy Context"/></td>
       <td>Means that capability is "course category" context.</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextG.png" alt="Contexte G"/></td>
-      <td>Means that capability is "group" context.</td>
-    </tr>
-    <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextM.png" alt="Contexte M"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextM.png" alt="Module Context"/></td>
       <td>Means that capability is "module" context.</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextS.png" alt="Contexte S"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextS.png" alt="System Context"/></td>
       <td>Means that capability is "system" context.</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextU.png" alt="Contexte U"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/contextU.png" alt="User Context"/></td>
       <td>Means that capability is "user" context.</td>
     </tr>
     <tr>
-      <td colspan="2" style="font-size 1.2 em; font-style: italic;">Lack of capabilities:</td>
+      <td colspan="2" style="font-size:1.2em; font-style:italic;">Lack of capabilities:</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/roles/pix/norolecapability.png" alt="Pas de capacité de rôle"/></td>
+      <td><img src="/blocks/vmoodle/plugins/roles/pix/norolecapability.png" alt="No capability set for role"/></td>
       <td>Means that capability is not set for this role.</td>
     </tr>
     <tr>
-      <td><img src="/blocks/vmoodle/plugins/libs/rolelib/pix/nocapability.png" alt="Pas de capacité"/></td>
+      <td><img src="/blocks/vmoodle/plugins/libs/rolelib/pix/nocapability.png" alt="No capability"/></td>
       <td>Means that capability is not defined on this platform.</td>
     </tr>
     <tr>
       <td colspan="2" style="font-size 1.2 em; font-style: italic;">Difference markers:</td>
     </tr>
     <tr>
-      <td style="background-color: #F2FF98;"><img src="/blocks/vmoodle/plugins/roles/pix/blank.png" alt=" "/></td>
+      <td style="background-color: #F2FF98;"><img src="/blocks/vmoodle/plugins/roles/pix/blank.png" alt="Context mismatch for capability"/></td>
       <td>Means that capability has different context than others platforms.</td>
     </tr>
     <tr>
-      <td style="background-color: #FF607D;"><img src="/blocks/vmoodle/plugins/roles/pix/blank.png" alt=" "/></td>
+      <td style="background-color: #FF607D;"><img src="/blocks/vmoodle/plugins/roles/pix/blank.png" alt="Value mismatch for capability"/></td>
       <td>Means that capability has different permission than others platforms.</td>
     </tr>
     <tr>

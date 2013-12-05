@@ -55,20 +55,26 @@ class Vmoodle_Host_Form extends moodleform {
 		// Name.
 		$mform->addElement('text', 'name', get_string('addformname', 'block_vmoodle'), $size_input_text);
 		$mform->addHelpButton('name', 'name','block_vmoodle');
+		$mform->setType('name', PARAM_TEXT);
 		if($this->isInAddMode()){
 			// Shortname.
 			$mform->addElement('text', 'shortname', get_string('addformshortname', 'block_vmoodle'), ($this->mode == 'edit' ? 'disabled="disabled" ' : ''));
 			$mform->addHelpButton('shortname', 'shortname', 'block_vmoodle');
+			$mform->setType('shortname', PARAM_TEXT);
 		}
 		// Description.
-		$mform->addElement('editor', 'description', get_string('addformdescription', 'block_vmoodle'), 'rows="15" cols="40"');
+		$mform->addElement('textarea', 'description', get_string('addformdescription', 'block_vmoodle'), 'rows="15" cols="40"');
 		$mform->addHelpButton('description', 'description', 'block_vmoodle');
+		$mform->setType('description', PARAM_TEXT);
+
 		if($this->isInAddMode()){
 			// Host's name.
 			$mform->addElement('text', 'vhostname', get_string('vhostname', 'block_vmoodle'), ($this->mode == 'edit' ? 'disabled="disabled" ' : '').$size_input_text);
 			$mform->addHelpButton('vhostname', 'vhostname', 'block_vmoodle');
 			$mform->addElement('checkbox', 'forcedns', get_string('forcedns', 'block_vmoodle'));
+			$mform->setType('shortname', PARAM_URL);
 		}
+
 		$mform->closeHeaderBefore('dbform');
 
 		/*
@@ -79,25 +85,38 @@ class Vmoodle_Host_Form extends moodleform {
 		$dbtypearray = array('mysqli' => 'MySQL', 'postgres' => 'PostgreSQL');
 		$mform->addElement('select', 'vdbtype', get_string('vdbtype', 'block_vmoodle'), $dbtypearray);
 		$mform->addHelpButton('vdbtype', 'vdbtype', 'block_vmoodle');
+		$mform->setType('vdbtype', PARAM_TEXT);
+
 		// Database host.
 		$mform->addElement('text', 'vdbhost', get_string('vdbhost', 'block_vmoodle'));
 		//$mform->addHelpButton('vdbhost', 'vdbhost', 'block_vmoodle');
+		$mform->setType('vdbhost', PARAM_TEXT);
+
 		// Database login.
 		$mform->addElement('text', 'vdblogin', get_string('vdblogin', 'block_vmoodle'));
+		$mform->setType('vdblogin', PARAM_TEXT);
+
 		// Database password.
 		$mform->addElement('password', 'vdbpass', get_string('vdbpass', 'block_vmoodle'));
+		$mform->setType('vdbpass', PARAM_RAW);
+
 		// Button for testing database connection.
 		$mform->addElement('button', 'testconnection', get_string('testconnection', 'block_vmoodle'), 'onclick="opencnxpopup(\''.$CFG->wwwroot.'\'); return true;"');
+
 		// Database name.
 		$mform->addElement('text', 'vdbname', get_string('vdbname', 'block_vmoodle'));
 		$mform->addHelpButton('vdbname', 'vdbname', 'block_vmoodle');
+		$mform->setType('vdbname', PARAM_TEXT);
+
 		// Table's prefix.
 		$mform->addElement('text', 'vdbprefix', get_string('vdbprefix', 'block_vmoodle'));
+		$mform->setType('vdbprefix', PARAM_TEXT);
 
 		// Connection persistance.
 		$noyesarray = array('0' => get_string('no'), '1' => get_string('yes'));
 		$mform->addElement('select', 'vdbpersist', get_string('vdbpersist', 'block_vmoodle'), $noyesarray);
 		$mform->addHelpButton('vdbpersist', 'vdbpersist', 'block_vmoodle');
+		$mform->setType('vdbpersist', PARAM_BOOL);
 		$mform->closeHeaderBefore('nfform');
 
 		/*
@@ -108,6 +127,7 @@ class Vmoodle_Host_Form extends moodleform {
 		// Path for "moodledata".
 		$mform->addElement('text', 'vdatapath', get_string('vdatapath', 'block_vmoodle'), $size_input_text_big);
 		$mform->addHelpButton('vdatapath', 'vdatapath', 'block_vmoodle');
+		$mform->setType('vdatapath', PARAM_TEXT);
 
 		// Button for testing datapath.
 		$mform->addElement('button', 'testdatapath', get_string('testdatapath', 'block_vmoodle'), 'onclick="opendatapathpopup(\''.$CFG->wwwroot.'\'); return true;"');
@@ -133,6 +153,7 @@ class Vmoodle_Host_Form extends moodleform {
 		$subnetworks[$newsubnetwork] = $newsubnetwork.' ('.get_string('mnetnew', 'block_vmoodle').')';
 		$mform->addElement('select', 'mnet', get_string('multimnet', 'block_vmoodle'), $subnetworks, 'onchange="switcherServices(\''.$newsubnetwork.'\'); return true;"');
 		$mform->addHelpButton('mnet', 'mnet', 'block_vmoodle');
+		$mform->setType('mnet', PARAM_TEXT);
 
 		// Services strategy.
 		$services_strategies = array(
@@ -141,6 +162,7 @@ class Vmoodle_Host_Form extends moodleform {
 		);
 		$mform->addElement('select', 'services', get_string('servicesstrategy', 'block_vmoodle'), $services_strategies);
 		$mform->addHelpButton('services', 'services', 'block_vmoodle');
+		$mform->setType('services', PARAM_TEXT);
 
 		// CRON (linux).
 		/**
@@ -156,6 +178,7 @@ class Vmoodle_Host_Form extends moodleform {
 			$templatesarray	= vmoodle_get_available_templates();
 			$mform->addElement('select', 'vtemplate', get_string('vtemplate', 'block_vmoodle'), $templatesarray);
 			$mform->addHelpButton('vtemplate', 'vtemplate', 'block_vmoodle');
+			$mform->setType('vtemplate', PARAM_TEXT);
 		}
 		$mform->closeHeaderBefore('submitbutton');
 
@@ -265,6 +288,11 @@ class Vmoodle_Host_Form extends moodleform {
 		// Checks if database's name doesn't finish with '_'.
 		if($data['vdbname'][strlen($data['vdbname']) -1] == '_'){
 			$errors['vdbname']	= get_string('baddatabasenamecoherence', 'block_vmoodle');
+		}
+
+		// Checks if database's name doesn't finish with '_'.
+		if(strstr($data['vdbname'], '-') !== false){
+			$errors['vdbname']	= get_string('badnohyphensindbname', 'block_vmoodle');
 		}
 
 		// Checks if table's prefix doesn't begin with restricted values (which can evolve).

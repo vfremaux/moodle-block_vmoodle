@@ -11,10 +11,16 @@ require_once VMOODLE_CLASSES_DIR.'Command.class.php';
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 class Vmoodle_Command_Sql extends Vmoodle_Command {	
+
 	/** SQL command */
 	private $sql;
+
 	/** If command's result should be returned */
 	private $returned;
+
+	/** if commands has place holders, they are converted into Moodle SQL named variables **/
+	private $values;
+	
 	/**
 	 * Constructor.
 	 * @param	$name				string				Command's name.
@@ -26,14 +32,17 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 	 */
 	public function __construct($name, $description, $sql, $parameters=null, $rpcommand=null) {
 		global $vmcommands_constants;
+
 		// Creating Vmoodle_Command
 		parent::__construct($name, $description, $parameters, $rpcommand);
+
 		// Checking SQL command
-		if (empty($sql))
+		if (empty($sql)){
 			throw new Vmoodle_Command_Sql_Exception('sqlemtpycommand', $this->name);
-		else {
+		} else {
 			// Looking for parameters
 			preg_match_all(Vmoodle_Command::placeholder, $sql, $sql_vars);
+
 			// Checking parameters to show
 			foreach($sql_vars[2] as $key => $sql_var) {
 				$is_param = !(empty($sql_vars[1][$key]));
@@ -44,7 +53,10 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 			}
 			$this->sql = $sql;
 		}
+		
+		$this->values = array();
 	}
+
 	/**
 	 * Execute the command.
 	 * @param	$host		mixed			The hosts where run the command (may be wwwroot or an array).
@@ -63,8 +75,10 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 		if (!has_capability('block/vmoodle:execute', context_system::instance())){
 			throw new Vmoodle_Command_Sql_Exception('insuffisantcapabilities');
 		}
+
 		// Initializing responses
 		$responses = array();
+
 		// Creating peers
 		$mnet_hosts = array();
 
@@ -81,14 +95,16 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 		}
         
 		// Getting command
-		$command = $this->isReturned();
+		$return = $this->isReturned();
+
 		// Creating XMLRPC client
 		$rpc_client = new Vmoodle_XmlRpc_Client();
 		$rpc_client->set_method('blocks/vmoodle/plugins/sql/rpclib.php/mnetadmin_rpc_run_sql_command');                              
         $rpc_client->add_param($this->_getGeneratedCommand(), 'string');
-        $rpc_client->add_param($command, 'boolean');    
-		// Sending requests
-     
+        $rpc_client->add_param($this->values, 'array');
+        $rpc_client->add_param($return, 'boolean');
+
+		// Sending requests     
 		foreach($mnet_hosts as $mnet_host) {
 			// Sending request
 			if (!$rpc_client->send($mnet_host)) {
@@ -150,6 +166,7 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 	public function setReturned($returned) {
 		$this->returned = $returned;
 	}
+
 	/**
 	 * Get the command to execute.
 	 * @return						string				The final SQL command to execute.
@@ -157,6 +174,7 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 	private function _getGeneratedCommand() {
 		return preg_replace_callback(self::placeholder, array($this, '_replaceParametersValues'), $this->getSql());
 	}
+
 	/**
 	 * Bind the replace_parameters_values function to create a callback.
  	 * @param	$matches			array				The placeholders found.
@@ -164,6 +182,11 @@ class Vmoodle_Command_Sql extends Vmoodle_Command {
 	 */
 	private function _replaceParametersValues($matches) {
 
-		return replace_parameters_values($matches, $this->getParameters(), true, false);
+		list($paramname, $paramvalue) = replace_parameters_values($matches, $this->getParameters(), true, false);
+	
+		$this->values[$paramname] = $paramvalue;
+
+		// return the named placeholder	
+		return ':'.$paramname;
 	}
 }

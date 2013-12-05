@@ -13,7 +13,7 @@
 	// Adding autoloader
 	require_once('autoloader.php');
       
-	// Adding requierements
+	// Adding requirements
 	require_once('../../config.php');
 	require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
 	require_once($CFG->dirroot.'/blocks/vmoodle/debuglib.php');
@@ -27,8 +27,14 @@
     $PAGE->requires->js ('/blocks/vmoodle/js/target_choice.js');
     
     $PAGE->requires->css ('/blocks/vmoodle/theme/styles.php');
- 
-    
+
+	// Report dead end trap
+	// Checking if command were executed and return back to idle state
+	if ((@$SESSION->vmoodle_sa['wizardnow'] == 'report') && !(isset($SESSION->vmoodle_sa['command']) && ($command = unserialize($SESSION->vmoodle_sa['command'])) && $command->isRunned())){
+		$SESSION->vmoodle_sa['wizardnow'] = 'commandchoice';
+		redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
+	}
+
 	// Declaring parameters
 	$view = optional_param('view', 'management', PARAM_TEXT);
 	$action = optional_param('what', '', PARAM_TEXT);

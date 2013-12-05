@@ -25,10 +25,12 @@ class Vmoodle_Command_Role_Sync extends Vmoodle_Command {
 		// Creating platform parameter
 		$platform_param = new Vmoodle_Command_Parameter('platform',	'enum', vmoodle_get_string('platformparamsyncdesc', 'vmoodleadminset_roles'), null, get_available_platforms());
 		// Creating role parameter
-		$records = $DB->get_records('role', null, 'name', 'name,shortname');
-		foreach($records as $record)
-			$roles[$record->shortname] = $record->name;
-		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamsyncdesc', 'vmoodleadminset_roles'), null, $roles);
+		$roles = role_fix_names(get_all_roles(), context_system::instance(), ROLENAME_ORIGINAL);
+		$rolemenu = array();
+		foreach($roles as $r){
+			$rolemenu[$r->shortname] = $r->localname;
+		}
+		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamsyncdesc', 'vmoodleadminset_roles'), null, $rolemenu);
 		// Creating command
 		parent::__construct($cmd_name, $cmd_desc, array($platform_param, $role_param));
 	}

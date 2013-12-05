@@ -275,7 +275,7 @@ $param2 = new Vmoodle_Command_Parameter(
 $cmd = new Vmoodle_Command_Sql(
 	'Retrieve platforms command',
 	'Command used to retrieve platforms from their original value.',
-	'SELECT id FROM [[prefix]]config WHERE name = \'[[?param]]\' AND value = \'[[?value]]\'',
+	'SELECT id FROM {config} WHERE name = [[?param]] AND value = [[?value]] ',
 	array(
 		$param1,
 		$param2
@@ -288,7 +288,7 @@ $category->addCommand($test_rpcommad);
 $category->addCommand(new Vmoodle_Command_Role_Sync());
 $category->addCommand(new Vmoodle_Command_Role_Capability_Sync());
 $category->addCommand(new Vmoodle_Command_Role_Compare());
-$category->addCommand(new Vmoodle_Command_Update());
+$category->addCommand(new Vmoodle_Command_Upgrade());
 	
 // Returning the category
 return $category;

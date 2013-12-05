@@ -39,7 +39,7 @@ $publishes = array(
             'mnetadmin_rpc_assign_role',
             'mnetadmin_rpc_user_exists',
             'mnetadmin_rpc_create_user',
-            'mnetadmin_rpc_remote_enrol'        
+            'mnetadmin_rpc_remote_enrol'
         ),
     ),
 );

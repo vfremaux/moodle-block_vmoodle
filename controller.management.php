@@ -366,7 +366,8 @@ if ($action == 'doadd'){
 				}
 			}
 
-			// TODO Creating CRON command.
+			// Creating CRON command.
+			// Obsolete with vrcon rotator.
 
 			// Every step was SUCCESS.
 			$message_object->message = get_string('successaddnewhost', 'block_vmoodle');
@@ -425,11 +426,11 @@ if ($action == 'doedit') {
 		$olddata = $DB->get_record('block_vmoodle', array('id' => $submitteddata->id));
 		$success = false;
 		
-		if(!update_record('block_vmoodle', $submitteddata)){
+		if(!$DB->update_record('block_vmoodle', $submitteddata)){
 			// If updating data in 'block_vmoodle' table has failed.
 			$message_object->message = get_string('badblockupdate', 'block_vmoodle');
     		$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-    		header('Location: view.php?view=management');
+    		redirect($CFG->wwwroot.'/block/vmoodle/view.php?view=management');
     		return -1;
 		}
 
@@ -446,7 +447,7 @@ if ($action == 'doedit') {
 				    echo $OUTPUT->continue_button('view.php?view=management');
 				} else {				    
             		$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-            		header('Location: view.php?view=management');
+            		redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
             	}
         		return -1;
 			}
@@ -483,7 +484,7 @@ if ($action == 'doedit') {
 			 * Deletes peer in last subnetwork members, and disconnects
 			 * peer from them, if was subnetworking.
 			 */
-			if($databeforeupdate->mnet > 0){
+			if($olddata->mnet > 0){
 
 				// Call to 'unbind_peer'.
 				$rpc_client = new Vmoodle_XmlRpc_Client();
@@ -787,6 +788,27 @@ if ($action == 'delete'){
 }
 /********************* Run an interactive cronlike trigger forcing key renew on all vmoodle ************/
 if ($action == 'renewall'){
+
+	// self renew
+	echo '<pre>';
+	$renewuri = $CFG->wwwroot.'/admin/cron.php?forcerenew=1';
+	echo "Running on : $renewuri\n";
+
+	echo "#############################\n";
+
+	$ch = curl_init($renewuri);
+
+	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_POST, false);
+	curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+	$raw = curl_exec($ch);
+	echo $raw."\n\n";
+	echo '</pre>';
 
 	$vmoodles = $DB->get_records_sql(' select * from {block_vmoodle} where mnet > -1');
 

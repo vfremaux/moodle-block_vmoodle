@@ -61,7 +61,7 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
     
     if ($havetorenew || $force){
         mtrace("Local key will expire very soon. Renew MNET keys now !!...\n");
-        // reniew local key
+        // renew local key
 		// mtrace('Me : '.$CFG->wwwroot);
 		// debug_trace("My Old Key :\n ".$MNET->public_key);
 
@@ -86,11 +86,12 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
                 $currentkey = mnet_get_public_key($mnet_peer->wwwroot, $application, 1);
                 if ($currentkey){
                     $mnet_peer->public_key = clean_param($currentkey, PARAM_PEM);
+                    $mnet_peer->updateparams = new StdClass();
                     $mnet_peer->updateparams->public_key = clean_param($currentkey, PARAM_PEM);
                     $mnet_peer->public_key_expires = $mnet_peer->check_common_name($currentkey);
                     $mnet_peer->updateparams->public_key_expires = $mnet_peer->check_common_name($currentkey);
                     $mnet_peer->commit();
-                    // mtrace('My key renewed at '.$peer->wwwroot.' till '.userdate($mnet_peer->public_key_expires));
+                    mtrace('My key renewed at '.$peer->wwwroot.' till '.userdate($mnet_peer->public_key_expires));
                 } else {
                     mtrace('Failed renewing key with '.$peer->wwwroot."\n");
                 }

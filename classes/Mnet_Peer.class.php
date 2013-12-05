@@ -1,4 +1,4 @@
-<?php // $Id: Mnet_Peer.class.php,v 1.2 2012-06-29 17:07:04 wa Exp $
+<?php // $Id: Mnet_Peer.class.php,v 1.3 2013-11-25 13:03:50 mo2dlemaster Exp $
 /**
  * An object to represent lots of information about an RPC-peer machine
  * This is a special implementation override for vmoodle MNET admin operations
@@ -46,6 +46,7 @@ class vmoodle_mnet_peer {
      */
     function bootstrap($wwwroot, $pubkey = null, $application, $force = false) {
         global $DB;
+        
         if (substr($wwwroot, -1, 1) == '/') {
             $wwwroot = substr($wwwroot, 0, -1);
         }

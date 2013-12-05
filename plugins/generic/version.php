@@ -6,5 +6,5 @@
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 $plugin = new stdclass;
-$plugin->version = 2012062400;
+$plugin->version = 2013091903;
 $plugin->component = 'vmoodleadminset_generic';

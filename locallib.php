@@ -20,6 +20,19 @@ define('VMOODLE_CLASSES_DIR', $CFG->dirroot.'/blocks/vmoodle/classes/');
 define('VMOODLE_LIBS_DIR', $CFG->dirroot.'/blocks/vmoodle/plugins/');
 define('VMOODLE_PLUGINS_DIR', $CFG->dirroot.'/blocks/vmoodle/plugins/');
 
+if (!defined('RPC_SUCCESS')) {
+	define('RPC_TEST', 100);
+	define('RPC_SUCCESS', 200);
+	define('RPC_FAILURE', 500);
+	define('RPC_FAILURE_USER', 501);
+	define('RPC_FAILURE_CONFIG', 502);
+	define('RPC_FAILURE_DATA', 503); 
+	define('RPC_FAILURE_CAPABILITY', 510);
+	define('MNET_FAILURE', 511);
+	define('RPC_FAILURE_RECORD', 520);
+	define('RPC_FAILURE_RUN', 521);
+}
+
 /**
  * Define MySQL and PostgreSQL paths for commands.
  */
@@ -106,30 +119,47 @@ function help_button_vml($library, $helpitem, $title) {
 
 /**
  * Get the parameters' values from the placeholders.
+ * We return both canonic name of the variable and replacement value
  * @param	$matches			array				The placeholders found.
  * @param	$data				array				The parameters' values to insert.
  * @param	$parameters_replace	bool				True if variables should be replaced (optional).
  * @param	$contants_replace	bool				True if constants should be replaced (optional).
  * @return						string				The parameters' values.
  */
-function replace_parameters_values($matches, $data, $parameters_replace=true, $constants_replace=true) {
+function replace_parameters_values($matches, $params, $parameters_replace=true, $constants_replace=true) {
 	global $vmcommands_constants;
+	
+	// debug_trace(serialize($matches));
 
 	// Parsing constants
-	if ($constants_replace && empty($matches[1]) && array_key_exists($matches[2], $vmcommands_constants))
-	$value = $vmcommands_constants[$matches[2]];
+	if ($constants_replace && empty($matches[1]) && array_key_exists($matches[2], $vmcommands_constants)){
+		$value = $vmcommands_constants[$matches[2]];
+
 	// Parsing parameter
-	else if ($parameters_replace && !empty($matches[1]) && array_key_exists($matches[2], $data))
-	$value = $data[$matches[2]]->getValue();
+	} else if ($parameters_replace && !empty($matches[1]) && array_key_exists($matches[2], $params)){
+		$value = $params[$matches[2]]->getValue();
+		/*
+		$paramtype = $params[$matches[2]]->getType();
+		if ($paramtype == 'text' || $paramtype == 'ltext'){
+			// probably obsolete when transferring to Moodle placeholders
+			// $value = str_replace("'", "''", $params[$matches[2]]->getValue());
+			$value = $params[$matches[2]]->getValue();
+		} else {
+			$value = $params[$matches[2]]->getValue();
+		}
+		*/
+
 	// Leave untouched
-	else
-	return $matches[0];
+	} else {
+		return array($matches[2], $matches[0]);
+	}
 
 	// Checking if member is asked
-	if (isset($matches[3]) && is_array($value))
-	$value = $value[$matches[3]];
+	if (isset($matches[3]) && is_array($value)){
+		$value = $value[$matches[3]];
+	}
 
-	return $value;
+	return array($matches[2], $value);
 }
 
 /**
@@ -534,7 +564,12 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 	* rebind self record to new wwwroot, ip and cleaning public key
 	*/
 	fwrite($FILE, "--\n-- Cleans all mnet tables but keeping service configuration in place \n--\n");
+
+	// we first remove all services. Services will be next rebuild based on template or minimal strategy.
+	// we expect all service declaraton are ok in the template DB as the template comes from homothetic installation.
 	fwrite($FILE, "DELETE FROM {$PREFIX}mnet_host2service;\n\n");
+
+	// we first remove all services. Services will be next rebuild based on template or minimal strategy.
 	fwrite($FILE, "DELETE FROM {$PREFIX}mnet_host WHERE wwwroot != '' AND wwwroot != '{$manifest['templatewwwroot']}';\n\n");
     fwrite($FILE, "UPDATE {$PREFIX}mnet_host SET id = 1, wwwroot = '{$vmoodledata->vhostname}', name = '{$vmoodledata->name}' , public_key = '', public_key_expires = 0, ip_address = '{$cfgipaddress}'  WHERE wwwroot = '{$manifest['templatewwwroot']}';\n\n");
     fwrite($FILE, "UPDATE {$PREFIX}config SET value = 1 WHERE name = 'mnet_localhost_id';\n\n"); // ensure consistance
@@ -561,10 +596,22 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
     	fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_idp'), 0, 1);\n\n");
 
     	fwrite($FILE, "--\n-- Insert master host user admin.  \n--\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}user (auth, confirmed, policyagreed, deleted, mnethostid, username, password) VALUES ('mnet', 1, 0, 0, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), 'admin', '');\n\n");
+    	fwrite($FILE, "INSERT INTO {$PREFIX}user (auth, confirmed, policyagreed, deleted, mnethostid, username, password) VALUES ('mnet', 1, 0, 0, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), 'manager', '');\n\n");
 
     	fwrite($FILE, "--\n-- Links role and capabilites for master host admin.  \n--\n");
-	    fwrite($FILE, "INSERT INTO {$PREFIX}role_assignments VALUES (0, (SELECT id FROM {$PREFIX}role WHERE shortname LIKE 'admin'), 1, (SELECT id FROM {$PREFIX}user WHERE auth LIKE 'mnet' AND username LIKE 'admin' AND mnethostid = (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}')), 0, 0, 0, 0, 0, 'manual', 0);\n\n");
+    	$roleid = "(SELECT id FROM {$PREFIX}role WHERE shortname LIKE 'manager')";
+    	$contextid = 1;
+    	$userid = "(SELECT id FROM {$PREFIX}user WHERE auth LIKE 'mnet' AND username = 'admin' AND mnethostid = (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'))";
+    	$timemodified = time();
+    	$modifierid = $userid;
+    	$component = "''";
+    	$itemid = 0;
+    	$sortorder = 1;
+	    fwrite($FILE, "INSERT INTO {$PREFIX}role_assignments(id,roleid,contextid,userid,timemodified,modifierid,component,itemid,sortorder) VALUES (0, $roleid, $contextid, $userid, $timemodified, $modifierid, $component, $itemid, $sortorder);\n\n");
+
+    	fwrite($FILE, "--\n-- Add new network admin to local siteadmins.  \n--\n");
+		$adminidsql = "(SELECT id FROM {$PREFIX}user WHERE auth LIKE 'mnet' AND username = 'admin' AND mnethostid = (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'))";
+		fwrite($FILE, "UPDATE {$PREFIX}config SET siteadmins = CONCAT(siteadmins, ',', $adminidsql)");
 
     	fwrite($FILE, "--\n-- Create a disposable key for renewing new host's keys.  \n--\n");
     	fwrite($FILE, "INSERT INTO {$PREFIX}config (name, value) VALUES ('bootstrap_init', '{$this_as_host->wwwroot}');\n");
@@ -853,7 +900,7 @@ function vmoodle_get_vmanifest($templatename){
  */
 function vmoodle_get_last_subnetwork_number(){
 	global $DB;
-	$nbmaxsubnetwork = $DB->get_record_select('block_vmoodle', '', sql_max('mnet').' AS mnet');
+	$nbmaxsubnetwork = $DB->get_record_select('block_vmoodle', '', 'MAX(mnet) AS mnet');
 	return $nbmaxsubnetwork->mnet;
 }
 

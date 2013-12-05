@@ -180,7 +180,6 @@ function vmoodle_make_connection(&$vmoodle, $binddb = false){
         // Important : force new link here
         $mysql_side_cnx = @mysql_connect($vmoodle->vdbhost, $vmoodle->vdblogin, $vmoodle->vdbpass, true);
         if (!$mysql_side_cnx){
-        	print_r($vmoodle);
             die ("VMoodle_make_connection : Server unreachable");
         }
         if ($binddb){
@@ -194,7 +193,6 @@ function vmoodle_make_connection(&$vmoodle, $binddb = false){
        
         $mysql_side_cnx = @mysqli_connect($vmoodle->vdbhost, $vmoodle->vdblogin, $vmoodle->vdbpass,$vmoodle->vdbname ,3306);
         if (!$mysql_side_cnx){
-        	print_r($vmoodle);
             die ("VMoodle_make_connection : Server unreachable");
         }
         if ($binddb){

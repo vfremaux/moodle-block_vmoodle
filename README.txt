@@ -34,7 +34,95 @@ New handling of subplugins in Moodle 2.2 :
 Conversely to version 1.9, now subplugins are handled as "standard architecture feature" for
 any plugin. 
 
-There is no more need of special patching now.  
+Since 2.4 an architecture flexibility regression caused the subplugin system for blocks to fail. We 
+now need an extra patch to get it finding plugin subcomponent path properly again. 
+
+This patch will alter 2 plugin related functions in /lib/moodle.php
+
+around L§8030
+
+/**
+ * Lists all plugin types
+ * @param bool $fullpaths false means relative paths from dirroot
+ * @return array Array of strings - name=>location
+ */
+function get_plugin_types($fullpaths=true) {
+    global $CFG;
+
+    static $info     = null;
+    static $fullinfo = null;
+
+    if (!$info) {
+        $info = array('qtype'         => 'question/type',
+                      'mod'           => 'mod',
+                      'auth'          => 'auth',
+                      'enrol'         => 'enrol',
+                      'message'       => 'message/output',
+                      'block'         => 'blocks',
+                      'filter'        => 'filter',
+                      'editor'        => 'lib/editor',
+                      'format'        => 'course/format',
+                      'profilefield'  => 'user/profile/field',
+                      'report'        => 'report',
+                      'coursereport'  => 'course/report', // must be after system reports
+                      'gradeexport'   => 'grade/export',
+                      'gradeimport'   => 'grade/import',
+                      'gradereport'   => 'grade/report',
+                      'gradingform'   => 'grade/grading/form',
+                      'mnetservice'   => 'mnet/service',
+                      'webservice'    => 'webservice',
+                      'repository'    => 'repository',
+                      'portfolio'     => 'portfolio',
+                      'qbehaviour'    => 'question/behaviour',
+                      'qformat'       => 'question/format',
+                      'plagiarism'    => 'plagiarism',
+                      'tool'          => $CFG->admin.'/tool',
+                      'cachestore'    => 'cache/stores',
+                      'cachelock'     => 'cache/locks',
+                      'theme'         => 'theme',  // this is a bit hacky, themes may be in $CFG->themedir too
+        );
+
+// PATCH : Allow subplugins in blocks
+        $subpluginowners = array_merge(array_values(get_plugin_list('mod')),
+                array_values(get_plugin_list('editor')), array_values(get_plugin_list('block')));
+// /PATCH 
+        foreach ($subpluginowners as $ownerdir) {
+
+around L§8106
+
+/**
+ * Simplified version of get_list_of_plugins()
+ * @param string $plugintype type of plugin
+ * @return array name=>fulllocation pairs of plugins of given type
+ */
+function get_plugin_list($plugintype) {
+    global $CFG;
+
+    $ignored = array('CVS', '_vti_cnf', 'simpletest', 'db', 'yui', 'tests');
+    if ($plugintype == 'auth') {
+        // Historically we have had an auth plugin called 'db', so allow a special case.
+        $key = array_search('db', $ignored);
+        if ($key !== false) {
+            unset($ignored[$key]);
+        }
+    }
+
+    if ($plugintype === '') {
+        $plugintype = 'mod';
+    }
+
+    $fulldirs = array();
+
+    if ($plugintype === 'mod') {
+        // mod is an exception because we have to call this function from get_plugin_types()
+        $fulldirs[] = $CFG->dirroot.'/mod';
+// PATCH : Allow subplugins in blocks
+    } else if ($plugintype === 'block') {
+        // block is an exception because we have to call this function from get_plugin_types()
+        $fulldirs[] = $CFG->dirroot . '/blocks';
+// /PATCH
+    } else if ($plugintype === 'editor') {
+
 
 0.2 Add possibility for blocks to handle xmlrpc the same way Moodle modules do:
 ###############################################################################

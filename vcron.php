@@ -25,6 +25,7 @@ define('LOWEST_POSSIBLE_GAP', 1);
 
 global $VCRON;
 
+$VCRON = new StdClass;
 $VCRON->STRATEGY = ROUND_ROBIN ;					// choose vcron rotation mode 
 $VCRON->PERIOD = 15 * MINSECS ; 					// used if LOWEST_POSSIBLE_GAP to setup the max gap
 $VCRON->TIMEOUT = 300; 								// time out for CURL call to effective cron

@@ -85,6 +85,15 @@ function vmoodle_upgrade_subplugins_modules($startcallback, $endcallback, $verbo
 	                        message_update_processors($plug);
 	                    }
 	                    vmoodle_upgrade_plugin_mnet_functions($component, $fullplug);
+	                    
+						// fix wrongly twicked paths
+	                    if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset' ", array())){
+	                    	foreach($rpc_shifted_defines as $rpc){
+	                    		$rpc->xmlrpcpath = str_replace('vmoocleadminset', 'blocks/vmoodle/plugins');
+	                    		$DB->update_record('mnet_rpc', $rpc);
+	                    	}
+	                    }
+	                    
 	                    $endcallback($component, true, $verbose);
 	                }
 	            }
@@ -121,6 +130,14 @@ function vmoodle_upgrade_subplugins_modules($startcallback, $endcallback, $verbo
 	                message_update_processors($plug);
 	            }
 	            vmoodle_upgrade_plugin_mnet_functions($component, $fullplug);
+
+				// fix wrongly twicked paths
+                if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset' ", array())){
+                	foreach($rpc_shifted_defines as $rpc){
+                		$rpc->xmlrpcpath = str_replace('vmoocleadminset', 'blocks/vmoodle/plugins');
+                		$DB->update_record('mnet_rpc', $rpc);
+                	}
+                }
 	
 	            purge_all_caches();
 	            $endcallback($component, true, $verbose);

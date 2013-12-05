@@ -33,10 +33,12 @@ class Vmoodle_Command_Role_Allow_Sync extends Vmoodle_Command {
 		$table_param = new Vmoodle_Command_Parameter('table', 'enum', vmoodle_get_string('tableparamdesc', 'vmoodleadminset_roles'), null, $tables);
 
 		// Creating role parameter
-		$records = $DB->get_records('role', null, 'name', 'name,shortname');
-		foreach($records as $record)
-			$roles[$record->shortname] = $record->name;
-		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamsyncdesc', 'vmoodleadminset_roles'), null, $roles);
+		$roles = role_fix_names(get_all_roles(), context_system::instance(), ROLENAME_ORIGINAL);
+		$rolemenu = array();
+		foreach($roles as $r){
+			$rolemenu[$r->shortname] = $r->localname;
+		}
+		$role_param = new Vmoodle_Command_Parameter('role', 'enum', vmoodle_get_string('roleparamsyncdesc', 'vmoodleadminset_roles'), null, $rolemenu);
 
 		// Creating command
 		parent::__construct($cmd_name, $cmd_desc, array($platform_param, $table_param, $role_param));
@@ -67,7 +69,7 @@ class Vmoodle_Command_Role_Allow_Sync extends Vmoodle_Command {
 		$mnet_host = new mnet_peer();
 		if (!$mnet_host->bootstrap($this->getParameter('platform')->getValue(), null, 'moodle')) {
 			$response = (object) array(
-							'status' => MNET_FAILURE,
+							'status' => RPC_FAILURE,
 							'error' => get_string('couldnotcreateclient', 'block_vmoodle', $platform)
 						);
 			foreach($hosts as $host => $name)
@@ -129,7 +131,7 @@ class Vmoodle_Command_Role_Allow_Sync extends Vmoodle_Command {
 			// Sending request
 			if (!$rpc_client->send($mnet_host)) {
 				$response = new stdclass;
-				$response->status = MNET_FAILURE;
+				$response->status = RPC_FAILURE;
 				$response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
 				$response->error = 'Set remote role capability : Remote call error';
 				if (debugging()) {

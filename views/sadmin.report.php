@@ -8,27 +8,29 @@
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-	// Adding requierements
+
+	// Adding requirements
 	require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
-	// Checking if command were executed
-	if (!(isset($SESSION->vmoodle_sa['command']) && ($command = unserialize($SESSION->vmoodle_sa['command'])) && $command->isRunned())){
-		return -1;
-	}
 	
 	// Getting platforms
 	$platforms = $SESSION->vmoodle_sa['platforms'];
+
 	// Checking commands' states
 	$successfull_platforms = array();
 	$failed_platforms = array();
 	foreach($platforms as $host => $platform) {
-		if ($command->getResult($host, 'status') == RPC_SUCCESS)
+		if ($command->getResult($host, 'status') == RPC_SUCCESS){
 			$successfull_platforms[$host] = $platform;
-		else
+		} else {
 			$failed_platforms[$host] = $platform;
+		}
 	}
+
 	// Displaying general result
-	if (!is_null($command->getResult()))
+	if (!is_null($command->getResult())){
 		echo $command->getResult();
+	}
+
 	// Displaying successfull commands
 	$i = 0;
 	if (!empty($successfull_platforms)) {
@@ -41,6 +43,9 @@
 			echo '<tr class="r'.$i.'">' .
 					'<td><b>'.$platform.'</b></td>' .
 					'<td>'.get_string('rpcstatus'.$command->getResult($host, 'status'), 'block_vmoodle').'</td>' .
+					'<td style="width: 25%;">'.
+					$command->getResult($host, 'message').
+					'</td>'.
 				'</tr>';
 			$i = ($i+1)%2;
 		}
@@ -68,13 +73,14 @@
 				'</tr>' .
 				'<tr class="r'.$i.'" valign="top">' .
 					'<td>'.get_string('details', 'block_vmoodle').'</td>' .
-					'<td colspan="2">'.implode("<br/>", $command->getResult($host, 'errors')).'</td>' .
+					'<td colspan="2">'.implode('<br/>', $command->getResult($host, 'errors')).'</td>' .
 				'</tr>';
 			$i = ($i+1)%2;
 		}
 		echo '</tbody>' .
 			'</table><br/>';
 	}
+
 	// Displaying controls
 	echo '<center>';
 	echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'sadmin', 'what' => 'runotherpfm')), get_string('runotherplatforms', 'block_vmoodle'), 'get');
