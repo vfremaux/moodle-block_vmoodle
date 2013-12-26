@@ -790,6 +790,9 @@ if ($action == 'delete'){
 if ($action == 'renewall'){
 
 	// self renew
+	/*
+	// WARNING : Possible cause of dead looping of key renewes 
+	// If confirms, check what can happen here....
 	echo '<pre>';
 	$renewuri = $CFG->wwwroot.'/admin/cron.php?forcerenew=1';
 	echo "Running on : $renewuri\n";
@@ -809,7 +812,8 @@ if ($action == 'renewall'){
 	$raw = curl_exec($ch);
 	echo $raw."\n\n";
 	echo '</pre>';
-
+	*/
+	
 	$vmoodles = $DB->get_records_sql(' select * from {block_vmoodle} where mnet > -1');
 
 	echo '<pre>';
