@@ -14,26 +14,28 @@ require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
 function vmoodle_get_remote_config($mnethost, $configkey, $domain = ''){
 	global $CFG, $USER, $DB, $OUTPUT;
 
-	if (!isset($USER->username)){
-		$USER = $DB->get_record('user', array('username' => 'guest'));
-	}	
-	$user = new StdClass();
-	if ($USER){
-		$user->username = $USER->username;
+	if (!isset($USER)){
+		$user = $DB->get_record('user', array('username' => 'guest'));
 	} else {
-		$user->username = 'guest';
+		$user = $USER;
 	}
-	$userhost = $DB->get_record('mnet_host', array('id' => $USER->mnethostid));
+
+	$userhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid));
 	$user->remoteuserhostroot = $userhost->wwwroot;
 	$user->remotehostroot = $CFG->wwwroot;
+
     // get the sessions for each vmoodle that have same ID Number
     $rpcclient = new mnet_xmlrpc_client();
     $rpcclient->set_method('blocks/vmoodle/plugins/generic/rpclib.php/dataexchange_rpc_fetch_config');
+
     $rpcclient->add_param($user, 'struct');
     $rpcclient->add_param($configkey, 'string');
     $rpcclient->add_param($domain, 'string');
+
     $mnet_host = new mnet_peer();
+
     $mnet_host->set_wwwroot($mnethost->wwwroot);
+    
     if ($rpcclient->send($mnet_host)){
         $response = json_decode($rpcclient->response);
         if ($response->status == 200){
