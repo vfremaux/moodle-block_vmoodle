@@ -47,6 +47,7 @@ class Vmoodle_Host_Form extends moodleform {
 		 * Host's id.
 		 */
 		$mform->addElement('hidden', 'id');
+		$mform->setType('id', PARAM_INT);
 
 		/*
 		 * Features fieldset.
@@ -72,7 +73,7 @@ class Vmoodle_Host_Form extends moodleform {
 			$mform->addElement('text', 'vhostname', get_string('vhostname', 'block_vmoodle'), ($this->mode == 'edit' ? 'disabled="disabled" ' : '').$size_input_text);
 			$mform->addHelpButton('vhostname', 'vhostname', 'block_vmoodle');
 			$mform->addElement('checkbox', 'forcedns', get_string('forcedns', 'block_vmoodle'));
-			$mform->setType('shortname', PARAM_URL);
+			$mform->setType('vhostname', PARAM_URL);
 		}
 
 		$mform->closeHeaderBefore('dbform');
