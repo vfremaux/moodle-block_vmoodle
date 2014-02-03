@@ -30,6 +30,8 @@ require_once($CFG->dirroot . '/repository/lib.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/pluginlib.php');
 require_once($CFG->libdir . '/portfoliolib.php');
+require_once($CFG->dirroot . '/mod/assign/adminlib.php');
+require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 abstract class plugin_remote_control{
 
@@ -48,6 +50,7 @@ abstract class plugin_remote_control{
 	*/	
 	function __construct($fqplugin){
 		$this->fqplugin = $fqplugin;
+		
 		list($this->type, $this->plugin) = explode('/', $fqplugin);
 	}
 	
@@ -59,7 +62,7 @@ class mod_remote_control extends plugin_remote_control{
 
 	function action($action){
 		global $DB;
-
+		
         if (!$module = $DB->get_record('modules', array('name' => $this->plugin))) {
             return get_string('moduledoesnotexist', 'error');
         }
@@ -519,5 +522,51 @@ class enrol_remote_control extends plugin_remote_control{
 	function is_enabled(){
 		$active_enrols = explode(',', get_config('enrol_plugins_enabled'));
 	    return in_array($this->plugin, $active_enrols);
+	}
+}
+
+class assignsubmission_remote_control extends plugin_remote_control{
+
+	function action($action){
+
+		$pluginmanager = new assign_plugin_manager('assignsubmission');
+		switch($action){
+		    case 'enable':
+				$pluginmanager->show_plugin($this->plugin);
+		        break;		
+		    case 'disable':
+				$pluginmanager->hide_plugin($this->plugin);
+		        break;		
+		}
+
+	    return 0;
+	}
+
+	function is_enabled(){
+        return !get_config('submission_' . $this->plugin, 'disabled');
+	}
+}
+
+
+class assignfeedback_remote_control extends plugin_remote_control{
+
+	function action($action){
+
+		$pluginmanager = new assign_plugin_manager('assignfeedback');
+		
+		switch($action){
+		    case 'enable':
+				$pluginmanager->show_plugin($this->plugin);
+		        break;		
+		    case 'disable':
+				$pluginmanager->hide_plugin($this->plugin);
+		        break;		
+		}
+
+	    return 0;
+	}
+
+	function is_enabled(){
+        return !get_config('feedback_' . $this->plugin, 'disabled');
 	}
 }

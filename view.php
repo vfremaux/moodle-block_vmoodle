@@ -111,7 +111,7 @@
 				default: {
 					$result = -1;
 				}
-			}		
+			}
 			if ($result == -1) {
 				echo $OUTPUT->footer();
 				exit();

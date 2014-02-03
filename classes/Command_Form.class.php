@@ -71,8 +71,11 @@ class Vmoodle_Command_Form extends moodleform {
 		// Adding hidden fields
 		if ($this->mode == self::MODE_COMMAND_CHOICE) {
 			$mform->addElement('hidden', 'category_name', $command->getCategory()->getName());
+			$mform->setType('category_name', PARAM_TEXT);
 			$mform->addElement('hidden', 'category_plugin_name', $command->getCategory()->getPluginName());
+			$mform->setType('category_plugin_name', PARAM_TEXT);
 			$mform->addElement('hidden', 'command_index', $command->getIndex());
+			$mform->setType('command_index', PARAM_TEXT);
 		}
 		
 		// Adding command's description
@@ -92,12 +95,14 @@ class Vmoodle_Command_Form extends moodleform {
 					break;
 					case 'text': {
 						$mform->addElement('text', $parameter->getName(), $parameter->getDescription());
+						$mform->setType($parameter->getName(), PARAM_TEXT);
 						if ($this->mode != self::MODE_DISPLAY_COMMAND)
 							$mform->addRule($parameter->getName(), null, 'required', null, 'client');
 					}
 					break;
 					case 'ltext': {
 						$mform->addElement('textarea', $parameter->getName(), $parameter->getDescription(), 'wrap="virtual" rows="20" cols="50"');
+						$mform->setType($parameter->getName(), PARAM_TEXT);
 						if ($this->mode != self::MODE_DISPLAY_COMMAND)
 							$mform->addRule($parameter->getName(), null, 'required', null, 'client');
 					}

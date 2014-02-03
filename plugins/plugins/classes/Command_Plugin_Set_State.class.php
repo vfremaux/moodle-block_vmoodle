@@ -86,6 +86,9 @@ class Vmoodle_Command_Plugin_Set_State extends Vmoodle_Command {
 				
 		$plugininfo = $pm->get_plugin_info($plugin);
 		if (empty($plugininfo->type)){
+			if (empty($plugininfo)){
+				$plugininfo = new StdClass();
+			}
 			$plugininfo->type = $type;
 		}
 		$plugininfo->action = $state;
@@ -135,7 +138,7 @@ class Vmoodle_Command_Plugin_Set_State extends Vmoodle_Command {
 
 			// Recording plugin descriptors
 			if ($response->status == RPC_SUCCESS){
-				$this->plugins[$mnet_host->wwwroot] = $response->value;
+				$this->plugins[$mnet_host->wwwroot] = @$response->value;
 			}
 		}
 

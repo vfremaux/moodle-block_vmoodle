@@ -50,7 +50,9 @@ class Vmoodle_Services_Strategy_Form extends moodleform {
 				$mform->setDefault($defaultservice->name.'_description', $defaultservice->description);
 				$mform->setDefault($defaultservice->name.'_id',	$defaultservice->id);
 				$mform->addGroup($group, null, $defaultservice->name);
+				$mform->setType($defaultservice->name.'_id', PARAM_INT);
 			}
+
 			// Submit button.
 			$mform->addElement('submit', 'submitbutton', get_string('edit'));
 

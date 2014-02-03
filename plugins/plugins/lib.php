@@ -32,6 +32,8 @@ $STANDARD_PLUGIN_TYPES = array(
     'tool' => get_string('tools', 'admin'),
     'cachestore' => get_string('cachestores', 'cache'),
     'local' => get_string('localplugins'),
+    'assignsubmission' => get_string('assignsubmission', 'assign'),
+    'assignfeedback' => get_string('assignfeedback', 'assign'),
 
 	/*
 	// these are module embedded plugins

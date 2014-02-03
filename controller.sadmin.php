@@ -57,14 +57,14 @@
  			$SESSION->vmoodle_sa['wizardnow'] = 'targetchoice';
 
 			// Move to the next step
-			header('Location: view.php?view=sadmin');
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
  		}
  		break;
 
  		// Switching to the advanced mode
  		case 'switchtoadvancedcommand': {
  		    $SESSION->vmoodle_sa['wizardnow'] = 'advancedcommand';
- 		    header('Location: view.php?view=sadmin');
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
  		}
  		break;
 
@@ -95,7 +95,7 @@
  			$SESSION->vmoodle_sa['wizardnow'] = 'targetchoice';
 
 			// Move to the next step
-			header('Location: view.php?view=sadmin');
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
  		}
  		break;
 
@@ -115,7 +115,7 @@
 
 	 	// Getting available platforms by their original value.
 	 	case 'gettargetbyvalue': {
-	 		// Including requierements
+	 		// Including requirements
 	 		require_once VMOODLE_CLASSES_DIR.'Command_Form.class.php';
 	 		require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
 	 		// Checking command
@@ -150,7 +150,7 @@
  			// Saving selected platforms in session
  			$SESSION->vmoodle_sa['platforms'] = $platforms;
 	 		// Moving to current step
-	 		@header('Location: view.php?view=sadmin');		// Adding @ due to debugging features
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
 	 	}
 	 	break;
 
@@ -174,6 +174,7 @@
 			// Getting platforms // BUGFIX not found why splatforms dont' come into get_data()
 			$form_platforms = optional_param_array('splatforms', array(), PARAM_URL);
 			if (empty($form_platforms) || (count($form_platforms) == 1 && $form_platforms[0] == '0')){
+				echo $OUTPUT->header();
 				throw new Vmoodle_Command_Exception('noplatformchosen');
 			}
 
@@ -199,14 +200,14 @@
 			$SESSION->vmoodle_sa['wizardnow'] = 'report';
 
 			// Move to the next step 			
-			@header('Location: view.php?view=sadmin');		// Adding @ due to debugging features
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
 		}
 		break;
 
 		// Clean up wizard session to run a new command
 		case 'newcommand': {
 			unset($SESSION->vmoodle_sa);
-			header('Location: view.php?view=sadmin');
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
 		}
 		break;
 
@@ -222,7 +223,7 @@
 			// Modifying wizard state
 			$SESSION->vmoodle_sa['wizardnow'] = 'targetchoice';
 			// Move to the step
-			header('Location: view.php?view=sadmin');
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
 		}
 		break;
 		// Run an other command on selected platforms
@@ -234,7 +235,7 @@
 			// Modifying wizard state
 			$SESSION->vmoodle_sa['wizardnow'] = 'commandchoice';
 			// Move to the step
-			header('Location: view.php?view=sadmin');
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
 		}
 		break;
 
@@ -259,7 +260,7 @@
 			// Saving result
 			$SESSION->vmoodle_sa['command'] = serialize($command);
 			// Moving to report step
-			@header('Location: view.php?view=sadmin');		// Adding @ due to debugging features
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
 		}
 		break;
 	}
