@@ -611,7 +611,7 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 
     	fwrite($FILE, "--\n-- Add new network admin to local siteadmins.  \n--\n");
 		$adminidsql = "(SELECT id FROM {$PREFIX}user WHERE auth LIKE 'mnet' AND username = 'admin' AND mnethostid = (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'))";
-		fwrite($FILE, "UPDATE {$PREFIX}config SET siteadmins = CONCAT(siteadmins, ',', $adminidsql)");
+		fwrite($FILE, "UPDATE {$PREFIX}config SET value = CONCAT(value, ',', $adminidsql) WHERE name = 'siteadmins';\n");
 
     	fwrite($FILE, "--\n-- Create a disposable key for renewing new host's keys.  \n--\n");
     	fwrite($FILE, "INSERT INTO {$PREFIX}config (name, value) VALUES ('bootstrap_init', '{$this_as_host->wwwroot}');\n");

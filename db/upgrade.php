@@ -27,5 +27,3 @@ function xmldb_block_vmoodle_upgrade($oldversion=0) {
 
     return $result;
 }
-
-?>
