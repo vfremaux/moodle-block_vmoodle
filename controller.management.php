@@ -91,16 +91,19 @@ if ($action == 'add') {
 /**************************** Do ADD actions ************/
 if ($action == 'doadd'){
     // debug_open_trace();
-    $vmoodlestep = optional_param('step', 0, PARAM_INT);
 
-	// Retrieve submitted data, from the add form.
-	unset($SESSION->vmoodle_mg['dataform']);
-	$platform_form	= new Vmoodle_Host_Form('add', null);
+	if (empty($automation)){
+    	$vmoodlestep = optional_param('step', 0, PARAM_INT);
 
-	// Check if form is cancelled.
-	if ($platform_form->is_cancelled()) {
-		redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-		die;
+		// Retrieve submitted data, from the add form.
+		unset($SESSION->vmoodle_mg['dataform']);
+		$platform_form	= new Vmoodle_Host_Form('add', null);
+	
+		// Check if form is cancelled.
+		if ($platform_form->is_cancelled()) {
+			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+			die;
+		}
 	}
 
 	// If there is submitted data from form or in session (no errors).
@@ -111,8 +114,10 @@ if ($action == 'doadd'){
     }
 
     if ($submitteddata){	
+
 		// debug_trace("entering doadd case");
 		if($submitteddata->vtemplate === 0) {
+
 			$sqlrequest = 'UPDATE 
 								{mnet_host}
 						   SET
@@ -120,6 +125,7 @@ if ($action == 'doadd'){
 						   WHERE
 								wwwroot = "'.$submitteddata->vhostname.'"';
 			$DB->execute($sqlrequest);
+
 			$sqlrequest = 'SELECT 
 							*
 						   FROM
@@ -127,6 +133,7 @@ if ($action == 'doadd'){
 						   WHERE
 								vhostname = "'.$submitteddata->vhostname.'"';
 			$record = $DB->get_record_sql($sqlrequest);					
+
 			if(empty($record)) {
 				$record = (object) array('name' => $submitteddata->name,
 						   'shortname' => $submitteddata->shortname,
@@ -144,12 +151,17 @@ if ($action == 'doadd'){
 						   'mnet' => $submitteddata->mnet);
 				$DB->insert_record('block_vmoodle', $record);										
 			}
+
 			$message_object->message = get_string('plateformreactivate', 'block_vmoodle');
 			$message_object->style = 'notifysuccess';
 
 			$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-			die;
+
+			if (empty($automation)){
+				redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+				die;
+			}
+			return 0;
 		} else {
 			// Checks if the chosen template still exists.
 			$templates = vmoodle_get_available_templates();
@@ -157,8 +169,12 @@ if ($action == 'doadd'){
 				// If the snapshot has been deleted between loading the add form and submitting it.
 				$message_object->message = get_string('notemplates', 'block_vmoodle');
 				$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-				redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-				die;
+				if (empty($automation)){
+					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+					die;
+				}
+				mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+				return -1;
 			}
 
 			// Check if the required hostname has DNS resolution
@@ -168,10 +184,14 @@ if ($action == 'doadd'){
 					print_string('unknownhostforced', 'block_vmoodle');
 					// $submitteddata->mnet = -1;
 				} else {
-					$message_object->message = get_string('unkownhost', 'block_vmoodle'). ' : '.$domainname;
+					$message_object->message = get_string('unknownhost', 'block_vmoodle'). ' : '.$domainname;
 					$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-					die;
+					if (empty($automation)){
+						redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+						die;
+					}
+					mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+					return -1;
 				}
 			}
 			// Do we have a "self" host record ?
@@ -180,27 +200,40 @@ if ($action == 'doadd'){
 				// If loading this host's data has failed.
 				$message_object->message = get_string('badthishostdata', 'block_vmoodle');
 				$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-				redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-				die;
+
+				if (empty($automation)){
+					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+					die;
+				}
+				mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+				return -1;
 			}
 
 		/// Creates database from template.
 
 			if ($vmoodlestep == 0){
-				// debug_trace("step 0 : loading");
+				debug_trace("step 0 : loading");
 				if(!vmoodle_load_database_from_template($submitteddata, $CFG->dataroot.'/vmoodle')){
 					// If loading database from template has failed.
 					unset($SESSION->vmoodledata);
 					$message_object->message = get_string('badtemplatation', 'block_vmoodle');
 					$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+					if (empty($automation)){
+						redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+						die;
+					}
+					mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+					return -1;
+				}
+
+				if (empty($automation)){
+	            	echo $OUTPUT->header();
+					echo $OUTPUT->box(get_string('vmoodledoadd1', 'block_vmoodle'));
+					echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=1');
+					echo $OUTPUT->footer();
 					die;
 				}
-            	echo $OUTPUT->header();
-				echo $OUTPUT->box(get_string('vmoodledoadd1', 'block_vmoodle'));
-				echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=1');
-				echo $OUTPUT->footer();
-				die;
+				return 0;
 			}
 
 		/// Fix remote database for Mnet operations.
@@ -217,28 +250,35 @@ if ($action == 'doadd'){
 		// with all fixing SQL instructions processed.
 
 			if ($vmoodlestep == 1){
-				// debug_trace("step 1 : fixing DB");
+				debug_trace("step 1 : fixing DB");
 				if(!vmoodle_fix_database($submitteddata, $this_as_host, $CFG->dataroot.'/vmoodle')){
 					// If fixing database has failed.
 					unset($SESSION->vmoodledata);
 					$message_object->message = get_string('couldnotfixdatabase', 'block_vmoodle');
 					$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+					if (empty($automation)){
+						redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+						die;
+					}
+					mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+					return -1; 
+				}
+				if (empty($automation)){
+					echo $OUTPUT->header();
+					echo $OUTPUT->box(get_string('vmoodledoadd2', 'block_vmoodle'));
+					if (debugging()){
+						$opts['view'] = 'management';
+						$opts['what'] = 'doadd';
+						$opts['step'] = 2;
+						echo "<center>";
+						echo $OUTPUT->single_button(new moodle_url($CFG->wwwroot.'/blocks/vmoodle/view.php', $opts), get_string('skip', 'block_vmoodle'), 'get');
+						echo "</center>";
+					}
+					echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=2');
+					echo $OUTPUT->footer();
 					die;
 				}
-				echo $OUTPUT->header();
-				echo $OUTPUT->box(get_string('vmoodledoadd2', 'block_vmoodle'));
-				if (debugging()){
-					$opts['view'] = 'management';
-					$opts['what'] = 'doadd';
-					$opts['step'] = 2;
-					echo "<center>";
-					echo $OUTPUT->single_button(new moodle_url($CFG->wwwroot.'/blocks/vmoodle/view.php', $opts), get_string('skip', 'block_vmoodle'), 'get');
-					echo "</center>";
-				}
-				echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=2');
-				echo $OUTPUT->footer();
-				die;
+				return 0;
 			}
 
 		/// Get fileset for moodledata
@@ -246,11 +286,14 @@ if ($action == 'doadd'){
 			if ($vmoodlestep == 2){
 				// debug_trace("step 2 : dumping files");
 				vmoodle_dump_files_from_template($submitteddata->vtemplate, $submitteddata->vdatapath);
-				echo $OUTPUT->header();
-				echo $OUTPUT->box(get_string('vmoodledoadd3', 'block_vmoodle'));
-				echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=3');
-				echo $OUTPUT->footer();
-				die;
+				if (empty($automation)){
+					echo $OUTPUT->header();
+					echo $OUTPUT->box(get_string('vmoodledoadd3', 'block_vmoodle'));
+					echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=3');
+					echo $OUTPUT->footer();
+					die;
+				}
+				return 0;
 			}
 
 		/// Insert proper vmoodle record
@@ -260,20 +303,32 @@ if ($action == 'doadd'){
 				// Adds the new virtual instance record, with all data if everything is done
 				$submitteddata->timecreated	= time();
 				$submitteddata->vhostname = preg_replace("/\/$/", '', $submitteddata->vhostname); // fix possible misslashing
-				
+
+				$makenewnetwork = false;
+				if ($submitteddata->mnet == 'NEW'){
+					$submitteddata->mnet = 0;
+					$makenewnetwork = true;
+				}
             
                 if(!$idnewblock = $DB->insert_record('block_vmoodle', $submitteddata)){
 					// If inserting data in 'block_vmoodle' table has failed.
 					$message_object->message = get_string('badblockinsert', 'block_vmoodle');
 					$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+					if (empty($automation)){
+						redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+						die;
+					}
+					mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+					return -1;
+				}
+				if (empty($automation)){
+					echo $OUTPUT->header();
+					echo $OUTPUT->box(get_string('vmoodledoadd4', 'block_vmoodle'));
+					echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=4&makenewnet='.$makenewnetwork);
+					echo $OUTPUT->footer();
 					die;
 				}
-				echo $OUTPUT->header();
-				echo $OUTPUT->box(get_string('vmoodledoadd4', 'block_vmoodle'));
-				echo $OUTPUT->continue_button($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management&amp;what=doadd&amp;step=4');
-				echo $OUTPUT->footer();
-				die;
+				return 0;
 			}
 
 		/// Mnet bind from master side
@@ -290,19 +345,22 @@ if ($action == 'doadd'){
 					$newmnet_host->commit();
 					$message_object->message = get_string('successaddnewhostwithoutmnet', 'block_vmoodle');
 					$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-					die; // we have finished
+					if (empty($automation)){
+						redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+						die; // we have finished
+					}
+					return 1;
 				}
 
 				// force renew using remote keyboot.php access
-				// debug_trace("step 4.1 : booting remote key");
+				debug_trace("step 4.1 : booting remote key");
 				$uri = $submitteddata->vhostname.'/blocks/vmoodle/keyboot.php';		
 
 				$rq = 'pk='.urlencode($this_as_host->public_key);
-				$ch = curl_init("$uri?$rq");
+				$ch = curl_init("$uri");
 				curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
-				curl_setopt($ch, CURLOPT_POST, false);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_POST, true);
 				curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
 				curl_setopt($ch, CURLOPT_POSTFIELDS, $rq);
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
@@ -313,45 +371,58 @@ if ($action == 'doadd'){
 				if (!$res = curl_exec($ch)){
 					// If remote keybooting has failed.
 					// debug_trace("step 4.1 : Failed boot / No CURL response");
-					$message_object->message = get_string('couldnotkeyboot', 'block_vmoodle');
+					$message_object->message = get_string('couldnotkeyboot', 'block_vmoodle', 'CURL Error');
 					$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-					die;
+					if (empty($automation)){
+						redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+						die;
+					}
+					mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+					return -1;
 				}
 				if (preg_match('/ERROR/', $res)){
-					// debug_trace("step 4.1 : Failed boot / ERROR response");
+					debug_trace("step 4.1 : Failed boot / ERROR response");
 					// If remote keybooting has failed.
 					$message_object->message = get_string('couldnotkeyboot', 'block_vmoodle', $res);
 					$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-					redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-					die;
+					if (empty($automation)){
+						redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+						die;
+					}
+					mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+					return -1;
 				}
 				curl_close($ch);
 
 				// Force new virtual host to renew our key and send his own to us.
-				// debug_trace("step 4.2 : exchanging keys");
+				debug_trace("step 4.2 : exchanging keys");
              
 				if(!$newmnet_host->bootstrap($submitteddata->vhostname, null, 'moodle', 1)){
 					// If bootstraping the new host has failed.
-					// debug_trace("step 4.2 Failed : bootstrap failure");
-					if (debugging()){
-						echo $OUTPUT->header();
-						echo $OUTPUT->continue_button('view.php?view=management');
-						echo $OUTPUT->footer();
+					debug_trace("step 4.2 Failed : bootstrap failure");
+					$SESSION->vmoodle_ma['confirm_message'] = 'bootstrap failure';;
+					if (empty($automation)){
+						if (debugging()){
+							echo $OUTPUT->header();
+							echo $OUTPUT->continue_button('view.php?view=management');
+							echo $OUTPUT->footer();
+							die;
+						} else {				    
+							$SESSION->vmoodle_ma['confirm_message'] = $message_object;
+							redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
+						}
 						die;
-					} else {				    
-						$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-						redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
 					}
-					die;
+					mtrace($SESSION->vmoodle_ma['confirm_message']->message);
+					return -1;
 				}
-
+				$newmnet_host->updateparams->deleted = 0; // in case already there and needs revive;
 				$newmnet_host->commit();
 
-				// debug_trace("step 4.3 : setting mnetadmin remote side");
+				debug_trace("step 4.3 : setting mnetadmin remote side");
 
 				// we need to start output here in case of exceptions
-            	echo $OUTPUT->header();
+            	// echo $OUTPUT->header();
 
 				// Service 'mnetadmin' is needed to speak with new host. Set it our side.
 				$slavehost = $DB->get_record('mnet_host', array('wwwroot' => $submitteddata->vhostname));
@@ -393,11 +464,14 @@ if ($action == 'doadd'){
 			$message_object->style = 'notifysuccess';
 
 			// Save confirm message before redirection.
-			// debug_trace("step 4 : Finished");
+			debug_trace("step 4 : Finished");
 			unset($SESSION->vmoodledata);
 			$SESSION->vmoodle_ma['confirm_message'] = $message_object;
-			redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management');
-			die;
+			if (empty($automation)){
+				redirect($CFG->wwwroot.'/blocks/vmoodle/view.php?view=management'); // finished
+				die;
+			}
+			return 0; // finished
 		}
 	}
 }
@@ -711,11 +785,12 @@ if ($action == 'snapshot'){
     }
 }
 /**************************** Delete a Vmoodle and uninstall it ************/
-if ($action == 'delete'){
+if (($action == 'delete') || ($action == 'fulldelete')){
 	$id = required_param('id', PARAM_INT);
 	// Unmarks the Vmoodle in everyplace (subnetwork, common).
 	if ($vmoodle = $DB->get_record('block_vmoodle', array('id' => $id))){
 		if($vmoodle_host = $DB->get_record('mnet_host', array('wwwroot' => $vmoodle->vhostname))){
+			debug_trace('Deleting vmoodle host');
 			if(($vmoodle_host->deleted == 0)) {
 				$vmoodle_host->deleted	= 1;
 				$DB->update_record('mnet_host', $vmoodle_host);
@@ -782,13 +857,11 @@ if ($action == 'delete'){
 					$message_object->message = get_string('successdeletehost', 'block_vmoodle');
 					$message_object->style	=	'notifysuccess';
 				}
-			}
-			else{
+			} else {
 				// If trying to delete an already deleted host.
 				$message_object->message = get_string('badhostalreadydeleted', 'block_vmoodle');
 			}
-		}
-		else{
+		} else {
 			// If block and host are not synchronized.
 			$sqlrequest = 'DELETE
 						   FROM
@@ -798,16 +871,19 @@ if ($action == 'delete'){
 			if($DB->execute($sqlrequest)) {
 				$message_object->message = get_string('successdeletehost', 'block_vmoodle');
 				$message_object->style	=	'notifysuccess';
-			}
-			else {
+			} else {
 				$message_object->message = get_string('badhostalreadydeleted', 'block_vmoodle');
 				$message_object->style	=	'notifysuccess';
 			}
 		}
-	}
-	else{
+	} else{
 		// If the Vmoodle record doesn't exist in the block, because of a manual action.
 		$message_object->message = get_string('novmoodle', 'block_vmoodle');
+	}
+	
+	if ($action == 'fulldelete'){
+		debug_trace('Full deleting vmoodle host');
+		vmoodle_destroy($vmoodle);
 	}
 
 	/* // Save confirm message before redirection.

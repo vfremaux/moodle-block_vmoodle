@@ -46,7 +46,7 @@ if (!defined('RPC_SUCCESS')) {
  * @param	$context				int					The capability's context (optional / CONTEXT_SYSTEM by default).
  */
 function invoke_local_user($user, $capability, $context=null) {
-	global $CFG, $USER,$DB;
+	global $CFG, $USER, $DB;
 
 	// Creating response
 	$response = new stdclass;
@@ -117,9 +117,7 @@ function invoke_local_user($user, $capability, $context=null) {
  * @param		$new_peer		array		The peer to add as a complete mnet_host record.
  */
 function mnetadmin_rpc_bind_peer($username, $userhost, $remotehost, $new_peer, $servicestrategy) {
-	global $CFG, $USER;
-
-    debug_open_trace();
+	global $CFG, $USER, $DB;
 
 	// Invoke distant user who makes the call and checks his rights.
 	$user['username'] = $username;
@@ -184,7 +182,7 @@ function mnetadmin_rpc_bind_peer($username, $userhost, $remotehost, $new_peer, $
  * @param		$peer_wwwroot	string		The peer's wwwroot to delete.
  */
 function mnetadmin_rpc_unbind_peer($username, $userhost, $remotehost, $peer_wwwroot) {
-	global $CFG, $USER;
+	global $CFG, $USER, $DB;
 
 	// Invoke distant user who makes the call and checks his rights.
 	$user['username'] = $username;

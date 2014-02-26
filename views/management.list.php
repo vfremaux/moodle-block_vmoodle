@@ -50,18 +50,22 @@ if ($vmoodles){
           
 			$vmoodlecmd .= "<a href=\"view.php?view=management&amp;what=edit&amp;id={$vmoodle->id}\"><img src=\"{$OUTPUT->pix_url('t/edit','core')}\" title=\"".get_string('edithost', 'block_vmoodle')."\" /></a>";
 			$vmoodlecmd .= " <a href=\"view.php?view=management&amp;what=delete&amp;id={$vmoodle->id}\" onclick=\"return confirm('".get_string('confirmdelete', 'block_vmoodle')."');\"><img src=\"{$OUTPUT->pix_url('t/delete')}\" title=\"".get_string('deletehost', 'block_vmoodle')."\" /></a>";
+		} else {
+			$vmoodlecmd .= " <a href=\"view.php?view=management&amp;what=fulldelete&amp;id={$vmoodle->id}\" onclick=\"return confirm('".get_string('confirmfulldelete', 'block_vmoodle')."');\"><img src=\"{$OUTPUT->pix_url('t/delete')}\" title=\"".get_string('fulldeletehost', 'block_vmoodle')."\" /></a>";
 		}
 		$vmoodlecmd .= " <a href=\"view.php?view=management&amp;what=snapshot&amp;wwwroot={$vmoodle->vhostname}\"><img src=\"{$CFG->wwwroot}/blocks/vmoodle/pix/snapshot.gif\" title=\"".get_string('snapshothost', 'block_vmoodle')."\" /></a>";
 		$vmoodlestatus = vmoodle_print_status($vmoodle, true);
 		$strmnet = $vmoodle->mnet;
-		if($strmnet < 0)
+		if($strmnet < 0){
 			$strmnet = get_string('mnetdisabled', 'block_vmoodle');
-		else if ($strmnet == 0)
+		} else if ($strmnet == 0) {
 			$strmnet = get_string('mnetfree', 'block_vmoodle');
-		$vmoodlelnk = "<a href=\"$vmoodle->vhostname\" target=\"_blank\" >$vmoodle->name</a>";
+		}
+		$vmoodlelnk = "<a href=\"{$CFG->wwwroot}/auth/mnet/jump.php?hostwwwroot=".urlencode($vmoodle->vhostname)."\" target=\"_blank\" >$vmoodle->name</a>";
+		$hostlnk = "<a href=\"{$vmoodle->vhostname}\" target=\"_blank\">{$vmoodle->vhostname}</a>";
 		$crongap = ($vmoodle->lastcrongap > DAYSECS) ? "<span style=\"color:red\">$vmoodle->lastcrongap s.</span>" : $vmoodle->lastcrongap ." s.";
 		
-        $table->data[] = array($vmoodlelnk, $vmoodle->vhostname, $vmoodlestatus, $strmnet, $vmoodle->croncount, userdate($vmoodle->lastcron), $crongap, $vmoodlecmd);
+        $table->data[] = array($vmoodlelnk, $hostlnk, $vmoodlestatus, $strmnet, $vmoodle->croncount, userdate($vmoodle->lastcron), $crongap, $vmoodlecmd);
 	}
 
 	echo '<center>';

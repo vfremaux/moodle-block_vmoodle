@@ -1,4 +1,4 @@
-<?php // $Id: Mnet_Peer.class.php,v 1.3 2013-11-25 13:03:50 mo2dlemaster Exp $
+<?php // $Id: Mnet_Peer.class.php,v 1.1.1.1 2013-02-13 08:42:17 mo2dlemaster Exp $
 /**
  * An object to represent lots of information about an RPC-peer machine
  * This is a special implementation override for vmoodle MNET admin operations

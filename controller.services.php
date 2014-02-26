@@ -29,27 +29,15 @@ if ($action == 'redefineservices') {
 	// Processing.
 	$defaultservices = $DB->get_records('mnet_service', array('offer' => 1), 'name');
 	if(!empty($defaultservices)){
+
 		require_once(VMOODLE_CLASSES_DIR.'ServicesStrategy_Form.class.php');
+
 		// Retrieve submitted data, from the services strategy form.
 		$services_form	=	new Vmoodle_Services_Strategy_Form();
 		$submitteddata	=	$services_form->get_data();
-		$submitteddata	=	(array)$submitteddata;
-		$services =	array();
-		foreach($defaultservices as $defaultservice){
-		    // print_object($defaultservice);
-			if(array_key_exists($defaultservice->name.'_publish', $submitteddata)
-			&& array_key_exists($defaultservice->name.'_subscribe', $submitteddata)
-			&& array_key_exists($defaultservice->name.'_id', $submitteddata)){
-				$service =	new stdclass();
-				$service->id			=	$submitteddata[$defaultservice->name.'_id'];
-				$service->name			=	$defaultservice->name;
-				$service->publish		=	$submitteddata[$defaultservice->name.'_publish'];
-				$service->subscribe		=	$submitteddata[$defaultservice->name.'_subscribe'];
-				$services[$service->name] =	$service;
-			}
-		}
+
 		// Saves default services strategy.
-		set_config('block_vmoodle_services_strategy', serialize($services));
+		set_config('block_vmoodle_services_strategy', serialize($submitteddata));
 		// Every step was SUCCESS.
 		$message_object->message = get_string('successstrategyservices', 'block_vmoodle');
 		$message_object->style = 'notifysuccess';
