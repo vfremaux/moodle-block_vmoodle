@@ -1,4 +1,4 @@
-<?php  //$Id: upgrade.php,v 1.1 2012-06-24 09:22:42 vf Exp $
+<?php  //$Id: upgrade.php,v 1.1.1.1 2013-02-13 08:42:17 mo2dlemaster Exp $
 
 // This file keeps track of upgrades to 
 // the vmoodle block
@@ -27,5 +27,3 @@ function xmldb_block_vmoodle_upgrade($oldversion=0) {
 
     return $result;
 }
-
-?>

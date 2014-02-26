@@ -1,19 +1,17 @@
 table#plugincompare {
-	border-collapse: separate;
+	border-collapse: collapse;
 }
 table#plugincompare td.header {
 	font-size: 1em;
 }
 table#plugincompare td.cell {
 	padding: 0px;
-	border-width: 3px;
-	border-style: inset;
 }
 table#plugincompare td.headinghighlight, table#plugincompare th.headinghighlight {
 	background-color: #CBFFC4;
 }
 table#plugincompare td.cellhighlight {
-	border-color: #1FFF00;
+	border-color: #18BF00;
 	border-style: dashed;
 }
 table#plugincompare td.choosenheading, table#plugincompare th.choosenheading {

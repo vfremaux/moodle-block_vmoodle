@@ -5,6 +5,17 @@ Implements a packaged virtualization control feature for large "Moodle Arrays"
 
 Important requirements for VMoodling :
 
+version 2013020801 summary
+=============================
+
+- Fixes security issue when used with local/technicalsignals plugin
+- Adds new remote plugin and equipement control
+- MultiSQL commands fixed
+- Several fixes on meta administration
+- added config file generator (to help cli migrations)
+- impove Command error and success report
+- integrates mahara patches for MNET stability.
+
 Summary of prerequisites
 ################################################################
 

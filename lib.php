@@ -523,5 +523,3 @@ function vmoodle_make_connection(&$vmoodle, $binddb = false){
         echo "vmoodle_make_connection : Database not supported<br/>";
     }
 }
-
-?>

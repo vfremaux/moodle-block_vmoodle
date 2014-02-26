@@ -67,7 +67,7 @@ function vmoodle_boot_configuration(){
 	                $CFG->dbname    = $vmoodle->vdbname;
 	                $CFG->dbuser    = $vmoodle->vdblogin;
 	                $CFG->dbpass    = $vmoodle->vdbpass;
-	                $CFG->dbpersist = $vmoodle->vdbpersist;
+	                $CFG->dboptions['dbpersist'] = $vmoodle->vdbpersist;
 	                $CFG->prefix    = $vmoodle->vdbprefix;
 	                
 	                $CFG->wwwroot   = $CFG->vmoodleroot;
@@ -109,7 +109,7 @@ function vmoodle_boot_configuration(){
 	                $CFG->dbname    = $vmoodle->vdbname;
 	                $CFG->dbuser    = $vmoodle->vdblogin;
 	                $CFG->dbpass    = $vmoodle->vdbpass;
-	                $CFG->dbpersist = $vmoodle->vdbpersist;
+	                $CFG->dboptions['dbpersist'] = $vmoodle->vdbpersist;
 	                $CFG->prefix    = $vmoodle->vdbprefix;
 	                
 	                $CFG->wwwroot   = $CFG->vmoodleroot;
@@ -146,7 +146,7 @@ function vmoodle_boot_configuration(){
 	                $CFG->dbname    = $vmoodle->vdbname;
 	                $CFG->dbuser    = $vmoodle->vdblogin;
 	                $CFG->dbpass    = $vmoodle->vdbpass;
-	                $CFG->dbpersist = $vmoodle->vdbpersist;
+	                $CFG->dboptions['dbpersist'] = $vmoodle->vdbpersist;
 	                $CFG->prefix    = $vmoodle->vdbprefix;
 	                
 	                $CFG->wwwroot   = $CFG->vmoodleroot;

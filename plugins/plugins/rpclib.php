@@ -76,9 +76,10 @@ function mnetadmin_rpc_get_plugins_info($user, $plugintype, $json_response = tru
 	// Setting result value
 	$response->value = (array)$allplugins[$plugintype];
 
+	$actionclass = $plugintype.'_remote_control';
+
 	// get activation status	
 	foreach($response->value as $pluginname => $foobar){
-		$actionclass = $plugintype.'_remote_control';
 
 		// ignore non implemented
 		if (!class_exists($actionclass)){
@@ -129,7 +130,6 @@ function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = 
 	
 	if (!empty($plugininfos)){
 		foreach($plugininfos as $plugin => $infos){
-			// debug_trace(serialize($infos));
 			$actionclass = $infos['type'].'_remote_control';
 
 			// ignore non implemented
@@ -138,13 +138,14 @@ function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = 
 				continue;
 			}
 
-			debug_trace("running remote {$infos['action']} on $plugin with $actionclass");
 			$control = new $actionclass($infos['type'].'/'.$plugin);
-			$return = $control->action($infos['action']);
+			$action = $infos['action'];
+			$return = $control->action($action);
 			if ($return !== 0){
 				$response->status = RPC_FAILURE;
 				$response->errors[] = $return;
 			}
+			$response->value = 'done.';
 		}
 	}
 
