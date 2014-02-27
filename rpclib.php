@@ -136,7 +136,6 @@ function mnetadmin_rpc_bind_peer($username, $userhost, $remotehost, $new_peer, $
 	$peerobj = (object)$new_peer;
 	unset($peerobj->id);
 
-    debug_trace('RPC '.json_encode($peerobj));
 	if($oldpeer = $DB->get_record('mnet_host', array('wwwroot' => $peerobj->wwwroot))){
 	    $peerobj->id = $oldpeer->id;
 	    if (!$DB->update_record('mnet_host', $peerobj)){
@@ -157,8 +156,9 @@ function mnetadmin_rpc_bind_peer($username, $userhost, $remotehost, $new_peer, $
     debug_trace('RPC : Binding service strategy');
 	// bind the service strategy.
 	if (!empty($servicestrategy)){
+	    $DB->delete_records('mnet_host2service', array('hostid' => $peerobj->id)); // eventually deletes something on the way
     	foreach($servicestrategy as $servicename => $servicestate){
-    	    $DB->delete_records('mnet_host2service', array('hostid' => $peerobj->id)); // eventually deletes something on the way
+    		$servicestate = (object)$servicestate; // ensure it is object
     	    $service = $DB->get_record('mnet_service', array('name' => $servicename));
         	$host2service = new stdclass();
         	$host2service->hostid = $peerobj->id;

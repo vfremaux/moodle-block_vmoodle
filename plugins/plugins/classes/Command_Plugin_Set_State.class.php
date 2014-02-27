@@ -53,8 +53,8 @@ class Vmoodle_Command_Plugin_Set_State extends Vmoodle_Command {
 		$plugin_param = new Vmoodle_Command_Parameter('plugin', 'enum', vmoodle_get_string('pluginparamdesc', 'vmoodleadminset_plugins'), null, $pluginlist);
 
 		$states = array();
-		$states['enable'] = get_string('enable', 'vmoodleadminset_plugins');
-		$states['disable'] = get_string('disable', 'vmoodleadminset_plugins');
+		$states['enable'] = vmoodle_get_string('enable', 'vmoodleadminset_plugins');
+		$states['disable'] = vmoodle_get_string('disable', 'vmoodleadminset_plugins');
 		$state_param = new Vmoodle_Command_Parameter('state', 'enum', vmoodle_get_string('pluginstateparamdesc', 'vmoodleadminset_plugins'), null, $states);
 
 		// Creating command

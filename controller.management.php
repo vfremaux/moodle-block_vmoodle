@@ -304,10 +304,9 @@ if ($action == 'doadd'){
 				$submitteddata->timecreated	= time();
 				$submitteddata->vhostname = preg_replace("/\/$/", '', $submitteddata->vhostname); // fix possible misslashing
 
-				$makenewnetwork = false;
 				if ($submitteddata->mnet == 'NEW'){
-					$submitteddata->mnet = 0;
-					$makenewnetwork = true;
+					$maxmnet = vmoodle_get_last_subnetwork_number();
+					$submitteddata->mnet = $maxmnet + 1;
 				}
             
                 if(!$idnewblock = $DB->insert_record('block_vmoodle', $submitteddata)){
@@ -426,6 +425,8 @@ if ($action == 'doadd'){
 
 				// Service 'mnetadmin' is needed to speak with new host. Set it our side.
 				$slavehost = $DB->get_record('mnet_host', array('wwwroot' => $submitteddata->vhostname));
+				// cleanup any previous records
+				$DB->delete_records('mnet_host2service', array('hostid' => $slavehost->id));
 				$mnetadminservice = $DB->get_record('mnet_service', array('name' => 'mnetadmin'));
 				$host2service               =	new stdclass();
 				$host2service->hostid		=	$slavehost->id;
@@ -450,8 +451,8 @@ if ($action == 'doadd'){
 				$host2service->subscribe	=	1;
 				$DB->insert_record('mnet_host2service', $host2service);
 
-				// MNET subnetworking, without creating a new.
-				if(($submitteddata->mnet > 0) && ($submitteddata->mnet <= vmoodle_get_last_subnetwork_number())){
+				// MNET subnetworking, unless completely isolated
+				if ($submitteddata->mnet > 0){
 					vmoodle_bind_to_network($submitteddata, $newmnet_host);
 				}
 			}
@@ -794,6 +795,7 @@ if (($action == 'delete') || ($action == 'fulldelete')){
 			if(($vmoodle_host->deleted == 0)) {
 				$vmoodle_host->deleted	= 1;
 				$DB->update_record('mnet_host', $vmoodle_host);
+				/*
 				if($vmoodle->mnet == 0 || $vmoodle->mnet == -1) {										
 					$sqlrequest = 'DELETE
 								   FROM
@@ -809,6 +811,7 @@ if (($action == 'delete') || ($action == 'fulldelete')){
 						$message_object->style	=	'notifysuccess';
 					}
 				}
+				*/
 			}
 
 			if(($vmoodle->enabled == 1)){

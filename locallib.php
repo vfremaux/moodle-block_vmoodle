@@ -642,7 +642,7 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 }
 
 function vmoodle_destroy($vmoodledata){
-	global $DB;
+	global $DB, $OUTPUT;
 	
 	// Checks if paths commands have been properly defined in 'vconfig.php'.
 	if($vmoodledata->vdbtype == 'mysql') {
@@ -659,9 +659,11 @@ function vmoodle_destroy($vmoodledata){
 
 	$sql = "$dropstatement $vmoodledata->vdbname";
     debug_trace("destroy_database : executing drop sql");
-	if(!$DB->execute($sql)){
-	    print_error('noexecutionfor','block_vmoodle', $sql);
-		return false;
+
+	try{
+		$DB->execute($sql);
+	} catch(Exception $e) {
+	    echo $OUTPUT->notification('noexecutionfor', 'block_vmoodle', $sql);
 	}
 
 	// destroy moodledata
@@ -846,71 +848,74 @@ function vmoodle_bind_to_network($submitteddata, &$newmnet_host){
     debug_trace("step 4.4.2 : getting possible peers");
     $idnewblock = $DB->get_field('block_vmoodle', 'id', array('vhostname' => $submitteddata->vhostname));
 
-	// Retrieves the subnetwork member(s).
-	$subnetwork_hosts	= array();
-	$select = 'id != ? AND mnet = ? AND enabled = 1';
-	$subnetwork_members = $DB->get_records_select('block_vmoodle', $select, array($idnewblock, $submitteddata->mnet));
-
-	if(!empty($subnetwork_members)){
-        debug_trace("step 4.4.3 : preparing peers");
-		foreach($subnetwork_members as $subnetwork_member){
-			$temp_host	        = new stdClass();
-			$temp_host->wwwroot	= $subnetwork_member->vhostname;
-			$temp_host->name	= utf8_decode($subnetwork_member->name);
-			$subnetwork_hosts[]	= $temp_host;
+	// last mnet has been raised by one at step 3 so we add to network if less
+	if($submitteddata->mnet < vmoodle_get_last_subnetwork_number()){
+		// Retrieves the subnetwork member(s).
+		$subnetwork_hosts	= array();
+		$select = 'id != ? AND mnet = ? AND enabled = 1';
+		$subnetwork_members = $DB->get_records_select('block_vmoodle', $select, array($idnewblock, $submitteddata->mnet));
+	
+		if(!empty($subnetwork_members)){
+	        debug_trace("step 4.4.3 : preparing peers");
+			foreach($subnetwork_members as $subnetwork_member){
+				$temp_host	        = new stdClass();
+				$temp_host->wwwroot	= $subnetwork_member->vhostname;
+				$temp_host->name	= utf8_decode($subnetwork_member->name);
+				$subnetwork_hosts[]	= $temp_host;
+			}
 		}
-	}
-
-	// Member(s) of the subnetwork add the new host.
-	if (!empty($subnetwork_hosts)){
-        debug_trace("step 4.4.4 : bind peers");
-		$rpc_client = new Vmoodle_XmlRpc_Client();
-		$rpc_client->reset_method();
-		$rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
-        // authentication params
-		$rpc_client->add_param($USER->username, 'string');
-		$userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
-		$rpc_client->add_param($userhostroot, 'string');
-		$rpc_client->add_param($CFG->wwwroot, 'string');        			
-		// peer to bind to
-		$rpc_client->add_param((array)$newmnet_host, 'array');
-		$rpc_client->add_param($peerservices, 'array');
-
-		foreach($subnetwork_hosts as $subnetwork_host){
-            debug_trace("step 4.4.4.1 : bind to -> $subnetwork_host->wwwroot");
-			$temp_member = new vmoodle_mnet_peer();
-			$temp_member->set_wwwroot($subnetwork_host->wwwroot);
-			if (!$rpc_client->send($temp_member)){
-                echo $OUTPUT->notification(implode('<br />', $rpc_client->getErrors($temp_member)));
-                if (debugging()){
-                    echo '<pre>';
-                    var_dump($rpc_client);
-                    echo '</pre>';
-                }
-            }
-
-            debug_trace("step 4.4.4.1 : bind from <- $subnetwork_host->wwwroot");
-			$rpc_client_2 = new Vmoodle_XmlRpc_Client();
-			$rpc_client_2->reset_method();
-			$rpc_client_2->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
-            // authentication params
-			$rpc_client_2->add_param($USER->username, 'string');
+	
+		// Member(s) of the subnetwork add the new host.
+		if (!empty($subnetwork_hosts)){
+	        debug_trace("step 4.4.4 : bind peers");
+			$rpc_client = new Vmoodle_XmlRpc_Client();
+			$rpc_client->reset_method();
+			$rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
+	        // authentication params
+			$rpc_client->add_param($USER->username, 'string');
 			$userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
-			$rpc_client_2->add_param($userhostroot, 'string');
-			$rpc_client_2->add_param($CFG->wwwroot, 'string');
-			// peer to bind to        			
-			$rpc_client_2->add_param((array)$temp_member, 'array');
-		    $rpc_client_2->add_param($services, 'array');
-
-			if (!$rpc_client_2->send($newmnet_host)){
-                echo $OUTPUT->notification(implode('<br />', $rpc_client_2->getErrors($newmnet_host)));
-                if (debugging()){
-                    echo '<pre>';
-                    var_dump($rpc_client_2);
-                    echo '</pre>';
-                }
-            }
-            unset($rpc_client_2); // free some resource
+			$rpc_client->add_param($userhostroot, 'string');
+			$rpc_client->add_param($CFG->wwwroot, 'string');        			
+			// peer to bind to
+			$rpc_client->add_param((array)$newmnet_host, 'array');
+			$rpc_client->add_param($peerservices, 'array');
+	
+			foreach($subnetwork_hosts as $subnetwork_host){
+	            debug_trace("step 4.4.4.1 : bind to -> $subnetwork_host->wwwroot");
+				$temp_member = new vmoodle_mnet_peer();
+				$temp_member->set_wwwroot($subnetwork_host->wwwroot);
+				if (!$rpc_client->send($temp_member)){
+	                echo $OUTPUT->notification(implode('<br />', $rpc_client->getErrors($temp_member)));
+	                if (debugging()){
+	                    echo '<pre>';
+	                    var_dump($rpc_client);
+	                    echo '</pre>';
+	                }
+	            }
+	
+	            debug_trace("step 4.4.4.1 : bind from <- $subnetwork_host->wwwroot");
+				$rpc_client_2 = new Vmoodle_XmlRpc_Client();
+				$rpc_client_2->reset_method();
+				$rpc_client_2->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
+	            // authentication params
+				$rpc_client_2->add_param($USER->username, 'string');
+				$userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
+				$rpc_client_2->add_param($userhostroot, 'string');
+				$rpc_client_2->add_param($CFG->wwwroot, 'string');
+				// peer to bind to        			
+				$rpc_client_2->add_param((array)$temp_member, 'array');
+			    $rpc_client_2->add_param($services, 'array');
+	
+				if (!$rpc_client_2->send($newmnet_host)){
+	                echo $OUTPUT->notification(implode('<br />', $rpc_client_2->getErrors($newmnet_host)));
+	                if (debugging()){
+	                    echo '<pre>';
+	                    var_dump($rpc_client_2);
+	                    echo '</pre>';
+	                }
+	            }
+	            unset($rpc_client_2); // free some resource
+			}
 		}
 	}
 
@@ -942,7 +947,6 @@ function vmoodle_bind_to_network($submitteddata, &$newmnet_host){
 	$rpc_client = new Vmoodle_XmlRpc_Client();
 	$rpc_client->reset_method();
 	$rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
-    // authentication params
 	$rpc_client->add_param($USER->username, 'string');
 	$userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
 	$rpc_client->add_param($userhostroot, 'string');
@@ -1010,8 +1014,8 @@ function vmoodle_get_vmanifest($templatename){
 function vmoodle_get_last_subnetwork_number(){
 	global $DB;
 
-	$nbmaxsubnetwork = $DB->get_record_select('block_vmoodle', '', array(), 'MAX(mnet) AS mnet');
-	return $nbmaxsubnetwork->mnet;
+	$nbmaxsubnetwork = $DB->get_field('block_vmoodle', 'MAX(mnet)', array());
+	return $nbmaxsubnetwork;
 
 }
 
