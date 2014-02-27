@@ -146,6 +146,7 @@ $string['csvencoding'] = 'CSV Encoding';
 $string['csvencoding_desc'] = 'Choose encoding for the nodelist.csv file';
 $string['mnet'] = 'MNET';
 $string['mnetadmin_name'] = 'Meta-administration service';
+$string['mnetadmin_description'] = 'Remote administration from a master Moodle';
 $string['mnetkeyautorenew'] = 'Activation';
 $string['mnetkeyautorenew_desc'] = 'Enables the global key refreshing task';
 $string['mnetkeyautorenewgap'] = 'Detect lookback delay';

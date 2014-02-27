@@ -48,19 +48,22 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = ''){
 			'vdbpass' => 1,
 			);
 
+	$optional = array(
+			'description' => 1,
+			'vdbhost' => 1,
+			'vdbpersist' => 1,
+			'vtemplate' => 1,
+			'services' => 1,
+			'mnet' => 1);
+
 	$optionalDefaults = array(
 			'mnet' => 1, 
 			'vdbtype' => 'mysqli', 
 			'vdbhost' => $CFG->dbhost,
 			'vdbpersist' => $CFG->dboptions['dbpersist'],
 			'vdbprefix' => 'mdl_',
-			'vtemplate' => '');
-
-	$optional = array(
-			'description' => 1,
-			'vdbhost' => 1,
-			'vdbpersist' => 1,
-			'vtemplate' => 1);
+			'vtemplate' => '',
+			'services' => 'default');
 
 	$patterns = array();
 	$metas = array();

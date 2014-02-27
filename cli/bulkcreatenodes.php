@@ -9,6 +9,9 @@
 	require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
 	require_once('clilib.php');         			// vmoodle cli only functions
 
+    // fake an admin identity for all the process
+	$USER = get_admin();
+
 	// now get cli options
 	list($options, $unrecognized) = cli_get_params(
 	    array(
