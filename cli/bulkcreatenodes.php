@@ -15,21 +15,22 @@
 	// now get cli options
 	list($options, $unrecognized) = cli_get_params(
 	    array(
-	        'non-interactive'   => false,
+	        'interactive'   	=> false,
 	        'help'              => false,
 	        'config'            => false,
-	        'nodes'            => '',
-	        'lint'            => false
+	        'nodes'             => '',
+	        'lint'              => false
 	    ),
 	    array(
 	        'h' => 'help',
+	        'i' => 'interactive',
 	        'c' => 'config',
 	        'n' => 'nodes',
 	        'l' => 'lint'
 	    )
 	);
 	
-	$interactive = empty($options['non-interactive']);
+	$interactive = !empty($options['interactive']);
 	
 	if ($unrecognized) {
 	    $unrecognized = implode("\n  ", $unrecognized);
@@ -42,10 +43,11 @@
 	Please note you must execute this script with the same uid as apache!
 	
 	Options:
-	--non-interactive     No interactive questions or confirmations
+	--interactive     	  Blocks on each step and waits for input to continue
 	-h, --help            Print out this help
 	-c, --config          Define an external config file
 	-n, --nodes           A node descriptor CSV file
+	-l, --lint            Decodes node file and give a report on nodes to be created.
 	
 	Example:
 	\$sudo -u www-data /usr/bin/php blocks/vmoodle/cli/bulkcreatenodes.php
@@ -96,6 +98,8 @@
 	mtrace(get_string('clistart', 'block_vmoodle'));
 
 	foreach($nodes as $n){
+
+		mtrace(get_string('climakenode', 'block_vmoodle', $n->vhostname));
 		
 		$n->forcedns = 0;
 		
@@ -125,6 +129,15 @@
 			$return = include $CFG->dirroot.'/blocks/vmoodle/controller.management.php';
 			if ($return == -1){
 				cli_error(get_string('cliprocesserror', 'block_vmoodle'));
+			}
+			if ($interactive){
+				$input = readline("Continue (y/n|r) ?\n");
+				if ($input == 'r' || $input == 'R'){
+					$vmoodlestep--;
+				} elseif ($input == 'n' || $input == 'N'){
+					echo "finishing\n";
+					exit;
+				}
 			}
 		}
 	}	

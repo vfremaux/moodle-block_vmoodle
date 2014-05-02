@@ -12,7 +12,16 @@ function vmoodle_get_hostname(){
 	} else {
 		$protocol = 'http';
 	}
-	
+
+	// this happens when a cli script needs to force one Vmoodle execution	
+	// this will force vmoodle switch using a hard defined constant
+	if (defined('CLI_VMOODLE_OVERRIDE')){
+		$CFG->vmoodleroot = CLI_VMOODLE_OVERRIDE;
+		$CFG->vmoodlename = preg_replace('/https?:\/\//', '', CLI_VMOODLE_OVERRIDE);
+		echo 'resolving name to : '.$CFG->vmoodlename."\n";
+		return;
+	}
+		
 	$CFG->vmoodleroot = "{$protocol}://".@$_SERVER['HTTP_HOST'];
 	$CFG->vmoodlename = @$_SERVER['HTTP_HOST'];
 	if (empty($CFG->vmoodlename)){ // try again

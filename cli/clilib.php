@@ -1,5 +1,29 @@
 <?php
 
+/*
+// TODO : integrate some of LDAP/CAS configuration field overrides in
+(part of LDAP implementation)
+auth/ldap	host_url
+auth/ldap	contexts	 
+auth/ldap	user_type
+auth/ldap	user_attribute	 
+auth/ldap	search_sub
+auth/ldap	opt_deref
+auth/ldap	preventpassindb
+auth/ldap	bind_dn
+auth/ldap	bind_pw
+auth/ldap	objectclass 
+auth/ldap	memberattribute	 
+auth/ldap	memberattribute_isdn	 
+auth/ldap	creators
+auth/ldap	create_context
+auth/ldap	auth_user_create
+auth/ldap	changepasswordurl
+auth/ldap	removeuser
+
+(part of CAS implementation)
+*/
+
 /**
 * Opens and parses/checks a VMoodle instance definition file
 * @param string $location 
@@ -16,9 +40,9 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = ''){
 	
 	// decode file
 	$csv_encode = '/\&\#44/';
-	if (isset($CFG->tool_sync_csvseparator)) {
+	if (isset($CFG->block_vmoodle_csvseparator)) {
 		$csv_delimiter = '\\' . $CFG->block_vmoodle_csvseparator;
-		$csv_delimiter2 = $CFG->tool_block_vmoodle;
+		$csv_delimiter2 = $CFG->block_vmoodle_csvseparator;
 
 		if (isset($CFG->CSV_ENCODE)) {
 			$csv_encode = '/\&\#' . $CFG->CSV_ENCODE . '/';
@@ -44,7 +68,7 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = ''){
 			'shortname' => 1,
 			'vdatapath' => 1,
 			'vdbname' => 1,
-			'vdbuser' => 1,
+			'vdblogin' => 1,
 			'vdbpass' => 1,
 			);
 
@@ -83,7 +107,7 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = ''){
 		$text = fgets($fp, 1024);
 		$i++;
 	}
-
+	
 	$headers = explode($csv_delimiter2, $text);
 
 	// check for valid field names
@@ -96,8 +120,8 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = ''){
 			return;
 		}
 
-		if (isset($required[$h])) {
-			$required[$h] = 0;
+		if (isset($required[trim($h)])) {
+			$required[trim($h)] = 0;
 		}
 	}
 
@@ -164,6 +188,12 @@ function vmoodle_is_empty_line_or_format(&$text, $resetfirst = false){
 	if ($CFG->block_vmoodle_encoding != 'UTF-8'){
 		$text = utf8_encode($text);
 	}
+
+	// last chance
+	if ('ASCII' == mb_detect_encoding($text)){
+		$text = utf8_encode($text);
+	}
 	
+	// check the text is empty or cmment line and answer true if it is
 	return preg_match('/^$/', $text) || preg_match('/^(\(|\[|-|#|\/| )/', $text);
 }

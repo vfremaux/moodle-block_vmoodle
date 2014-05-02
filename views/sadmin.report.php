@@ -38,6 +38,7 @@
 				'<tbody>' .
 					'<tr>' .
 						'<th scope="col" class="header c0" style="vertical-align: top; text-align: left; width: 20%; white-space: nowrap;" colspan="2"><b>'.get_string('successfullplatforms', 'block_vmoodle').'</b></th>' .
+						'<th scope="col" class="header c1" style="vertical-align: top; text-align: left; white-space: nowrap;">&nbsp;</th>' .
 					'</tr>';
 		foreach($successfull_platforms as $host => $platform) {
 			echo '<tr class="r'.$i.'">' .

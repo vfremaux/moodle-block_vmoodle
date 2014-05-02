@@ -133,23 +133,18 @@ class Vmoodle_Host_Form extends moodleform {
 		// Button for testing datapath.
 		$mform->addElement('button', 'testdatapath', get_string('testdatapath', 'block_vmoodle'), 'onclick="opendatapathpopup(\''.$CFG->wwwroot.'\'); return true;"');
 
-		// MNET activation.
-		/*
-		$mform->addElement('select', 'mnetenabled', get_string('mnetenabled', 'block_vmoodle'), $noyesarray, 'onchange="switcherMNET();"');
-		$mform->addHelpButton('mnetenabled', 'mnet', 'block_vmoodle');
-		$mform->setDefault('mnetenabled', '1');
-		*/
-
 		// MultiMNET.
 		$subnetworks = array('-1' => get_string('nomnet', 'block_vmoodle'));
 		$subnetworks['0'] = get_string('mnetfree', 'block_vmoodle');
 		$subnetworksrecords = $DB->get_records_sql('select * from {block_vmoodle} where mnet > 0  order by mnet');
 		$newsubnetwork = 1;
 		if(!empty($subnetworksrecords)){
+			$maxmnet = 0;
 			foreach ($subnetworksrecords as $subnetworksrecord) {
 				$subnetworks[$subnetworksrecord->mnet] = $subnetworksrecord->mnet;
+				$maxmnet = max($maxmnet, $subnetworksrecord->mnet);
 			}
-			$newsubnetwork = array_pop($subnetworksrecords)->mnet + $newsubnetwork;
+			$newsubnetwork = $maxmnet + 1;
 		}
 		$subnetworks[$newsubnetwork] = $newsubnetwork.' ('.get_string('mnetnew', 'block_vmoodle').')';
 		$mform->addElement('select', 'mnet', get_string('multimnet', 'block_vmoodle'), $subnetworks, 'onchange="switcherServices(\''.$newsubnetwork.'\'); return true;"');
@@ -164,15 +159,6 @@ class Vmoodle_Host_Form extends moodleform {
 		$mform->addElement('select', 'services', get_string('servicesstrategy', 'block_vmoodle'), $services_strategies);
 		$mform->addHelpButton('services', 'services', 'block_vmoodle');
 		$mform->setType('services', PARAM_TEXT);
-
-		// CRON (linux).
-		/**
-		// Obsolete since vcron.php
-		if ($CFG->ostype != 'WINDOWS') {
-			$mform->addElement('text', 'crontab', get_string('crontab', 'block_vmoodle'), $size_input_text_big);
-			$mform->addHelpButton('crontab', 'crontab', 'block_vmoodle');
-		}
-		**/
 
 		if($this->isInAddMode()){
 			// Template.
@@ -201,67 +187,6 @@ class Vmoodle_Host_Form extends moodleform {
 			$mform->addRule('vdbprefix', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
 			$mform->addRule('vdatapath', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
 		}
-
-		// If adding and default configuration (automated schema).
-		/*
-		if($this->isInAddMode() && isset($this->platform_form)) {
-
-			$mform->setDefault('vhostname',		$this->platform_form->vhostname);
-			$mform->setDefault('vdbtype',		$this->platform_form->vdbtype);
-			$mform->setDefault('vdbhost',		$this->platform_form->vdbhost);
-			$mform->setDefault('vdblogin',		$this->platform_form->vdblogin);
-			$mform->setDefault('vdbpass',		$this->platform_form->vdbpass);
-			$mform->setDefault('vdbname',		$this->platform_form->vdbname);
-			$mform->setDefault('vdbprefix',		$this->platform_form->vdbprefix);
-			$mform->setDefault('vdbpersist',	$this->platform_form->vdbpersist);
-			$mform->setDefault('vdatapath', 	$this->platform_form->vdatapath);
-
-			// Try to get crontab (Linux).
-			if ($CFG->ostype != 'WINDOWS'){
-				$crontabcmd = escapeshellcmd('crontab -l');
-				$mform->setDefault('crontab',	$crontabcmd);
-			}
-		}
-
-		// If editing.
-		if($this->isInEditMode() && isset($this->platform_form)) {
-
-			 * Settings the data in the form.
-			// Host's id.
-			$mform->setDefault('id',			$this->platform_form->id);
-			// Name.
-			$mform->setDefault('name',			$this->platform_form->name);
-			// Description.
-			$mform->setDefault('description',	$this->platform_form->description);
-			// Database type.
-			$mform->setDefault('vdbtype',		$this->platform_form->vdbtype);
-			// Database host.
-			$mform->setDefault('vdbhost',		$this->platform_form->vdbhost);
-			// Database login.
-			$mform->setDefault('vdblogin',		$this->platform_form->vdblogin);
-			// Database password.
-			$mform->setDefault('vdbpass',		$this->platform_form->vdbpass);
-			// Database name.
-			$mform->setDefault('vdbname',		$this->platform_form->vdbname);
-			// Table's prefix.
-			$mform->setDefault('vdbprefix',		$this->platform_form->vdbprefix);
-			// Connection persistance.
-			$mform->setDefault('vdbpersist',	$this->platform_form->vdbpersist);
-			// Connection persistance.
-			$mform->setDefault('vdatapath',		$this->platform_form->vdatapath);
-
-			// MNET activation.
-			if($this->platform_form->mnet > -1) {
-				$mform->setDefault('mnetenabled',	'yes');
-			}
-			else {
-				$mform->setDefault('mnetenabled',	'no');
-			}
-
-			// MultiMNET.
-			$mform->setDefault('multimnet',		$this->platform_form->mnet);
-		}
-		*/
 	}
 
 	/**
