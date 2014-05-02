@@ -2,10 +2,10 @@
 
 // Capabilities
 
-$string['vmoodle:execute'] = 'Execute meta-administration commands';
-$string['vmoodle:managevmoodles'] = 'Manage moodle satellites';
-$string['vmoodle:myaddinstance'] = 'Can add instance to my pages';
-$string['vmoodle:addinstance'] = 'Can add instance';
+$string['vmoodle:execute'] = 'Execute meta-administration commands'; // @CORE
+$string['vmoodle:managevmoodles'] = 'Manage moodle satellites'; // @CORE
+$string['vmoodle:myaddinstance'] = 'Can add instance to my pages'; // @CORE
+$string['vmoodle:addinstance'] = 'Can add instance'; // @CORE
 
 // Block strings
 
@@ -37,6 +37,7 @@ $string['badbootstraphost'] = 'Error when doing bootstrap for the MNET host (key
 $string['badbootstrapnewhost'] = 'Error when doing bootstrap for the new MNET host (keys, vhosting, or others).';
 $string['badbothblockhost'] = 'Host with \'wwwroot\' equals to block\'s \'vhostname\' cannot be find.';
 $string['badclientuser'] = 'Wrong client user';
+$string['badnodefile'] = 'Bad node file {$a}';
 $string['badconnection'] = 'Error when connecting to database.';
 $string['baddatabasenamealreadyused'] = 'This database name is already used.';
 $string['baddatabasenamecoherence'] = 'Please check the database name consistency.';
@@ -62,7 +63,14 @@ $string['categoryignored'] = 'The category {$a} has been ignored:';
 $string['categorywrongname'] = 'The category\'s name is wrong.';
 $string['categorywrongpluginname'] = 'The plugin\'s name linked to the category {$a} is wrong.';
 $string['certificate'] = 'Certificate';
+$string['climakestep'] = 'Make step {$a}';
+$string['cliusingtemplate'] = 'Make Node using template {$a}';
+$string['climissingtemplateskip'] = 'Template files not found for {$a}';
+$string['clistart'] = 'Starting cli =';
+$string['climakenode'] = 'Making node {$a}';
+$string['cliprocesserror'] = 'An unrecoverable error occured. Aborting.';
 $string['closewindow'] = 'Close the window';
+$string['clinodeexistsskip'] = 'Node {$a} exists already. Ignored.';
 $string['commanddescription'] = 'Description';
 $string['commandemptydescription'] = 'The command\'s description is empty.';
 $string['commandemptyname'] = 'The command\'s name is empty.';
@@ -73,6 +81,7 @@ $string['commands'] = 'Commands';
 $string['commandsadministration'] = 'Commands administration:';
 $string['commandwrongparametertype'] = 'Parameters of the command {$a} aren\'t supported types.';
 $string['confirmdelete'] = 'Do you really want to delete (disable) this host ?';
+$string['confirmfulldelete'] = 'Do you really want to destroy (definitive) this host ?';
 $string['confirmedit'] = 'All changes are under the responsibility of the administrator, particularly in case of changing database name, tables prefix and path for "moodledata". Do you want to continue ?';
 $string['connectionok'] = 'Connection is OK';
 $string['contains'] = 'contains';
@@ -88,8 +97,8 @@ $string['crontab'] = 'CRON tasks table ';
 $string['databasecreated'] = 'Database created ';
 $string['databaseloaded'] = 'Database initialized ';
 $string['databasesetup'] = 'Database configurated ';
-$string['dataexchange_name'] = 'Generic data exchange'; // from vmoodleadminset_generic
-$string['dataexchange_description'] = 'Opens functions to exchange static text values on a system to system basis';  // from vmoodleadminset_generic
+$string['dataexchange_name'] = 'Generic data exchange'; // from vmoodleadminset_generic @CORE
+$string['dataexchange_description'] = 'Opens functions to exchange static text values on a system to system basis';  // from vmoodleadminset_generic @CORE
 $string['datapath'] = 'Data path';
 $string['datapathavailable'] = 'Data path is available';
 $string['datapathnotavailable'] = 'Data path is NOT available';
@@ -121,6 +130,7 @@ $string['failedplatforms'] = 'Failed platforms:';
 $string['filter'] = 'Filter';
 $string['fixcommand'] = 'Fix command';
 $string['forcedns'] = 'Force deployment even if DNS resolution is not available.';
+$string['fulldeletehost'] = 'Destroy all host data';
 $string['generateconfigs'] = 'Generate configuration files';
 $string['generatedconfigs'] = 'Config generated: {$a}';
 $string['hostexists'] = 'Host exists';
@@ -133,9 +143,12 @@ $string['lastcron'] = 'Last cron';
 $string['lastcrongap'] = '&Delta;';
 $string['manualcommand'] = 'Manual command';
 $string['mastermnetnotice'] = 'The moodle network (mnet) is not enabled on the master host. The virtual moodle will continue install without the mnet activation. You may bind manually the network feature by yourself after deployment';
+$string['massdeployment'] = 'Massive deployment';
+$string['csvencoding'] = 'CSV Encoding';
+$string['csvencoding_desc'] = 'Choose encoding for the nodelist.csv file';
 $string['mnet'] = 'MNET';
-$string['mnetadmin_description'] = 'En publiant ce service, vous autorisez la plate-forme à être administrée par la méta-administration du site nationnal.<br/><br/>En s\'abonnant à ce service, vous pouvez administrer les autres plates-formes du réseau.<br/><br/>';
 $string['mnetadmin_name'] = 'Meta-administration service';
+$string['mnetadmin_description'] = 'Remote administration from a master Moodle';
 $string['mnetkeyautorenew'] = 'Activation';
 $string['mnetkeyautorenew_desc'] = 'Enables the global key refreshing task';
 $string['mnetkeyautorenewgap'] = 'Detect lookback delay';
@@ -180,7 +193,7 @@ $string['parameterinternalfunctionnotexists'] = 'The function "{$a->function_nam
 $string['parameterinternalparameternotgiven'] = 'The parameter "{$a->parameter_need}" of parameter "{$a->parameter_name}" isn\'t given.';
 $string['parametervaluenotdefined'] = 'The value of parameter "{$a}" is not defined.';
 $string['parameterwrongdefaultvalue'] = 'The default value of parameter "{$a}" is wrong.';
-$string['pluginname'] = 'VMoodle';
+$string['pluginname'] = 'VMoodle'; // @CORE
 $string['pgsqlcmd'] = 'Postgres command location';
 $string['pgsqldumpcmd'] = 'Postgres sqldump command location';
 $string['plateformreactivate'] = 'Platform reactivated';
@@ -217,8 +230,10 @@ $string['runvcron'] = 'Run VCRon manually';
 $string['selected'] = 'Selected';
 $string['services'] = 'Services';
 $string['servicesformselection'] = 'Default services pattern';
+$string['mainservicesformselection'] = 'Services pattern to master Moodle<br/>This pattern is applied to the new node. the mirrored pattern is applied to the master node (this moodle)';
+$string['peerservicesformselection'] = 'Services pattern to subnet peers<br/>This pattern is applied to the new node. the mirrored pattern is applied to all peers in the subnetwork';
 $string['servicesstrategy'] = 'Services strategy';
-$string['servicesstrategy_desc'] = 'Servioce strategy that will be applied to the new host at bootup';
+$string['servicesstrategy_desc'] = 'Service strategy that will be applied to the new host at bootup';
 $string['servicesstrategydefault']	= '"Minimal services" strategy (SSO for remote administration only)';
 $string['servicesstrategysubnetwork'] = 'Subnetwork Template services strategy';
 $string['shortnameexists'] = 'Shortname exists already';
@@ -289,11 +304,12 @@ $string['vtemplate'] = 'Vmoodle template';
 $string['withmessage'] = 'with message "{$a}"';
 $string['withoutmessage'] = 'without message';
 $string['wrongplugin'] = 'Wrong plugin.';
+$string['wwwrootexceedscsrlimits'] = 'The choosen wwwroot exceeds 64 chars length. This is not compatible with MNET openssl CSR requirements.';
 
 
 /*** Help Strings ***/
-$string['name'] = 'Name';
-$string['name_help'] = '
+$string['name'] = 'Name'; //@CORE
+$string['name_help'] = '  //@CORE
 <p><b>Public Name of the Instance</b></p>
 
 <p>This name is the apparent instance name as known on the master
@@ -301,8 +317,8 @@ moodle side, and will serve as preset for the Moodle instance name. This
 name can be updated after instance creation.</p>
 ';
 
-$string['shortname'] = 'Short Name';
-$string['shortname_help'] = '
+$string['shortname'] = 'Short Name'; // @CORE
+$string['shortname_help'] = ' // @CORE
 <p><b>Shortname for the Instance</b></p>
 
 <p>The shortname given here will be preset as shortname of the
@@ -312,15 +328,15 @@ instance is created.</p>
 <p>The short name MUST be a token WITHOUT SPACES.</p>
 ';
 
-$string['description'] = 'Description';
-$string['description_help'] = '
+$string['description'] = 'Description'; // @CORE
+$string['description_help'] = ' // @CORE
 <p>This text will be setup as base moodle description in the local
 instance datamodel. It may be updated after instance creation.</p>
 ';
  
 
-$string['vhostname'] = 'Hostname';
-$string['vhostname_help']= '
+$string['vhostname'] = 'Hostname'; // @CORE
+$string['vhostname_help'] = ' // @CORE
 <p><b>Instance Effective Hostname</b></p>
 
 <p>This field defines the apparent Web name of the new instance. Generally, you should use a %%INSTANCE%% metatag that will be replaced with the instance shortname. This will allow each new instance to be independantly identified on the Web. The atual subdomain will be automatically constructed using the lowercased shortname.</p>
@@ -339,14 +355,14 @@ $string['vhostname_help']= '
 <p>Other binding solutions might be possible, but we do not have evaluation for them.</p>
 ';
 
-$string['vdbhost_help']='<p><b>Instance Local Database</b></p>
+$string['vdbhost_help'] = '<p><b>Instance Local Database</b></p> // @CORE
 
 <p>Must contain a valid hostname:port pattern where the database
 holding the instance\'s own datamodel will run. This host must have a
 suitable database, and must have network connectivity from the master
 moodle website server.</p>';
 
-$string['vdbtype_help']='
+$string['vdbtype_help'] = ' //@CORE
 <p><b>Instance Database Type</b></p>
 
 <p>The vmoodle block has implementation for MySQL and PostgreSQL
@@ -355,7 +371,7 @@ unique master moodle. Other databases supported by the standard
 distribution of Moodle are not supported for virtualization.</p>
 ';
 
-$string['vdbname_help']='
+$string['vdbname_help'] = ' // @CORE
 <p><b>Instance Database Name</b></p>
 
 <p>Allows database name definition for the created instance. This
@@ -363,14 +379,14 @@ name CANNOT be updated. It is actually preset to a default based on the
 instance shortname.</p>
 ';
 
-$string['vdbpersist_help']='
+$string['vdbpersist_help'] = ' // @CORE
 <p><b>Database Connection Persistance</b></p>
 
 <p>This dropdown allows selecting if the instance may use persistent
 connection to its own database. This parameter can be updated.</p>
 ';
 
-$string['vdatapath_help']='
+$string['vdatapath_help'] = ' // @CORE
 <p><b>Physical File System for the Instance</b></p>
 
 <p>Any user file will be uploaded within a single data volume
@@ -386,7 +402,7 @@ instances are writable by the master server.</p>
 instance is created.</p>
 ';
 
-$string['mnet_help']='
+$string['mnet_help'] = ' // @CORE
 <p><b>MNET Activation of the Instance</b></p>
 
 <p>New virtual hosts can be integrated directly in the MNET master
@@ -398,7 +414,7 @@ By default, all the instances activating the MNET network will be in the
 same MNET network.</p>
 ';   
    
-$string['services_help']='
+$string['services_help'] = ' // @CORE
 <p><b>Services strategy</b></p>
 
 <p>This field allows services strategy definition, when defining a
@@ -415,7 +431,7 @@ necessary to remember that all members of a subnetwork are synchronized
 in terms of services.</p>
 ';   
 
-$string['vtemplate_help']='
+$string['vtemplate_help'] = ' // @CORE
 <p><b>Vmoodle Template</b></p>
 
 <p>When a VMoodle host is instantiated, the contextual part of the

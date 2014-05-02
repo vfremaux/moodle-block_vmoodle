@@ -51,7 +51,12 @@ abstract class plugin_remote_control{
 	function __construct($fqplugin){
 		$this->fqplugin = $fqplugin;
 		
-		list($this->type, $this->plugin) = explode('/', $fqplugin);
+		if (strstr('/', $fqplugin) !== false){
+			list($this->type, $this->plugin) = explode('/', $fqplugin);
+		} else {
+			$this->type = 'mod';
+			$this->plugin = $fqplugin;
+		}
 	}
 	
 	abstract function action($action);

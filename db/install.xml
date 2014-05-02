@@ -8,9 +8,9 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="name"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="shortname"/>
-        <FIELD NAME="shortname" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="name" NEXT="description"/>
+        <FIELD NAME="shortname" TYPE="char" LENGTH="60" NOTNULL="false" SEQUENCE="false" PREVIOUS="name" NEXT="description"/>
         <FIELD NAME="description" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" PREVIOUS="shortname" NEXT="vhostname"/>
-        <FIELD NAME="vhostname" TYPE="char" LENGTH="80" NOTNULL="false" SEQUENCE="false" PREVIOUS="description" NEXT="vdbtype"/>
+        <FIELD NAME="vhostname" TYPE="char" LENGTH="120" NOTNULL="false" SEQUENCE="false" PREVIOUS="description" NEXT="vdbtype"/>
         <FIELD NAME="vdbtype" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="mysql" SEQUENCE="false" PREVIOUS="vhostname" NEXT="vdbhost"/>
         <FIELD NAME="vdbhost" TYPE="char" LENGTH="80" NOTNULL="true" DEFAULT="localhost" SEQUENCE="false" PREVIOUS="vdbtype" NEXT="vdblogin"/>
         <FIELD NAME="vdblogin" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="root" SEQUENCE="false" PREVIOUS="vdbhost" NEXT="vdbpass"/>

@@ -40,9 +40,8 @@ if ($ADMIN->fulltree) {
 		foreach ($subnetworksrecords as $subnetworksrecord) {
 			$subnetworks[$subnetworksrecord->mnet] = $subnetworksrecord->mnet;
 		}
-		$newsubnetwork = array_pop($subnetworksrecords)->mnet + $newsubnetwork;
 	}
-	$subnetworks[$newsubnetwork] = $newsubnetwork.' ('.get_string('mnetnew', 'block_vmoodle').')';
+	$subnetworks['NEW'] = get_string('mnetnew', 'block_vmoodle');
 	$settings->add(new admin_setting_configselect('block_vmoodle_mnet', get_string('multimnet', 'block_vmoodle'), get_string('multimnet_desc', 'block_vmoodle'), 0, $subnetworks));
 
 	// Services strategy.
@@ -65,5 +64,11 @@ if ($ADMIN->fulltree) {
 	$settings->add(new admin_setting_configtext('block_vmoodle_cmd_mysqldump', get_string('mysqldumpcmd', 'block_vmoodle'), get_string('systempath_desc', 'block_vmoodle'), '/usr/bin/mysqldump'));
 	$settings->add(new admin_setting_configtext('block_vmoodle_cmd_pgsql', get_string('pgsqlcmd', 'block_vmoodle'), get_string('systempath_desc', 'block_vmoodle'), '/usr/bin/psql'));
 	$settings->add(new admin_setting_configtext('block_vmoodle_cmd_pgsqldump', get_string('pgsqldumpcmd', 'block_vmoodle'), get_string('systempath_desc', 'block_vmoodle'), '/usr/bin/pg_dump'));
+
+	$settings->add(new admin_setting_heading('massdeployment', get_string('massdeployment', 'block_vmoodle'), ''));
+
+	$encodingopts[0] = 'UTF-8';
+	$encodingopts[1] = 'ISO-5889-1';
+	$settings->add(new admin_setting_configselect('block_vmoodle_encoding', get_string('csvencoding', 'block_vmoodle'), get_string('csvencoding_desc', 'block_vmoodle'), 1, $encodingopts));
 }
 

@@ -448,13 +448,13 @@ function vmoodle_load_database_from_template($vmoodledata) {
     
 	// Checks if paths commands have been properly defined in 'vconfig.php'.
 	if($vmoodledata->vdbtype == 'mysql') {
-		$createstatement = 'CREATE DATABASE'; 
+		$createstatement = 'CREATE DATABASE %DATABASE% DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ';
 	}
     else if($vmoodledata->vdbtype == 'mysqli') {
-        $createstatement = 'CREATE DATABASE';            
+        $createstatement = 'CREATE DATABASE %DATABASE% DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ';
     }
 	else if($vmoodledata->vdbtype == 'postgres') {
-		$createstatement = 'CREATE SCHEMA'; 
+		$createstatement = 'CREATE SCHEMA %DATABASE% '; 
 	}
 
 	// SQL files paths.
@@ -490,7 +490,7 @@ function vmoodle_load_database_from_template($vmoodledata) {
 
 	// Creates the new database before importing the data.
 
-	$sql = "$createstatement $vmoodledata->vdbname";
+	$sql = str_replace('%DATABASE%', $vmoodledata->vdbname, $createstatement);
     debug_trace("load_database_from_dump : executing creation sql");
 	if(!$DB->execute($sql)){
 	    print_error('noexecutionfor','block_vmoodle', $sql);
@@ -504,6 +504,12 @@ function vmoodle_load_database_from_template($vmoodledata) {
 
 	// Execute the command.
     debug_trace("load_database_from_dump : executing feeding sql");
+
+	if (!defined('CLI_SCRIPT')){
+		putenv('LANG=en_US.utf-8'); 
+	}
+	// ensure utf8 is correctly handled by php exec()
+	// @see http://stackoverflow.com/questions/10028925/call-a-program-via-shell-exec-with-utf-8-text-input
 
 	exec($import, $output, $return);
 
@@ -542,11 +548,12 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 	$separator = DIRECTORY_SEPARATOR;
 
     debug_trace('fixing_database ; opening setup script file');
-	if (!$FILE = fopen($temporarysetup_path, 'w')){
+	if (!$FILE = fopen($temporarysetup_path, 'wb')){
 	    print_error('couldnotwritethesetupscript', 'block_vmoodle');
 	    return false;
 	}
 	$PREFIX = $vmoodledata->vdbprefix;
+	$vmoodledata->description = str_replace("'", "''", $vmoodledata->description);
 	// setup moodle name and description
 	fwrite($FILE, "UPDATE {$PREFIX}course SET fullname='{$vmoodledata->name}', shortname='{$vmoodledata->shortname}', summary='{$vmoodledata->description}' WHERE category = 0 AND id = 1;\n");
 
@@ -581,24 +588,24 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
         /** we need :
     	* disable mnet
     	*/
-        fwrite($FILE, "UPDATE {$PREFIX}config SET value = 'off' WHERE name = 'mnet_dispatcher_mode';\n\n");
+        fputs($FILE, "UPDATE {$PREFIX}config SET value = 'off' WHERE name = 'mnet_dispatcher_mode';\n\n");
     } else { // ALL OTHER CASES
     	/** we need : 
     	* enable mnet
     	* push our master identity in mnet_host table
     	*/
-        fwrite($FILE, "UPDATE {$PREFIX}config SET value = 'strict' WHERE name = 'mnet_dispatcher_mode';\n\n");
-	    fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host (wwwroot, ip_address, name, public_key, applicationid, public_key_expires) VALUES ('{$this_as_host->wwwroot}', '{$this_as_host->ip_address}', '{$SITE->fullname}', '{$this_as_host->public_key}', {$this_as_host->applicationid}, '{$this_as_host->public_key_expires}');\n\n");
+        fputs($FILE, "UPDATE {$PREFIX}config SET value = 'strict' WHERE name = 'mnet_dispatcher_mode';\n\n");
+	    fputs($FILE, "INSERT INTO {$PREFIX}mnet_host (wwwroot, ip_address, name, public_key, applicationid, public_key_expires) VALUES ('{$this_as_host->wwwroot}', '{$this_as_host->ip_address}', '{$SITE->fullname}', '{$this_as_host->public_key}', {$this_as_host->applicationid}, '{$this_as_host->public_key_expires}');\n\n");
 
-    	fwrite($FILE, "--\n-- Enable the service 'mnetadmin, sso_sp and sso_ip' with host which creates this host.  \n--\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'mnetadmin'), 1, 0);\n\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_sp'), 1, 0);\n\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_idp'), 0, 1);\n\n");
+    	fputs($FILE, "--\n-- Enable the service 'mnetadmin, sso_sp and sso_ip' with host which creates this host.  \n--\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'mnetadmin'), 1, 0);\n\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_sp'), 1, 0);\n\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_idp'), 0, 1);\n\n");
 
-    	fwrite($FILE, "--\n-- Insert master host user admin.  \n--\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}user (auth, confirmed, policyagreed, deleted, mnethostid, username, password) VALUES ('mnet', 1, 0, 0, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), 'manager', '');\n\n");
+    	fputs($FILE, "--\n-- Insert master host user admin.  \n--\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}user (auth, confirmed, policyagreed, deleted, mnethostid, username, password) VALUES ('mnet', 1, 0, 0, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), 'admin', '');\n\n");
 
-    	fwrite($FILE, "--\n-- Links role and capabilites for master host admin.  \n--\n");
+    	fputs($FILE, "--\n-- Links role and capabilites for master host admin.  \n--\n");
     	$roleid = "(SELECT id FROM {$PREFIX}role WHERE shortname LIKE 'manager')";
     	$contextid = 1;
     	$userid = "(SELECT id FROM {$PREFIX}user WHERE auth LIKE 'mnet' AND username = 'admin' AND mnethostid = (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'))";
@@ -607,14 +614,14 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
     	$component = "''";
     	$itemid = 0;
     	$sortorder = 1;
-	    fwrite($FILE, "INSERT INTO {$PREFIX}role_assignments(id,roleid,contextid,userid,timemodified,modifierid,component,itemid,sortorder) VALUES (0, $roleid, $contextid, $userid, $timemodified, $modifierid, $component, $itemid, $sortorder);\n\n");
+	    fputs($FILE, "INSERT INTO {$PREFIX}role_assignments(id,roleid,contextid,userid,timemodified,modifierid,component,itemid,sortorder) VALUES (0, $roleid, $contextid, $userid, $timemodified, $modifierid, $component, $itemid, $sortorder);\n\n");
 
-    	fwrite($FILE, "--\n-- Add new network admin to local siteadmins.  \n--\n");
+    	fputs($FILE, "--\n-- Add new network admin to local siteadmins.  \n--\n");
 		$adminidsql = "(SELECT id FROM {$PREFIX}user WHERE auth LIKE 'mnet' AND username = 'admin' AND mnethostid = (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'))";
-		fwrite($FILE, "UPDATE {$PREFIX}config SET value = CONCAT(value, ',', $adminidsql) WHERE name = 'siteadmins';\n");
+		fputs($FILE, "UPDATE {$PREFIX}config SET value = CONCAT(value, ',', $adminidsql) WHERE name = 'siteadmins';\n");
 
-    	fwrite($FILE, "--\n-- Create a disposable key for renewing new host's keys.  \n--\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}config (name, value) VALUES ('bootstrap_init', '{$this_as_host->wwwroot}');\n");
+    	fputs($FILE, "--\n-- Create a disposable key for renewing new host's keys.  \n--\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}config (name, value) VALUES ('bootstrap_init', '{$this_as_host->wwwroot}');\n");
     }
     fclose($FILE);
     debug_trace('fixing_database ; setup script written');
@@ -625,11 +632,18 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 	$import	= $sqlcmd.$temporarysetup_path;
 
 	// Prints log messages in the page and in 'cmd.log'.
-    debug_trace("fixing_database ; executing $import");
+    debug_trace("fixing_database ; executing $import ");
+
+	// ensure utf8 is correctly handled by php exec()
+	// @see http://stackoverflow.com/questions/10028925/call-a-program-via-shell-exec-with-utf-8-text-input
+	// this is required only with PHP exec through a web access.
+	if (!CLI_SCRIPT){
+		putenv('LANG=en_US.utf-8'); 
+	}
 
 	// Execute the command.
 	exec($import, $output, $return);
-
+	
     debug_trace(implode("\n", $output)."\n");
 
 	// Remove temporary files.
@@ -641,6 +655,55 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 	return true;
 }
 
+function vmoodle_destroy($vmoodledata){
+	global $DB, $OUTPUT;
+	
+	if (!$vmoodledata) return;
+	
+	// Checks if paths commands have been properly defined in 'vconfig.php'.
+	if($vmoodledata->vdbtype == 'mysql') {
+		$dropstatement = 'DROP DATABASE'; 
+	}
+    else if($vmoodledata->vdbtype == 'mysqli') {
+        $dropstatement = 'DROP DATABASE';            
+    }
+	else if($vmoodledata->vdbtype == 'postgres') {
+		$dropstatement = 'DROP SCHEMA'; 
+	}
+
+	// Drop the database
+
+	$sql = "$dropstatement $vmoodledata->vdbname";
+    debug_trace("destroy_database : executing drop sql");
+
+	try{
+		$DB->execute($sql);
+	} catch(Exception $e) {
+	    echo $OUTPUT->notification('noexecutionfor', 'block_vmoodle', $sql);
+	}
+
+	// destroy moodledata
+	
+	$cmd = " rm -rf \"$vmoodledata->vdatapath\" ";
+	exec($cmd);
+
+	// delete vmoodle instance
+
+	$DB->delete_records('block_vmoodle', array('vhostname' => $vmoodledata->vhostname));
+	
+	// delete all related mnet_hosts info
+
+	$mnet_host = $DB->get_record('mnet_host', array('wwwroot' => $vmoodledata->vhostname));
+	$DB->delete_records('mnet_host', array('wwwroot' => $mnet_host->wwwroot));
+	$DB->delete_records('mnet_host2service', array('hostid' => $mnet_host->id));
+	$DB->delete_records('mnetservice_enrol_courses', array('hostid' => $mnet_host->id));
+	$DB->delete_records('mnetservice_enrol_enrolments', array('hostid' => $mnet_host->id));
+	$DB->delete_records('mnet_log', array('hostid' => $mnet_host->id));
+	$DB->delete_records('mnet_session', array('mnethostid' => $mnet_host->id));
+	$DB->delete_records('mnet_sso_access_control', array('mnet_host_id' => $mnet_host->id));
+	
+}
+
 /**
 * get the service strategy and peer mirror strategy to apply to new host, depending on 
 * settings. If no settings were made, use a simple peer to peer SSO binding so that users
@@ -649,29 +712,33 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 * @param array reference $services the service scheme to apply to new host
 * @param array reference $peerservices the service scheme to apply to new host peers
 */
-function vmoodle_get_service_strategy($vmoodledata, &$services, &$peerservices){
+function vmoodle_get_service_strategy($vmoodledata, &$services, &$peerservices, $domain = 'peer'){
 	global $DB;
 
 	// We will mix in order to an single array of configurated service here.
 	$servicesstrategy = unserialize(get_config(null, 'block_vmoodle_services_strategy'));
 	$servicerecs = $DB->get_records('mnet_service', array());
-
-	if(!empty($servicerecs)){
+	$servicesstrategy = (array)$servicesstrategy;
+	
+	if(!empty($servicerecs)){ // should never happen; standard services are always there
 	    if ($vmoodledata->services == 'subnetwork'  && !empty($servicesstrategy)){
     		foreach($servicerecs as $key => $service){
-    			if(array_key_exists($service->name, $servicesstrategy)){
-    				$services[$service->name]->publish       = $servicesstrategy[$service->name]->publish;
-    				$peerservices[$service->name]->subscribe = $services[$service->name]->publish;
-    				$services[$service->name]->subscribe     = $servicesstrategy[$service->name]->subscribe;
-    				$peerservices[$service->name]->publish   = $services[$service->name]->subscribe;
-    			} else {
-    				$services[$service->name]->publish       = 0;
-    				$services[$service->name]->subscribe     = 0;
-    				$peerservices[$service->name]->publish   = 0;
-    				$peerservices[$service->name]->subscribe = 0;
-    			}
+				$services[$service->name] = new StdClass();
+				$peerservices[$service->name] = new StdClass();
+				$services[$service->name]->publish       = 0 + @$servicesstrategy[$domain.'_'.$service->name.'_publish'];
+				$peerservices[$service->name]->subscribe = 0 + @$servicesstrategy[$domain.'_'.$service->name.'_publish'];
+				$services[$service->name]->subscribe     = 0 + @$servicesstrategy[$domain.'_'.$service->name.'_subscribe'];
+				$peerservices[$service->name]->publish   = 0 + @$servicesstrategy[$domain.'_'.$service->name.'_subscribe'];
     		}
     	} else { // if no strategy has been recorded, use default SSO binding
+    		foreach($servicerecs as $key => $service){
+				$services[$service->name] = new StdClass();
+				$peerservices[$service->name] = new StdClass();
+				$services[$service->name]->publish       = 0;
+				$peerservices[$service->name]->subscribe = 0;
+				$services[$service->name]->subscribe     = 0;
+				$peerservices[$service->name]->publish   = 0;
+    		}
     		$services['sso_sp']->publish	= 1;
     		$services['sso_sp']->subscribe	= 1;
     		$services['sso_idp']->publish	= 1;
@@ -681,6 +748,18 @@ function vmoodle_get_service_strategy($vmoodledata, &$services, &$peerservices){
     		$peerservices['sso_idp']->publish	= 1;
     		$peerservices['sso_idp']->subscribe	= 1;
     	}
+	}
+
+	// with main force mnet admin whatever is said in defaults	
+	if ($domain == 'main'){
+		$services['sso_sp']->publish	= 1;
+		$services['sso_idp']->subscribe	= 1;
+		$services['mnetadmin']->publish	= 1;
+		
+		// peer is main
+		$peerservices['sso_sp']->subscribe	= 1;
+		$peerservices['sso_idp']->publish	= 1;
+		$peerservices['mnetadmin']->subscribe = 1;
 	}
 }
 
@@ -770,88 +849,138 @@ function vmoodle_dump_files_from_template($templatename, $destpath) {
 }
 
 /**
-*
+* @param object $submitteddata
 *
 */
 function vmoodle_bind_to_network($submitteddata, &$newmnet_host){
-    global $USER, $CFG, $DB;
+    global $USER, $CFG, $DB, $OUTPUT;
 
     debug_trace("step 4.4 : binding to subnetwork");
 
 	// Getting services schemes to apply
     debug_trace("step 4.4.1 : getting services");
-	vmoodle_get_service_strategy($submitteddata, $services, $peerservices);
+	vmoodle_get_service_strategy($submitteddata, $services, $peerservices, 'peer');
 
     debug_trace("step 4.4.2 : getting possible peers");
     $idnewblock = $DB->get_field('block_vmoodle', 'id', array('vhostname' => $submitteddata->vhostname));
 
-	// Retrieves the subnetwork member(s).
-	$subnetwork_hosts	= array();
-	$select = 'id != ? AND mnet = ? AND enabled = 1';
-	$subnetwork_members = $DB->get_records_select('block_vmoodle', $select, array($idnewblock, $submitteddata->mnet));
-
-	if(!empty($subnetwork_members)){
-        debug_trace("step 4.4.3 : preparing peers");
-		foreach($subnetwork_members as $subnetwork_member){
-			$temp_host	        = new stdClass();
-			$temp_host->wwwroot	= $subnetwork_member->vhostname;
-			$temp_host->name	= utf8_decode($subnetwork_member->name);
-			$subnetwork_hosts[]	= $temp_host;
+	// last mnet has been raised by one at step 3 so we add to network if less
+	if($submitteddata->mnet < vmoodle_get_last_subnetwork_number()){
+		// Retrieves the subnetwork member(s).
+		$subnetwork_hosts	= array();
+		$select = 'id != ? AND mnet = ? AND enabled = 1';
+		$subnetwork_members = $DB->get_records_select('block_vmoodle', $select, array($idnewblock, $submitteddata->mnet));
+	
+		if(!empty($subnetwork_members)){
+	        debug_trace("step 4.4.3 : preparing peers");
+			foreach($subnetwork_members as $subnetwork_member){
+				$temp_host	        = new stdClass();
+				$temp_host->wwwroot	= $subnetwork_member->vhostname;
+				$temp_host->name	= utf8_decode($subnetwork_member->name);
+				$subnetwork_hosts[]	= $temp_host;
+			}
 		}
-	}
-
-	// Member(s) of the subnetwork add the new host.
-	if (!empty($subnetwork_hosts)){
-        debug_trace("step 4.4.4 : bind peers");
-		$rpc_client = new Vmoodle_XmlRpc_Client();
-		$rpc_client->reset_method();
-		$rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
-        // authentication params
-		$rpc_client->add_param($USER->username, 'string');
-		$userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
-		$rpc_client->add_param($userhostroot, 'string');
-		$rpc_client->add_param($CFG->wwwroot, 'string');        			
-		// peer to bind to
-		$rpc_client->add_param((array)$newmnet_host, 'array');
-		$rpc_client->add_param($peerservices, 'array');
-
-		foreach($subnetwork_hosts as $subnetwork_host){
-            debug_trace("step 4.4.4.1 : bind to -> $subnetwork_host->wwwroot");
-			$temp_member = new vmoodle_mnet_peer();
-			$temp_member->set_wwwroot($subnetwork_host->wwwroot);
-			if (!$rpc_client->send($temp_member)){
-                echo $OUTPUT->notification(implode('<br />', $rpc_client->getErrors($temp_member)));
-                if (debugging()){
-                    echo '<pre>';
-                    var_dump($rpc_client);
-                    echo '</pre>';
-                }
-            }
-
-            debug_trace("step 4.4.4.1 : bind from <- $subnetwork_host->wwwroot");
-			$rpc_client_2 = new Vmoodle_XmlRpc_Client();
-			$rpc_client_2->reset_method();
-			$rpc_client_2->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
-            // authentication params
-			$rpc_client_2->add_param($USER->username, 'string');
+	
+		// Member(s) of the subnetwork add the new host.
+		if (!empty($subnetwork_hosts)){
+	        debug_trace("step 4.4.4 : bind peers");
+			$rpc_client = new Vmoodle_XmlRpc_Client();
+			$rpc_client->reset_method();
+			$rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
+	        // authentication params
+			$rpc_client->add_param($USER->username, 'string');
 			$userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
-			$rpc_client_2->add_param($userhostroot, 'string');
-			$rpc_client_2->add_param($CFG->wwwroot, 'string');
-			// peer to bind to        			
-			$rpc_client_2->add_param((array)$temp_member, 'array');
-		    $rpc_client_2->add_param($services, 'array');
-
-			if (!$rpc_client_2->send($newmnet_host)){
-                echo $OUTPUT->notification(implode('<br />', $rpc_client_2->getErrors($newmnet_host)));
-                if (debugging()){
-                    echo '<pre>';
-                    var_dump($rpc_client_2);
-                    echo '</pre>';
-                }
-            }
-            unset($rpc_client_2); // free some resource
+			$rpc_client->add_param($userhostroot, 'string');
+			$rpc_client->add_param($CFG->wwwroot, 'string');        			
+			// peer to bind to
+			$rpc_client->add_param((array)$newmnet_host, 'array');
+			$rpc_client->add_param($peerservices, 'array');
+	
+			foreach($subnetwork_hosts as $subnetwork_host){
+	            debug_trace("step 4.4.4.1 : bind to -> $subnetwork_host->wwwroot");
+				$temp_member = new vmoodle_mnet_peer();
+				$temp_member->set_wwwroot($subnetwork_host->wwwroot);
+				if (!$rpc_client->send($temp_member)){
+	                echo $OUTPUT->notification(implode('<br />', $rpc_client->getErrors($temp_member)));
+	                if (debugging()){
+	                    echo '<pre>';
+	                    var_dump($rpc_client);
+	                    echo '</pre>';
+	                }
+	            }
+	
+	            debug_trace("step 4.4.4.1 : bind from <- $subnetwork_host->wwwroot");
+				$rpc_client_2 = new Vmoodle_XmlRpc_Client();
+				$rpc_client_2->reset_method();
+				$rpc_client_2->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
+	            // authentication params
+				$rpc_client_2->add_param($USER->username, 'string');
+				$userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
+				$rpc_client_2->add_param($userhostroot, 'string');
+				$rpc_client_2->add_param($CFG->wwwroot, 'string');
+				// peer to bind to        			
+				$rpc_client_2->add_param((array)$temp_member, 'array');
+			    $rpc_client_2->add_param($services, 'array');
+	
+				if (!$rpc_client_2->send($newmnet_host)){
+	                echo $OUTPUT->notification(implode('<br />', $rpc_client_2->getErrors($newmnet_host)));
+	                if (debugging()){
+	                    echo '<pre>';
+	                    var_dump($rpc_client_2);
+	                    echo '</pre>';
+	                }
+	            }
+	            unset($rpc_client_2); // free some resource
+			}
 		}
 	}
+
+	// Getting services schemes to apply to main
+    debug_trace("step 4.4.5 : getting services");
+	vmoodle_get_service_strategy($submitteddata, $services, $peerservices, 'main');
+
+    debug_trace("step 4.4.5.1 : bind to -> $CFG->wwwroot");
+	$mainhost = new vmoodle_mnet_peer(); // this is us
+	$mainhost->set_wwwroot($CFG->wwwroot);
+	
+    debug_trace('step 4.4.5.2 : Binding our main service strategy to remote');
+	// bind the local service strategy to new host
+	if (!empty($peerservices)){
+	    $DB->delete_records('mnet_host2service', array('hostid' => $newmnet_host->id)); // eventually deletes something on the way
+    	foreach($peerservices as $servicename => $servicestate){
+    	    $service = $DB->get_record('mnet_service', array('name' => $servicename));
+        	$host2service = new stdclass();
+        	$host2service->hostid = $newmnet_host->id;
+        	$host2service->serviceid = $service->id;
+        	$host2service->publish = 0 + @$servicestate->publish;
+        	$host2service->subscribe = 0 + @$servicestate->subscribe;
+        	$DB->insert_record('mnet_host2service', $host2service);
+    		debug_trace("step 4.4.5.2 : adding ".serialize($host2service));
+        }
+    }
+
+    debug_trace('step 4.4.5.4 : Binding remote service strategy to main');
+	$rpc_client = new Vmoodle_XmlRpc_Client();
+	$rpc_client->reset_method();
+	$rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
+	$rpc_client->add_param($USER->username, 'string');
+	$userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
+	$rpc_client->add_param($userhostroot, 'string');
+	$rpc_client->add_param($CFG->wwwroot, 'string');
+	// peer to bind to : this is us
+	$rpc_client->add_param((array)$mainhost, 'array');
+    $rpc_client->add_param($services, 'array');
+
+    debug_trace('step 4.4.5.4 : Sending');
+	if (!$rpc_client->send($newmnet_host)){
+        // echo $OUTPUT->notification(implode('<br />', $rpc_client->getErrors($newmnet_host)));
+        if (debugging()){
+            echo '<pre>';
+            var_dump($rpc_client);
+            echo '</pre>';
+        }
+    }
+
 }
 
 /**
@@ -900,8 +1029,10 @@ function vmoodle_get_vmanifest($templatename){
  */
 function vmoodle_get_last_subnetwork_number(){
 	global $DB;
-	$nbmaxsubnetwork = $DB->get_record_select('block_vmoodle', '', 'MAX(mnet) AS mnet');
-	return $nbmaxsubnetwork->mnet;
+
+	$nbmaxsubnetwork = $DB->get_field('block_vmoodle', 'MAX(mnet)', array());
+	return $nbmaxsubnetwork;
+
 }
 
 // **************************************************************************************

@@ -621,6 +621,18 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 
 /// Process site admin operation
 
+	if (!$targetuser = $DB->get_record('user', array('username' => $targetuser))){
+		$response->status = RPC_FAILURE_RECORD;
+		$response->errors[] = ' Not such target user.';
+		$response->error = ' Not such target user.';
+		if ($json_response){
+			return json_encode($response);
+		} else {
+			return $response;
+		}
+	}
+
+
 	if ($siteadmin){
 		if (function_exists('debug_trace')) debug_trace("Setting $targetuser->username as site admin");
 		$response->message .= '<br/>'.fullname($targetuser).' is now site administrator ';
@@ -783,17 +795,6 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 	    }
 	}
 	if (function_exists('debug_trace')) debug_trace("Got context $contextlevel");
-
-    if (!$targetuser = $DB->get_record('user', array('username' => $targetuser))){
-		$response->status = RPC_FAILURE_RECORD;
-		$response->errors[] = ' Role assign : No such target user.';
-		$response->error = ' Role assign : No such target user.';
-		if ($json_response){
-    		return json_encode($response);
-    	} else {
-    		return $response;
-    	}
-    }
 
 	if ($unassign){
 		if (function_exists('debug_trace')) debug_trace("role_unassign($record_role->id, $targetuser->id, null, $context->id)");
@@ -988,7 +989,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
 	$response->errors = array();
 	$response->error = '';
 
-    $userparamsarr = (array)$userparams;
+	$userparamsarr = (array)$userparams;
 
 	$capability = '';
 	if (!$overridecapability){
@@ -997,107 +998,97 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
 
 	if ($auth_response = invoke_local_user((array)$callinguser, $capability)){
 		if ($json_response){
-		    return $auth_response;
+			return $auth_response;
 		} else {
 			return json_decode($auth_response);
 		}
 	}
 
-	if (function_exists('debug_trace')) debug_trace("Create caller ".serialize($callinguser));	
+	// be sure of our structure type.
+	$callinguser = (object)$callinguser;
 
-    if (!$onlybounce){
-		if (function_exists('debug_trace')) debug_trace("Up to create $targetuser ");	
-        if (!$user = $DB->get_record('user', array('username' => $targetuser))){
-            // collect eventual profilefields and cleanup user record from them
-            foreach($userparamsarr as $key => $value){
-                if (preg_match('/^profile_field_/', $key)){
-                    $profilefields[$key] = $value;
-                    unset($userparams[$key]);
-                }
-            }
-            $newuser = (object)$userparams;
-            $newuser->username = $targetuser;
-            // remap local mnethostid and auth method if needed
-            if (!empty($userhostname)){
-                if (!$originuserhost = $DB->get_record('mnet_host', array('wwwroot' => $userhostname))){
-                	/*
-                	$response->status = RPC_FAILURE_RECORD;
-                	$response->errors[] = "Bad origin host ".json_encode($userhostname).", or origin host of the user is not known by this host.";
-                	$response->error = "Bad origin host ".json_encode($userhostname).", or origin host of the user is not known by this host.";
-	        		if ($json_response){
-		        		return json_encode($response);
-		        	} else {
-		        		return $response;
-		        	}
-		        	*/
-		        	// if we fail in finding real user host ofr a remote, unbound node, try using the calling host  (callinguser->remotehostroot) identity as default
-					if (function_exists('debug_trace')) debug_trace("Remote user host : Taking call origin host {$callinguser['remotehostroot']} as default ");	
-		        	$remotehost = $DB->get_record('mnet_host', array('wwwroot' => $callinguser['remotehostroot']));
-		        	$newuser->mnethostid = $remotehost->id;
-		        	if (is_dir($CFG->dirroot.'/auth/multimnet') && is_enabled_auth('multimnet')){
-			        	$newuser->auth = 'multimnet';
-			        } else {
-			        	$newuser->auth = 'mnet';
-			        }
-		        	
-                } else {
-                    $newuser->mnethostid = $originuserhost->id;
-               		if (($originuserhost->id != $CFG->mnet_localhost_id) && (empty($newuser->auth) || ($newuser->auth == 'manual'))){
-			        	if (is_dir($CFG->dirroot.'/auth/multimnet') && is_enabled_auth('multimnet')){
-		                    $newuser->auth = 'multimnet';
-				        } else {
-				        	$newuser->auth = 'mnet';
-				        }
-	                } else {
-	                	if (empty($newuser->auth) || $newuser->auth == 'mnet' || $newuser->auth == 'multimnet'){
-		                    $newuser->auth = 'manual';
-		                }
-	                }
-                }
-            } else {
-                $newuser->mnethostid = $CFG->mnet_localhost_id;
-                if (empty($newuser->auth) || $newuser->auth == 'mnet' || $newuser->auth == 'multimnet'){
-                    $newuser->auth = 'manual';
-                }
-            }
-            $newuser->confirmed = 1;
-            $newuser->timemodified = time();
-			if (function_exists('debug_trace')) debug_trace("Create user REMOTE CALL : recording user");
-			
-			unset($newuser->id); // remove id for ensuring creating new record
+	if (!$onlybounce){
+		if (function_exists('debug_trace')) debug_trace("Up to create $targetuser ");
+		if (!$user = $DB->get_record('user', array('username' => $targetuser))){
 
-			try{
-	            $userid = $DB->insert_record('user', $newuser);
-	        } catch(Exception $e){
-            	$response->status = RPC_FAILURE_RECORD;
-            	$response->errors[] = "Create user : Could not create the user.";
-            	$response->error = "Create user : Could not create the user.";
-				if (function_exists('debug_trace')) debug_trace("Create user REMOTE CALL : Failure to record ");
-        		if ($json_response){
-	        		return json_encode($response);
-	        	} else {
-	        		return $response;
-	        	}
-	        }
-			if (function_exists('debug_trace')) debug_trace("Create user : user recorded ");
+			// collect eventual profilefields and cleanup user record from them
+			foreach($userparamsarr as $key => $value){
+				if (preg_match('/^profile_field_/', $key)){
+					$profilefields[$key] = $value;
+					unset($userparams[$key]);
+				}
+			}
 
-            $response->userid = $userid;
-            // add profilefields
-			if (function_exists('debug_trace')) debug_trace("Create user REMOTE CALL : Adding profile fields");	
-            if (!empty($profilefields)){
-                foreach($profilefields as $key => $value){
-                    $key = str_replace('profile_field_', '', $key); // extract real shortname
-                    if ($field = $DB->get_record('user_info_field', array('shortname' => $key))){ // do insert only if known field. Ignore others
-                    	$valuerec = new StdClass();
-                        $valuerec->userid = $userid;
-                        $valuerec->fieldid = $field->id;
-                        $valuerec->data = $value;
-                        $DB->insert_record('user_info_data', $valuerec);
-                    }
-                }
-            }
-        } else {
-			if (function_exists('debug_trace')) debug_trace("Create user REMOTE CALL : Reviving user");	
+			if (function_exists('debug_trace')) debug_trace("Making new user record");
+
+			$newuser = (object)$userparams;
+			$newuser->username = $targetuser;
+			// remap local mnethostid and auth method if needed
+
+			if (!empty($userhostname)){
+
+				if (!$originuserhost = $DB->get_record('mnet_host', array('wwwroot' => $userhostname))){
+					// if we fail to find real origin host for the user, take request host as failover
+					if (function_exists('debug_trace')) debug_trace("REMOTE CALL ERROR : Bad origin host. Trying $callinguser->remotehostroot as failover"); 
+					if (!$originuserhost = $DB->get_record('mnet_host', array('wwwroot' => $callinguser->remotehostroot))){
+
+						if (function_exists('debug_trace')) debug_trace("REMOTE CALL ERROR : Bad origin host ". json_encode($userhostname));
+						$response = new StdClass();
+						$response->status = 510;
+						$response->errors[] = "Bad origin host ".json_encode($userhostname).", or origin host of the user is not known by this host.";
+						$response->error = "Bad origin host ".json_encode($userhostname).", or origin host of the user is not known by this host.";
+						if ($json_response){
+							return json_encode($response);
+						} else {
+							return $response;
+						}
+					}
+				}
+
+				$newuser->mnethostid = $originuserhost->id;
+				if (($originuserhost->id != $CFG->mnet_localhost_id) && (empty($newuser->auth) || ($newuser->auth == 'manual'))){
+					$newuser->auth = 'mnet';
+				} else {
+					if (empty($newuser->auth) || $newuser->auth == 'mnet'){
+						$newuser->auth = 'manual';
+					}
+				}
+			} else {
+				$newuser->mnethostid = $CFG->mnet_localhost_id;
+				if (empty($newuser->auth) || $newuser->auth == 'mnet'){
+					$newuser->auth = 'manual';
+				}
+			}
+			$newuser->confirmed = 1;
+			$newuser->timemodified = time();
+			if (function_exists('debug_trace')) debug_trace("REMOTE CALL : recording user");
+			if (!$userid = $DB->insert_record('user', $newuser)){
+				if (function_exists('debug_trace')) debug_trace("REMOTE CALL ERROR : User creation failure");
+				$response->status = RPC_FAILURE_RECORD;
+				$response->errors[] = "Could not create the user.";
+				$response->error = "Could not create the user.";
+				if ($json_response){
+					return json_encode($response);
+				} else {
+					return $response;
+				}
+			}
+			$response->userid = $userid;
+			// add profilefields
+			if (function_exists('debug_trace')) debug_trace("REMOTE CALL : Adding profile fields");
+			if (!empty($profilefields)){
+				foreach($profilefields as $key => $value){
+					$key = str_replace('profile_field_', '', $key); // extract real shortname
+					if ($field = $DB->get_record('user_info_field', array('shortname' => $key))){ // do insert only if known field. Ignore others
+						$valuerec->userid = $userid;
+						$valuerec->fieldid = $field->id;
+						$valuerec->data = $value;
+						$DB->insert_record('user_info_data', $valuerec);
+					}
+				}
+			}
+		} else {
+			if (function_exists('debug_trace')) debug_trace("REMOTE CALL : Reviving user");
             if ($user->deleted == 1){
                 $user->deleted = 0;
                 foreach($userparams as $key => $value){
@@ -1105,6 +1096,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
                 }
                 $user->username = $targetuser;
                 if (!$userid = $DB->update_record('user', $user)){
+					if (function_exists('debug_trace')) debug_trace("REMOTE CALL ERROR : User revival failure");
                 	$response->status = RPC_FAILURE_RECORD;
                 	$response->errors[] = "Create user REMOTE CALL : Could not revive the user.";
                 	$response->error = "Create user REMOTE CALL : Could not revive the user.";
@@ -1169,7 +1161,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
 	        $ok = $DB->count_records_sql($sql);
 	        if ($ok){
 	            // we can do it.
-	            $userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid)); 
+	            $userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
 	    		$rpc_client = new Vmoodle_XmlRpc_Client();
 	    		$rpc_client->reset_method();
 	    		$rpc_client->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_create_user');
@@ -1181,11 +1173,11 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
 	    		$rpc_client->add_param($targetuser, 'string');
 	    		$rpc_client->add_param($userparams, 'struct');
 	    		if ($userhostname == ''){
-	        		$rpc_client->add_param($CFG->wwwroot, 'string');            
+	        		$rpc_client->add_param($CFG->wwwroot, 'string');
 	        	} else {
-	        		$rpc_client->add_param($userhostname, 'string');            
+	        		$rpc_client->add_param($userhostname, 'string');
 	        	}
-				if (function_exists('debug_trace')) debug_trace("REMOTE CALL : Bouncing to $bouncehost ");	
+				if (function_exists('debug_trace')) debug_trace("REMOTE CALL : Bouncing to $bouncehost ");
 			    $mnet_host = new mnet_peer();
 			    if ($mnet_host->set_wwwroot($bouncehost)){
 	        	    $result = $rpc_client->send($mnet_host);

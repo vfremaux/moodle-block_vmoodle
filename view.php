@@ -19,6 +19,7 @@
 	require_once($CFG->dirroot.'/blocks/vmoodle/debuglib.php');
 	require_once($CFG->dirroot.'/mnet/lib.php');
 
+
     //Loading jQuery 
      $PAGE->requires->js('/blocks/vmoodle/js/lib/jquery-1.7.2.min.js');  
      
@@ -63,7 +64,6 @@
 	$PAGE->set_pagelayout('admin');
 	$PAGE->set_title($strtitle);
 	$PAGE->set_heading($SITE->fullname);
-	/* SCANMSG: may be additional work required for $navigation variable */
 	$PAGE->navbar->add($strtitle,'view.php?view='.$view,'misc');
     
     $PAGE->set_focuscontrol('');
@@ -72,27 +72,9 @@
 	$PAGE->set_headingmenu('');
 	
     $url = new moodle_url('/blocks/vmoodle/view.php');
-    $PAGE->set_url($url,array('view'=>$view,'what'=>$action));
-    
-    echo $OUTPUT->header(); 
-
-    // Checking rights
-	if (!has_capability('block/vmoodle:managevmoodles', context_system::instance()))
-		print_error('onlyadministrators', 'block_vmoodle');
-
-	// Adding heading
-	echo $OUTPUT->heading(get_string('vmoodleadministration', 'block_vmoodle'));
-	// Adding tabs
-	$tabname = get_string('tabpoolmanage', 'block_vmoodle');
-	$row[] = new tabobject('management', $CFG->wwwroot."/blocks/vmoodle/view.php?view=management", $tabname);
-	$tabname = get_string('tabpoolsadmin', 'block_vmoodle');
-	$row[] = new tabobject('sadmin', $CFG->wwwroot."/blocks/vmoodle/view.php?view=sadmin", $tabname);
-	$tabname = get_string('tabpoolservices', 'block_vmoodle');
-	$row[] = new tabobject('services', $CFG->wwwroot."/blocks/vmoodle/view.php?view=services", $tabname);
-	$tabrows[] = $row;
-	print_tabs($tabrows, $view);
-
-	// Capturing action
+    $PAGE->set_url($url,array('view' => $view,'what' => $action));
+ 
+ 	// Capturing action
 	if ($action != '') {
 		try {
 			switch ($view) {
@@ -118,9 +100,31 @@
 			}
 		}
 		catch(Exception $e) {
+    		echo $OUTPUT->header(); 
 			echo $OUTPUT->notification($e->getMessage());
+			echo $OUTPUT->footer();
+			exit();
 		}
 	}
+   
+    echo $OUTPUT->header(); 
+
+    // Checking rights
+	if (!has_capability('block/vmoodle:managevmoodles', context_system::instance()))
+		print_error('onlyadministrators', 'block_vmoodle');
+
+	// Adding heading
+	echo $OUTPUT->heading(get_string('vmoodleadministration', 'block_vmoodle'));
+	// Adding tabs
+	$tabname = get_string('tabpoolmanage', 'block_vmoodle');
+	$row[] = new tabobject('management', $CFG->wwwroot."/blocks/vmoodle/view.php?view=management", $tabname);
+	$tabname = get_string('tabpoolsadmin', 'block_vmoodle');
+	$row[] = new tabobject('sadmin', $CFG->wwwroot."/blocks/vmoodle/view.php?view=sadmin", $tabname);
+	$tabname = get_string('tabpoolservices', 'block_vmoodle');
+	$row[] = new tabobject('services', $CFG->wwwroot."/blocks/vmoodle/view.php?view=services", $tabname);
+	$tabrows[] = $row;
+	print_tabs($tabrows, $view);
+
 
 	// Displaying headers
 	ob_end_flush();
