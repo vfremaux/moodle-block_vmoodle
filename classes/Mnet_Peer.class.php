@@ -20,6 +20,7 @@ class vmoodle_mnet_peer {
     var $name               = '';
     var $public_key         = '';
     var $public_key_expires = 0;
+    var $deleted 			= 0;
     var $last_connect_time  = 0;
     var $last_log_id        = 0;
     var $force_theme        = 0;
@@ -44,7 +45,7 @@ class vmoodle_mnet_peer {
      * @param int $application - table id - what kind of peer are we talking to
      * @return bool - indication of success or failure
      */
-    function bootstrap($wwwroot, $pubkey = null, $application, $force = false) {
+    function bootstrap($wwwroot, $pubkey = null, $application, $force = false, $localname = '') {
         global $DB;
         
         if (substr($wwwroot, -1, 1) == '/') {
@@ -64,8 +65,13 @@ class vmoodle_mnet_peer {
                 return false;
             }
 
-            $this->name = stripslashes($wwwroot);
-            $this->updateparams->name = $wwwroot;
+			if (empty($localname)){
+	            $this->name = stripslashes($wwwroot);
+	            $this->updateparams->name = $wwwroot;
+	        } else {
+	            $this->name = $localname;
+	            $this->updateparams->name = $localname;
+	        }
 
             // TODO: In reality, this will be prohibitively slow... need another
             // default - maybe blank string
@@ -76,7 +82,10 @@ class vmoodle_mnet_peer {
                     $this->name = $matches[1];
                     $this->updateparams->name = str_replace("'", "''", $matches[1]);
                 }
+            } else {
+            	// debug_trace("Missing remote real name guessing, no other side response");
             }
+        	// debug_trace("final name : ".$this->name);
 
             $this->wwwroot = stripslashes($wwwroot);
             $this->updateparams->wwwroot = $wwwroot;
@@ -98,7 +107,7 @@ class vmoodle_mnet_peer {
             if(empty($pubkey)) {
                 // This is the key difference : force the exchange using vmoodle RPC keyswap !!
                 if (empty($pubkeytemp)){
-                    $pubkeytemp = clean_param(vmoodle_mnet_get_public_key($this->wwwroot, $this->application, $force), PARAM_PEM);
+                    $pubkeytemp = clean_param(mnet_get_public_key($this->wwwroot, $this->application, $force), PARAM_PEM);
                 }
             } else {
                 $pubkeytemp = clean_param($pubkey, PARAM_PEM);
@@ -229,7 +238,7 @@ class vmoodle_mnet_peer {
     }
 
     function set_name($newname) {
-        if (is_string($newname) && strlen($newname <= 80)) {
+        if (is_string($newname) && strlen($newname <= 120)) {
             $this->name = $newname;
             return true;
         }
@@ -318,5 +327,3 @@ class vmoodle_mnet_peer {
         return $this->public_key_ref;
     }
 }
-
-?>

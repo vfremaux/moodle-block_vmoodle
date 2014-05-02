@@ -59,6 +59,13 @@ $string['categorywrongname'] = 'Le nom de la catégorie est incorrect.';
 $string['categorywrongpluginname'] = 'Le nom du plugin associé à la catégorie {$a} est incorrect.';
 $string['certificate'] = 'Certificat';
 $string['closewindow'] = 'Fermer cette fenêtre';
+$string['climakestep'] = 'Phase de construction {$a}';
+$string['cliusingtemplate'] = 'Construction sur le modèle {$a}';
+$string['climissingtemplateskip'] = 'Les fichiers du modèle {$a} n\'ont pas été trouvés';
+$string['clistart'] = 'Démarrage de la production';
+$string['cliprocesserror'] = 'Une erreur irrécupérable est survenue. Aborting.';
+$string['climakenode'] = 'Construction du noeud {$a}';
+$string['clinodeexistsskip'] = 'Le noeud {$a} existe déjà. Noeud ignoré.';
 $string['commanddescription'] = 'Description';
 $string['commandemptydescription'] = 'La description de la commande est vide.';
 $string['commandemptyname'] = 'Le nom de la commande est vide.';
@@ -283,6 +290,7 @@ $string['name'] = 'Nom';
 $string['shortname'] = 'Nom canonique';
 $string['description'] = 'Description';
 $string['vhostname'] = 'Nom d\'hôte';
+$string['wwwrootexceedscsrlimits'] = 'Le nom d\'hôte choisi dépasse 64 caractères. Ceci n\'est pas compatible avec les règles de construction des certificats SSL (MNET).';
 
 /*** Help Strings ***/
 $string['name_help'] = '

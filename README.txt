@@ -48,7 +48,7 @@ any plugin.
 Since 2.4 an architecture flexibility regression caused the subplugin system for blocks to fail. We 
 now need an extra patch to get it finding plugin subcomponent path properly again. 
 
-This patch will alter 2 plugin related functions in /lib/moodle.php
+This patch will alter 2 plugin related functions in /lib/moodlelib.php
 
 around L§8030
 
@@ -171,6 +171,9 @@ function mnet_get_public_key($uri, $application=null, $force=0) {
         $application = $DB->get_record('mnet_application', array('name'=>'moodle'));
     }
 
+//! PATCH : Mnet automated key renewal
+    $rq = xmlrpc_encode_request('system/keyswap', array($CFG->wwwroot, $mnet->public_key, $application->name, $force), array("encoding" => "utf-8"));
+// /PATCH
 
 
 1. Master configuration changes : Installing the config.php hook to vconfig.php

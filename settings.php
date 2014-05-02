@@ -40,9 +40,8 @@ if ($ADMIN->fulltree) {
 		foreach ($subnetworksrecords as $subnetworksrecord) {
 			$subnetworks[$subnetworksrecord->mnet] = $subnetworksrecord->mnet;
 		}
-		$newsubnetwork = array_pop($subnetworksrecords)->mnet + $newsubnetwork;
 	}
-	$subnetworks[$newsubnetwork] = $newsubnetwork.' ('.get_string('mnetnew', 'block_vmoodle').')';
+	$subnetworks['NEW'] = get_string('mnetnew', 'block_vmoodle');
 	$settings->add(new admin_setting_configselect('block_vmoodle_mnet', get_string('multimnet', 'block_vmoodle'), get_string('multimnet_desc', 'block_vmoodle'), 0, $subnetworks));
 
 	// Services strategy.

@@ -19,6 +19,7 @@
 	require_once($CFG->dirroot.'/blocks/vmoodle/debuglib.php');
 	require_once($CFG->dirroot.'/mnet/lib.php');
 
+
     //Loading jQuery 
      $PAGE->requires->js('/blocks/vmoodle/js/lib/jquery-1.7.2.min.js');  
      

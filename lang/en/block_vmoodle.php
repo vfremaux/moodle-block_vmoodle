@@ -67,8 +67,10 @@ $string['climakestep'] = 'Make step {$a}';
 $string['cliusingtemplate'] = 'Make Node using template {$a}';
 $string['climissingtemplateskip'] = 'Template files not found for {$a}';
 $string['clistart'] = 'Starting cli =';
+$string['climakenode'] = 'Making node {$a}';
 $string['cliprocesserror'] = 'An unrecoverable error occured. Aborting.';
 $string['closewindow'] = 'Close the window';
+$string['clinodeexistsskip'] = 'Node {$a} exists already. Ignored.';
 $string['commanddescription'] = 'Description';
 $string['commandemptydescription'] = 'The command\'s description is empty.';
 $string['commandemptyname'] = 'The command\'s name is empty.';
@@ -302,6 +304,7 @@ $string['vtemplate'] = 'Vmoodle template';
 $string['withmessage'] = 'with message "{$a}"';
 $string['withoutmessage'] = 'without message';
 $string['wrongplugin'] = 'Wrong plugin.';
+$string['wwwrootexceedscsrlimits'] = 'The choosen wwwroot exceeds 64 chars length. This is not compatible with MNET openssl CSR requirements.';
 
 
 /*** Help Strings ***/

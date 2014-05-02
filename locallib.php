@@ -448,13 +448,13 @@ function vmoodle_load_database_from_template($vmoodledata) {
     
 	// Checks if paths commands have been properly defined in 'vconfig.php'.
 	if($vmoodledata->vdbtype == 'mysql') {
-		$createstatement = 'CREATE DATABASE'; 
+		$createstatement = 'CREATE DATABASE %DATABASE% DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ';
 	}
     else if($vmoodledata->vdbtype == 'mysqli') {
-        $createstatement = 'CREATE DATABASE';            
+        $createstatement = 'CREATE DATABASE %DATABASE% DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ';
     }
 	else if($vmoodledata->vdbtype == 'postgres') {
-		$createstatement = 'CREATE SCHEMA'; 
+		$createstatement = 'CREATE SCHEMA %DATABASE% '; 
 	}
 
 	// SQL files paths.
@@ -490,7 +490,7 @@ function vmoodle_load_database_from_template($vmoodledata) {
 
 	// Creates the new database before importing the data.
 
-	$sql = "$createstatement $vmoodledata->vdbname";
+	$sql = str_replace('%DATABASE%', $vmoodledata->vdbname, $createstatement);
     debug_trace("load_database_from_dump : executing creation sql");
 	if(!$DB->execute($sql)){
 	    print_error('noexecutionfor','block_vmoodle', $sql);
@@ -504,6 +504,12 @@ function vmoodle_load_database_from_template($vmoodledata) {
 
 	// Execute the command.
     debug_trace("load_database_from_dump : executing feeding sql");
+
+	if (!defined('CLI_SCRIPT')){
+		putenv('LANG=en_US.utf-8'); 
+	}
+	// ensure utf8 is correctly handled by php exec()
+	// @see http://stackoverflow.com/questions/10028925/call-a-program-via-shell-exec-with-utf-8-text-input
 
 	exec($import, $output, $return);
 
@@ -542,11 +548,12 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 	$separator = DIRECTORY_SEPARATOR;
 
     debug_trace('fixing_database ; opening setup script file');
-	if (!$FILE = fopen($temporarysetup_path, 'w')){
+	if (!$FILE = fopen($temporarysetup_path, 'wb')){
 	    print_error('couldnotwritethesetupscript', 'block_vmoodle');
 	    return false;
 	}
 	$PREFIX = $vmoodledata->vdbprefix;
+	$vmoodledata->description = str_replace("'", "''", $vmoodledata->description);
 	// setup moodle name and description
 	fwrite($FILE, "UPDATE {$PREFIX}course SET fullname='{$vmoodledata->name}', shortname='{$vmoodledata->shortname}', summary='{$vmoodledata->description}' WHERE category = 0 AND id = 1;\n");
 
@@ -581,24 +588,24 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
         /** we need :
     	* disable mnet
     	*/
-        fwrite($FILE, "UPDATE {$PREFIX}config SET value = 'off' WHERE name = 'mnet_dispatcher_mode';\n\n");
+        fputs($FILE, "UPDATE {$PREFIX}config SET value = 'off' WHERE name = 'mnet_dispatcher_mode';\n\n");
     } else { // ALL OTHER CASES
     	/** we need : 
     	* enable mnet
     	* push our master identity in mnet_host table
     	*/
-        fwrite($FILE, "UPDATE {$PREFIX}config SET value = 'strict' WHERE name = 'mnet_dispatcher_mode';\n\n");
-	    fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host (wwwroot, ip_address, name, public_key, applicationid, public_key_expires) VALUES ('{$this_as_host->wwwroot}', '{$this_as_host->ip_address}', '{$SITE->fullname}', '{$this_as_host->public_key}', {$this_as_host->applicationid}, '{$this_as_host->public_key_expires}');\n\n");
+        fputs($FILE, "UPDATE {$PREFIX}config SET value = 'strict' WHERE name = 'mnet_dispatcher_mode';\n\n");
+	    fputs($FILE, "INSERT INTO {$PREFIX}mnet_host (wwwroot, ip_address, name, public_key, applicationid, public_key_expires) VALUES ('{$this_as_host->wwwroot}', '{$this_as_host->ip_address}', '{$SITE->fullname}', '{$this_as_host->public_key}', {$this_as_host->applicationid}, '{$this_as_host->public_key_expires}');\n\n");
 
-    	fwrite($FILE, "--\n-- Enable the service 'mnetadmin, sso_sp and sso_ip' with host which creates this host.  \n--\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'mnetadmin'), 1, 0);\n\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_sp'), 1, 0);\n\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_idp'), 0, 1);\n\n");
+    	fputs($FILE, "--\n-- Enable the service 'mnetadmin, sso_sp and sso_ip' with host which creates this host.  \n--\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'mnetadmin'), 1, 0);\n\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_sp'), 1, 0);\n\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}mnet_host2service VALUES (null, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), (SELECT id FROM {$PREFIX}mnet_service WHERE name LIKE 'sso_idp'), 0, 1);\n\n");
 
-    	fwrite($FILE, "--\n-- Insert master host user admin.  \n--\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}user (auth, confirmed, policyagreed, deleted, mnethostid, username, password) VALUES ('mnet', 1, 0, 0, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), 'admin', '');\n\n");
+    	fputs($FILE, "--\n-- Insert master host user admin.  \n--\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}user (auth, confirmed, policyagreed, deleted, mnethostid, username, password) VALUES ('mnet', 1, 0, 0, (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'), 'admin', '');\n\n");
 
-    	fwrite($FILE, "--\n-- Links role and capabilites for master host admin.  \n--\n");
+    	fputs($FILE, "--\n-- Links role and capabilites for master host admin.  \n--\n");
     	$roleid = "(SELECT id FROM {$PREFIX}role WHERE shortname LIKE 'manager')";
     	$contextid = 1;
     	$userid = "(SELECT id FROM {$PREFIX}user WHERE auth LIKE 'mnet' AND username = 'admin' AND mnethostid = (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'))";
@@ -607,14 +614,14 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
     	$component = "''";
     	$itemid = 0;
     	$sortorder = 1;
-	    fwrite($FILE, "INSERT INTO {$PREFIX}role_assignments(id,roleid,contextid,userid,timemodified,modifierid,component,itemid,sortorder) VALUES (0, $roleid, $contextid, $userid, $timemodified, $modifierid, $component, $itemid, $sortorder);\n\n");
+	    fputs($FILE, "INSERT INTO {$PREFIX}role_assignments(id,roleid,contextid,userid,timemodified,modifierid,component,itemid,sortorder) VALUES (0, $roleid, $contextid, $userid, $timemodified, $modifierid, $component, $itemid, $sortorder);\n\n");
 
-    	fwrite($FILE, "--\n-- Add new network admin to local siteadmins.  \n--\n");
+    	fputs($FILE, "--\n-- Add new network admin to local siteadmins.  \n--\n");
 		$adminidsql = "(SELECT id FROM {$PREFIX}user WHERE auth LIKE 'mnet' AND username = 'admin' AND mnethostid = (SELECT id FROM {$PREFIX}mnet_host WHERE wwwroot LIKE '{$this_as_host->wwwroot}'))";
-		fwrite($FILE, "UPDATE {$PREFIX}config SET value = CONCAT(value, ',', $adminidsql) WHERE name = 'siteadmins';\n");
+		fputs($FILE, "UPDATE {$PREFIX}config SET value = CONCAT(value, ',', $adminidsql) WHERE name = 'siteadmins';\n");
 
-    	fwrite($FILE, "--\n-- Create a disposable key for renewing new host's keys.  \n--\n");
-    	fwrite($FILE, "INSERT INTO {$PREFIX}config (name, value) VALUES ('bootstrap_init', '{$this_as_host->wwwroot}');\n");
+    	fputs($FILE, "--\n-- Create a disposable key for renewing new host's keys.  \n--\n");
+    	fputs($FILE, "INSERT INTO {$PREFIX}config (name, value) VALUES ('bootstrap_init', '{$this_as_host->wwwroot}');\n");
     }
     fclose($FILE);
     debug_trace('fixing_database ; setup script written');
@@ -625,11 +632,18 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 	$import	= $sqlcmd.$temporarysetup_path;
 
 	// Prints log messages in the page and in 'cmd.log'.
-    debug_trace("fixing_database ; executing $import");
+    debug_trace("fixing_database ; executing $import ");
+
+	// ensure utf8 is correctly handled by php exec()
+	// @see http://stackoverflow.com/questions/10028925/call-a-program-via-shell-exec-with-utf-8-text-input
+	// this is required only with PHP exec through a web access.
+	if (!CLI_SCRIPT){
+		putenv('LANG=en_US.utf-8'); 
+	}
 
 	// Execute the command.
 	exec($import, $output, $return);
-
+	
     debug_trace(implode("\n", $output)."\n");
 
 	// Remove temporary files.
@@ -643,6 +657,8 @@ function vmoodle_fix_database($vmoodledata, $this_as_host) {
 
 function vmoodle_destroy($vmoodledata){
 	global $DB, $OUTPUT;
+	
+	if (!$vmoodledata) return;
 	
 	// Checks if paths commands have been properly defined in 'vconfig.php'.
 	if($vmoodledata->vdbtype == 'mysql') {

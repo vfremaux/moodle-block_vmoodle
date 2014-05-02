@@ -60,6 +60,8 @@
 				if(tab1 != null && tab1.length >= 1)	{
 					element.value = "mdl_"+tab1[0];
 					element1.value = "vmoodle_"+tab1[0];
+					element1.value.replace('-', '_'); // do NOT admit hyphens in db names as dangerous for unescaped SQL syntax
+					element1.value.replace(' ', '_'); // do NOT admit spaces in db names as dangerous for unescaped SQL syntax
 				}
 				
 				dirroot = unescape(dirroot);
