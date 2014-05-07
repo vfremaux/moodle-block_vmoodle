@@ -27,6 +27,7 @@
 *
 */
 
+if (defined('CLI_SCRIPT') && !defined('WEB_CRON_EMULATED_CLI') && !defined('CLI_VMOODLE_OVERRIDE')) return;
 require_once $CFG->dirroot."/blocks/vmoodle/bootlib.php";
 
 // EDIT A CONFIGURATION FOR MASTER MOODLE //
