@@ -1,4 +1,4 @@
-<?php  //$Id: upgrade.php,v 1.1.1.1 2013-02-13 08:42:17 mo2dlemaster Exp $
+<?php  
 
 // This file keeps track of upgrades to 
 // the vmoodle block

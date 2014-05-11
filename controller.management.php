@@ -128,7 +128,7 @@ if ($action == 'doadd'){
 
 		// check vhostname length. Must be less than 64 chars (Mnet CSR reason)
 		// may be useless using check_credentials() patchs
-		
+		/*
 		if (strlen($submitteddata->vhostname) > 64){
 			if (empty($automation)){
 				$message_object->message = get_string('wwwrootexceedscsrlimits', 'block_vmoodle');
@@ -139,7 +139,7 @@ if ($action == 'doadd'){
 			mtrace(get_string('wwwrootexceedscsrlimits', 'block_vmoodle'));
 			return -1;
 		}
-		
+		*/
 
 		if($submitteddata->vtemplate === 0) {
 
@@ -237,7 +237,7 @@ if ($action == 'doadd'){
 		/// Creates database from template.
 
 			if ($vmoodlestep == 0){
-				// debug_trace("step 0 : loading");
+				debug_trace("step 0 : loading");
 				if(!vmoodle_load_database_from_template($submitteddata, $CFG->dataroot.'/vmoodle')){
 					// If loading database from template has failed.
 					unset($SESSION->vmoodledata);
@@ -275,7 +275,7 @@ if ($action == 'doadd'){
 		// with all fixing SQL instructions processed.
 
 			if ($vmoodlestep == 1){
-				// debug_trace("step 1 : fixing DB");
+				debug_trace("step 1 : fixing DB");
 				if(!vmoodle_fix_database($submitteddata, $this_as_host, $CFG->dataroot.'/vmoodle')){
 					// If fixing database has failed.
 					unset($SESSION->vmoodledata);
@@ -378,7 +378,7 @@ if ($action == 'doadd'){
 				}
 
 				// force renew using remote keyboot.php access
-				// debug_trace("step 4.1 : booting remote key");
+				debug_trace("step 4.1 : booting remote key");
 				$uri = $submitteddata->vhostname.'/blocks/vmoodle/keyboot.php';		
 
 				$rq = 'pk='.urlencode($this_as_host->public_key);
@@ -406,7 +406,7 @@ if ($action == 'doadd'){
 					return -1;
 				}
 				if (preg_match('/ERROR/', $res)){
-					// debug_trace("step 4.1 : Failed boot / ERROR response");
+					debug_trace("step 4.1 : Failed boot / ERROR response");
 					// If remote keybooting has failed.
 					$message_object->message = get_string('couldnotkeyboot', 'block_vmoodle', $res);
 					if (empty($automation)){
@@ -420,11 +420,11 @@ if ($action == 'doadd'){
 				curl_close($ch);
 
 				// Force new virtual host to renew our key and send his own to us.
-				// debug_trace("step 4.2 : exchanging keys");
+				debug_trace("step 4.2 : exchanging keys");
              
 				if(!$newmnet_host->bootstrap($submitteddata->vhostname, null, 'moodle', 1, $submitteddata->name)){
 					// If bootstraping the new host has failed.
-					// debug_trace("step 4.2 Failed : bootstrap failure");
+					debug_trace("step 4.2 Failed : bootstrap failure");
 					if (empty($automation)){
 						$SESSION->vmoodle_ma['confirm_message'] = 'bootstrap failure';
 						if (debugging()){
@@ -444,7 +444,7 @@ if ($action == 'doadd'){
 				$newmnet_host->updateparams->deleted = 0; // in case already there and needs revive;
 				$newmnet_host->commit();
 
-				// debug_trace("step 4.3 : setting mnetadmin remote side");
+				debug_trace("step 4.3 : setting mnetadmin remote side");
 
 				// we need to start output here in case of exceptions
             	// echo $OUTPUT->header();
@@ -491,7 +491,7 @@ if ($action == 'doadd'){
 			$message_object->style = 'notifysuccess';
 
 			// Save confirm message before redirection.
-			// debug_trace("step 4 : Finished");
+			debug_trace("step 4 : Finished");
 			unset($SESSION->vmoodledata);
 			$SESSION->vmoodle_ma['confirm_message'] = $message_object;
 			if (empty($automation)){
@@ -817,7 +817,7 @@ if (($action == 'delete') || ($action == 'fulldelete')){
 	// Unmarks the Vmoodle in everyplace (subnetwork, common).
 	if ($vmoodle = $DB->get_record('block_vmoodle', array('id' => $id))){
 		if($vmoodle_host = $DB->get_record('mnet_host', array('wwwroot' => $vmoodle->vhostname))){
-			// debug_trace('Deleting vmoodle host');
+			debug_trace('Deleting vmoodle host');
 			if(($vmoodle_host->deleted == 0)) {
 				$vmoodle_host->deleted	= 1;
 				$DB->update_record('mnet_host', $vmoodle_host);
