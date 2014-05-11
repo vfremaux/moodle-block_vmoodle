@@ -51,7 +51,7 @@ class Vmoodle_Command_PurgeCaches extends Vmoodle_Command {
 			$hosts = array($hosts => 'Unnamed host');
 		
 		// Checking capabilities
-		if (!has_capability('block/vmoodle:execute', get_context_instance(CONTEXT_SYSTEM)))
+		if (!has_capability('block/vmoodle:execute', context_system::instance()))
 			throw new Vmoodle_Command_PurgeCaches_Exception('insuffisantcapabilities');
 			
 		// Initializing responses

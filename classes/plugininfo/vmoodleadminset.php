@@ -15,19 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Subplugin info class.
  *
- * @package    block
- * @subpackage vmoodle
- * @copyright  2008 onwards Valery Fremaux (valery.fremaux@gmail.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   block_vmoodle
+ * @copyright 2014 Valery Fremaux (valery.Fremaux@gmail.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace block_vmoodle\plugininfo;
+
+use core\plugininfo\base;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014020400;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2013111800;        // Requires this Moodle version
-$plugin->component = 'block_vmoodle';   // Full name of the plugin (used for diagnostics)
-$plugin->maturity = MATURITY_RC;
-$plugin->release = "2.6.0 (Build 2014020400)";
-$plugin->cron = 5;
+class vmoodleadminset extends base {
+
+    public function is_uninstall_allowed() {
+        if ($this->is_standard()) {
+            return false;
+        }
+        return true;
+    }
+
+}

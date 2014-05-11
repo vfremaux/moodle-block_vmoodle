@@ -65,7 +65,7 @@ class block_vmoodle extends block_base {
 		$this->content->footer = '';
 		// Getting context
         //$context = context_block::instance(0); #WAFA #1.9                                           
-        $context = get_context_instance(CONTEXT_BLOCK,$this->instance->id);
+        $context = context_block::instance($this->instance->id);
            
 		// Setting content depending on capabilities
 		if (isloggedin()) {
