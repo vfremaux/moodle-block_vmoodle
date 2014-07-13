@@ -11,18 +11,22 @@
 
 require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
 
-function vmoodle_get_remote_config($mnethost, $configkey, $domain = ''){
-	global $CFG, $USER, $DB, $OUTPUT;
+function vmoodle_get_remote_config($mnethost, $configkey, $domain = '') {
+    global $CFG, $USER, $DB, $OUTPUT;
+    
+    if (empty($mnethost)) {
+        return '';
+    }
 
-	if (!isset($USER)){
-		$user = $DB->get_record('user', array('username' => 'guest'));
-	} else {
-		$user = $USER;
-	}
+    if (!isset($USER)) {
+        $user = $DB->get_record('user', array('username' => 'guest'));
+    } else {
+        $user = $USER;
+    }
 
-	$userhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid));
-	$user->remoteuserhostroot = $userhost->wwwroot;
-	$user->remotehostroot = $CFG->wwwroot;
+    $userhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid));
+    $user->remoteuserhostroot = $userhost->wwwroot;
+    $user->remotehostroot = $CFG->wwwroot;
 
     // get the sessions for each vmoodle that have same ID Number
     $rpcclient = new mnet_xmlrpc_client();
@@ -36,50 +40,50 @@ function vmoodle_get_remote_config($mnethost, $configkey, $domain = ''){
 
     $mnet_host->set_wwwroot($mnethost->wwwroot);
     
-    if ($rpcclient->send($mnet_host)){
+    if ($rpcclient->send($mnet_host)) {
         $response = json_decode($rpcclient->response);
-        if ($response->status == 200){
-        	return $response->value;
+        if ($response->status == 200) {
+            return $response->value;
         } else {
-        	if (debugging()){
-        		echo $OUTPUT->notification('Remote RPC error '.implode('<br/>', $response->errors));
-        	}
+            if (debugging()) {
+                echo $OUTPUT->notification('Remote RPC error '.implode('<br/>', $response->errors));
+            }
         }
     } else {
-    	if (debugging()){
-    		echo $OUTPUT->notification('Remote RPC failure '.implode('<br/', $rpcclient->error));
-    	}
-    }		
+        if (debugging()) {
+            echo $OUTPUT->notification('Remote RPC failure '.implode('<br/', $rpcclient->error));
+        }
+    }        
 }
 
 /**
  * Install generic plugin library.
- * @return					boolean				TRUE if the installation is successfull, FALSE otherwise.
+ * @return                    boolean                TRUE if the installation is successfull, FALSE otherwise.
  */
 function genericlib_install() {
-	// No install operation
+    // No install operation
     global $DB;
-	$result = true;
+    $result = true;
     // installing Data Exchange
 
-	if ($previous = get_config('dataexchangesafekeys')){
-		$genericconfigs[] = $previous;
-	}
-	$genericconfigs[] = 'globaladminmessage';
-	$genericconfigs[] = 'globaladminmessagecolor';
-	set_config('dataexchangesafekeys', implode(',', $genericconfigs));
+    if ($previous = get_config('dataexchangesafekeys')) {
+        $genericconfigs[] = $previous;
+    }
+    $genericconfigs[] = 'globaladminmessage';
+    $genericconfigs[] = 'globaladminmessagecolor';
+    set_config('dataexchangesafekeys', implode(',', $genericconfigs));
 
-	return $result;
+    return $result;
 }
 
 /**
  * Uninstall generic plugin library.
- * @return					boolean				TRUE if the uninstallation is successfull, FALSE otherwise.
+ * @return                    boolean                TRUE if the uninstallation is successfull, FALSE otherwise.
  */
 function genericlib_uninstall() {
     global $DB,$OUTPUT;
 
-	set_config('dataexchangesafekeys', '');
+    set_config('dataexchangesafekeys', '');
 
-	return true;
+    return true;
 }

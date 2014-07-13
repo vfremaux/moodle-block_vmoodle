@@ -291,6 +291,11 @@ $string['shortname'] = 'Nom canonique';
 $string['description'] = 'Description';
 $string['vhostname'] = 'Nom d\'hôte';
 $string['wwwrootexceedscsrlimits'] = 'Le nom d\'hôte choisi dépasse 64 caractères. Ceci n\'est pas compatible avec les règles de construction des certificats SSL (MNET).';
+$string['withselection'] = 'Avec la sélection: ';
+$string['disableinstances'] = 'désactiver les instances ';
+$string['enableinstances'] = 'activer les instances ';
+$string['deleteinstances'] = 'détruire les instances ';
+$string['deleteconfirm'] = 'Cette opération n\\\'est pas réversible. Continuer ?';
 
 /*** Help Strings ***/
 $string['name_help'] = '

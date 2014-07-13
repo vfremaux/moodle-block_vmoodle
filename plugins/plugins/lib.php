@@ -9,9 +9,8 @@
  */
 
 global $STANDARD_PLUGIN_TYPES;
- 
-$STANDARD_PLUGIN_TYPES = array(
 
+$STANDARD_PLUGIN_TYPES = array(
     'mod' => get_string('activitymodules'),
     'format' => get_string('courseformats'),
     'block' => get_string('blocks'),
@@ -34,30 +33,4 @@ $STANDARD_PLUGIN_TYPES = array(
     'local' => get_string('localplugins'),
     'assignsubmission' => get_string('assignsubmission', 'assign'),
     'assignfeedback' => get_string('assignfeedback', 'assign'),
-
-	/*
-	// these are module embedded plugins
-    'assignment' => get_string('assignment'),
-    'assignsubmission' => get_string('assignsubmission'),
-    'assignfeedback' => get_string('assignfeedback'),
-    'booktool' => get_string('booktool', 'book'),
-    'cachelock' => get_string('cachelock'),
-    'datafield' => get_string('datafield', 'data'),
-    'datapreset' => get_string('datapreset', 'data'),
-    'gradeexport' => get_string('gradeexport'),
-    'gradeimport' => get_string('gradeimport'),
-    'gradereport' => get_string('gradereport'),
-    'gradingform' => get_string('gradingform'),
-    'mnetservice' => get_string('mnetservice'),
-    'profilefield' => get_string('profilefield'),
-    'qformat' => get_string('qformat'),
-    'quiz' => get_string('quiz'),
-    'quizaccess' => get_string('quizaccess'),
-    'tinymce' => get_string('tinymce'),
-    'theme' => get_string('theme'),
-    'workshopallocation' => get_string('workshopallocation'),
-    'workshopeval' => get_string('workshopeval'),
-    'workshopform' => get_string('workshopform'),
-    */
 );
-

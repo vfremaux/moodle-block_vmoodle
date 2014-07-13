@@ -8,5 +8,7 @@
  */
 
 $plugin = new stdclass;
-$plugin->version = 2013092701;
+$plugin->version = 2014071300;
 $plugin->component = 'vmoodleadminset_plugins';
+$plugin->requires = 2013111800;
+$plugin->dependencies = array('block_vmoodle' => 2014020400);

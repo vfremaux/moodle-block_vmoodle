@@ -70,15 +70,15 @@ line : near 478
 location : before (or after, no case, but an additional case) the handling of modules.
 
     // PATCH : Add RPC support to blocks 
-	////////////////////////////////////// STRICT BLOCKS/*
+    // STRICT BLOCKS/*
     } elseif ($callstack[0] == 'blocks') {
         list($base, $block, $filename, $functionname) = $callstack;
         $includefile = '/blocks/'.$block.'/rpclib.php';
         $response = mnet_server_invoke_method($includefile, $functionname, $method, $payload);
         $response = mnet_server_prepare_response($response);
         echo $response;
-	// /PATCH
-    ////////////////////////////////////// STRICT MOD/*
+    // /PATCH
+    // STRICT MOD/*
     } elseif ($callstack[0] == 'mod' || 'dangerous' == $CFG->mnet_dispatcher_mode) {
         list($base, $module, $filename, $functionname) = $callstack;
 
@@ -108,10 +108,10 @@ A way to do this is using VirtualDirectory. Here comes a sample of Apache config
 this kind of generic binding.
 
 <VirtualHost 127.0.0.1>
-    ServerAdmin webmaster@eisti.fr
+    ServerAdmin webmaster@mydomain.fr
     ServerName %mastermoodlehost%
     ServerAlias *.%mastermoodledomain%
-	VirtualDocumentRoot "D:/wwwroot/%moodledir%"
+    VirtualDocumentRoot "D:/wwwroot/%moodledir%"
     ErrorLog logs/vmoodle_common-error_log
     CustomLog logs/vmoodle_common-access_log common
 </VirtualHost>

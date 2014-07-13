@@ -305,6 +305,11 @@ $string['withmessage'] = 'with message "{$a}"';
 $string['withoutmessage'] = 'without message';
 $string['wrongplugin'] = 'Wrong plugin.';
 $string['wwwrootexceedscsrlimits'] = 'The choosen wwwroot exceeds 64 chars length. This is not compatible with MNET openssl CSR requirements.';
+$string['withselection'] = 'With the selection: ';
+$string['disableinstances'] = 'disable instances ';
+$string['enableinstances'] = 'enable instances ';
+$string['deleteinstances'] = 'destroy instances ';
+$string['deleteconfirm'] = 'Delete is NOT reversible. Data will be definitively destroyed. Continue?';
 
 
 /*** Help Strings ***/

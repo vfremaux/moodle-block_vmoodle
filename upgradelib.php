@@ -1,5 +1,18 @@
 <?php
-
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Find and check all submodules and load them up or upgrade them if necessary
@@ -10,203 +23,202 @@
 function vmoodle_upgrade_subplugins_modules($startcallback, $endcallback, $verbose = true) {
     global $CFG, $DB;
 
-	include $CFG->dirroot.'/blocks/vmoodle/db/subplugins.php';
+    include($CFG->dirroot.'/blocks/vmoodle/db/subplugins.php');
 
-    foreach($subplugins as $type => $subpluginpath){
+    foreach ($subplugins as $type => $subpluginpath) {
 
-    	$plugindirs = glob($CFG->dirroot.'/'.$subpluginpath.'/*');
-    	
-	    foreach ($plugindirs as $dir) {
-	    	
-			$plug = basename($dir);
-			$fullplug = $dir;	    	
-			
-	        if ($plug === 'CVS') {   // Someone has unzipped the template, ignore it
-	            continue;
-	        }
-	
-	        if ($plug === 'NEWMODULE') {   // Someone has unzipped the template, ignore it
-	            continue;
-	        }
-	
-	        // Reset time so that it works when installing a large number of plugins
-	        set_time_limit(600);
-	        $component = clean_param($type.'_'.$plug, PARAM_COMPONENT); // standardised plugin name
-	
-	        // check plugin dir is valid name
-	        if (empty($component)) {
-	            throw new plugin_defective_exception($type.'_'.$plug, 'Invalid plugin directory name.');
-	        }
-	
-	        if (!is_readable($fullplug.'/version.php')) {
-	            continue;
-	        }
-	        	
-	        $plugin = new stdClass();
-	        require($fullplug.'/version.php');  // defines $plugin with version etc
+        $plugindirs = glob($CFG->dirroot.'/'.$subpluginpath.'/*');
 
-	        // if plugin tells us it's full name we may check the location
-	        if (isset($plugin->component)) {
-	            if ($plugin->component !== $component) {
-	                throw new plugin_defective_exception($component, 'Plugin installed in wrong folder.');
-	            }
-	        }
-	
-	        if (empty($plugin->version)) {
-	            throw new plugin_defective_exception($component, 'Missing version value in version.php');
-	        }
-	
-	        $plugin->name     = $plug;
-	        $plugin->fullname = $component;	
-	
-	        if (!empty($plugin->requires)) {
-	            if ($plugin->requires > $CFG->version) {
-	                throw new upgrade_requires_exception($component, $plugin->version, $CFG->version, $plugin->requires);
-	            } else if ($plugin->requires < 2010000000) {
-	                throw new plugin_defective_exception($component, 'Plugin is not compatible with Moodle 2.x or later.');
-	            }
-	        }
-	
-	        // try to recover from interrupted install.php if needed
-	        if (file_exists($fullplug.'/db/install.php')) {
-	            if (get_config($plugin->fullname, 'installrunning')) {
-	                require_once($fullplug.'/db/install.php');
-	                $recover_install_function = 'xmldb_'.$plugin->fullname.'_install_recovery';
-	                if (function_exists($recover_install_function)) {
-	                    $startcallback($component, true, $verbose);
-	                    $recover_install_function();
-	                    unset_config('installrunning', $plugin->fullname);
-	                    update_capabilities($component);
-	                    log_update_descriptions($component);
-	                    external_update_descriptions($component);
-	                    events_update_definition($component);
-	                    message_update_providers($component);
-	                    if ($type === 'message') {
-	                        message_update_processors($plug);
-	                    }
-	                    vmoodle_upgrade_plugin_mnet_functions($component, $fullplug);
-	                    
-						// fix wrongly twicked paths
-	                    if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset' ", array())){
-	                    	foreach($rpc_shifted_defines as $rpc){
-	                    		$rpc->xmlrpcpath = str_replace('vmoocleadminset', 'blocks/vmoodle/plugins');
-	                    		$DB->update_record('mnet_rpc', $rpc);
-	                    	}
-	                    }
-	                    
-	                    $endcallback($component, true, $verbose);
-	                }
-	            }
-	        }
+        foreach ($plugindirs as $dir) {
+            $plug = basename($dir);
+            $fullplug = $dir;
+            
+            if ($plug === 'CVS') {   // Someone has unzipped the template, ignore it.
+                continue;
+            }
+    
+            if ($plug === 'NEWMODULE') {   // Someone has unzipped the template, ignore it.
+                continue;
+            }
 
-	        $installedversion = get_config($plugin->fullname, 'version');
-	        if (empty($installedversion)) { // new installation
-	            $startcallback($component, true, $verbose);
-	
-	        /// Install tables if defined
-	            if (file_exists($fullplug.'/db/install.xml')) {
-	                $DB->get_manager()->install_from_xmldb_file($fullplug.'/db/install.xml');
-	            }
-	
-	        /// store version
-	            upgrade_plugin_savepoint(true, $plugin->version, $type, $plug, false);
-	
-	        /// execute post install file
-	            if (file_exists($fullplug.'/db/install.php')) {
-	                require_once($fullplug.'/db/install.php');
-	                set_config('installrunning', 1, $plugin->fullname);
-	                $post_install_function = 'xmldb_'.$plugin->fullname.'_install';
-	                $post_install_function();
-	                unset_config('installrunning', $plugin->fullname);
-	            }
-	
-	        /// Install various components
-	            update_capabilities($component);
-	            log_update_descriptions($component);
-	            external_update_descriptions($component);
-	            events_update_definition($component);
-	            message_update_providers($component);
-	            if ($type === 'message') {
-	                message_update_processors($plug);
-	            }
-	            vmoodle_upgrade_plugin_mnet_functions($component, $fullplug);
+            // Reset time so that it works when installing a large number of plugins.
+            set_time_limit(600);
+            $component = clean_param($type.'_'.$plug, PARAM_COMPONENT); // standardised plugin name
+    
+            // Check plugin dir is valid name.
+            if (empty($component)) {
+                throw new plugin_defective_exception($type.'_'.$plug, 'Invalid plugin directory name.');
+            }
 
-				// fix wrongly twicked paths
-                if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset' ", array())){
-                	foreach($rpc_shifted_defines as $rpc){
-                		$rpc->xmlrpcpath = str_replace('vmoocleadminset', 'blocks/vmoodle/plugins');
-                		$DB->update_record('mnet_rpc', $rpc);
-                	}
+            if (!is_readable($fullplug.'/version.php')) {
+                continue;
+            }
+
+            $plugin = new stdClass();
+            require($fullplug.'/version.php'); // Defines $plugin with version etc.
+
+            // If plugin tells us it's full name we may check the location.
+            if (isset($plugin->component)) {
+                if ($plugin->component !== $component) {
+                    throw new plugin_defective_exception($component, 'Plugin installed in wrong folder.');
                 }
-	
-	            purge_all_caches();
-	            $endcallback($component, true, $verbose);
-	
-	        } else if ($installedversion < $plugin->version) { // upgrade
-	        /// Run the upgrade function for the plugin.
-	            $startcallback($component, false, $verbose);
-	
-	            if (is_readable($fullplug.'/db/upgrade.php')) {
-	                require_once($fullplug.'/db/upgrade.php');  // defines upgrading function
-	
-	                $newupgrade_function = 'xmldb_'.$plugin->fullname.'_upgrade';
-	                $result = $newupgrade_function($installedversion);
-	            } else {
-	                $result = true;
-	            }
-	
-	            $installedversion = get_config($plugin->fullname, 'version');
-	            if ($installedversion < $plugin->version) {
-	                // store version if not already there
-	                upgrade_plugin_savepoint($result, $plugin->version, $type, $plug, false);
-	            }
-	
-	        /// Upgrade various components
-	            update_capabilities($component);
-	            log_update_descriptions($component);
-	            external_update_descriptions($component);
-	            events_update_definition($component);
-	            message_update_providers($component);
-	            if ($type === 'message') {
-	                message_update_processors($plug);
-	            }
-	            vmoodle_upgrade_plugin_mnet_functions($component, $fullplug);
-	
-	            purge_all_caches();
-	            $endcallback($component, false, $verbose);
-	
-	        } else if ($installedversion > $plugin->version) {
-	            throw new downgrade_exception($component, $installedversion, $plugin->version);
-	        }
-	    }
-	}
+            }
+
+            if (empty($plugin->version)) {
+                throw new plugin_defective_exception($component, 'Missing version value in version.php');
+            }
+
+            $plugin->name = $plug;
+            $plugin->fullname = $component;
+
+            if (!empty($plugin->requires)) {
+                if ($plugin->requires > $CFG->version) {
+                    throw new upgrade_requires_exception($component, $plugin->version, $CFG->version, $plugin->requires);
+                } else if ($plugin->requires < 2010000000) {
+                    throw new plugin_defective_exception($component, 'Plugin is not compatible with Moodle 2.x or later.');
+                }
+            }
+
+            // Try to recover from interrupted install.php if needed.
+            if (file_exists($fullplug.'/db/install.php')) {
+                if (get_config($plugin->fullname, 'installrunning')) {
+                    require_once($fullplug.'/db/install.php');
+                    $recover_install_function = 'xmldb_'.$plugin->fullname.'_install_recovery';
+                    if (function_exists($recover_install_function)) {
+                        $startcallback($component, true, $verbose);
+                        $recover_install_function();
+                        unset_config('installrunning', $plugin->fullname);
+                        update_capabilities($component);
+                        log_update_descriptions($component);
+                        external_update_descriptions($component);
+                        events_update_definition($component);
+                        message_update_providers($component);
+                        if ($type === 'message') {
+                            message_update_processors($plug);
+                        }
+                        vmoodle_upgrade_plugin_mnet_functions($component, $fullplug);
+
+                        // Fix wrongly twicked paths.
+                        if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset' ", array())) {
+                            foreach($rpc_shifted_defines as $rpc) {
+                                $rpc->xmlrpcpath = str_replace('vmoocleadminset', 'blocks/vmoodle/plugins');
+                                $DB->update_record('mnet_rpc', $rpc);
+                            }
+                        }
+
+                        $endcallback($component, true, $verbose);
+                    }
+                }
+            }
+
+            $installedversion = get_config($plugin->fullname, 'version');
+            if (empty($installedversion)) { // New installation.
+                $startcallback($component, true, $verbose);
+
+                // Install tables if defined.
+                if (file_exists($fullplug.'/db/install.xml')) {
+                    $DB->get_manager()->install_from_xmldb_file($fullplug.'/db/install.xml');
+                }
+
+                // Store version.
+                upgrade_plugin_savepoint(true, $plugin->version, $type, $plug, false);
+
+                // Execute post install file.
+                if (file_exists($fullplug.'/db/install.php')) {
+                    require_once($fullplug.'/db/install.php');
+                    set_config('installrunning', 1, $plugin->fullname);
+                    $post_install_function = 'xmldb_'.$plugin->fullname.'_install';
+                    $post_install_function();
+                    unset_config('installrunning', $plugin->fullname);
+                }
+
+                // Install various components.
+                update_capabilities($component);
+                log_update_descriptions($component);
+                external_update_descriptions($component);
+                events_update_definition($component);
+                message_update_providers($component);
+                if ($type === 'message') {
+                    message_update_processors($plug);
+                }
+                vmoodle_upgrade_plugin_mnet_functions($component, $fullplug);
+
+                // Fix wrongly twicked paths.
+                if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset' ", array())) {
+                    foreach($rpc_shifted_defines as $rpc) {
+                        $rpc->xmlrpcpath = str_replace('vmoocleadminset', 'blocks/vmoodle/plugins');
+                        $DB->update_record('mnet_rpc', $rpc);
+                    }
+                }
+
+                purge_all_caches();
+                $endcallback($component, true, $verbose);
+
+            } else if ($installedversion < $plugin->version) { // Upgrade
+                // Run the upgrade function for the plugin.
+                $startcallback($component, false, $verbose);
+
+                if (is_readable($fullplug.'/db/upgrade.php')) {
+                    require_once($fullplug.'/db/upgrade.php'); // Defines upgrading function
+
+                    $newupgrade_function = 'xmldb_'.$plugin->fullname.'_upgrade';
+                    $result = $newupgrade_function($installedversion);
+                } else {
+                    $result = true;
+                }
+
+                $installedversion = get_config($plugin->fullname, 'version');
+                if ($installedversion < $plugin->version) {
+                    // store version if not already there.
+                    upgrade_plugin_savepoint($result, $plugin->version, $type, $plug, false);
+                }
+
+                // Upgrade various components.
+                update_capabilities($component);
+                log_update_descriptions($component);
+                external_update_descriptions($component);
+                events_update_definition($component);
+                message_update_providers($component);
+                if ($type === 'message') {
+                    message_update_processors($plug);
+                }
+                vmoodle_upgrade_plugin_mnet_functions($component, $fullplug);
+
+                purge_all_caches();
+                $endcallback($component, false, $verbose);
+
+            } else if ($installedversion > $plugin->version) {
+                throw new downgrade_exception($component, $installedversion, $plugin->version);
+            }
+        }
+    }
 }
 
-function vmoodle_uninstall_plugins(){
-	global $CFG;
-	
-	include $CFG->dirroot.'/blocks/vmoodle/db/subplugins.php';
+function vmoodle_uninstall_plugins() {
+    global $CFG;
 
-    foreach($subplugins as $type => $subpluginpath){
+    include($CFG->dirroot.'/blocks/vmoodle/db/subplugins.php');
 
-    	$plugindirs = glob($CFG->dirroot.'/'.$subpluginpath.'/*');
-    	
-	    foreach ($plugindirs as $dir) {
-	    	
-			$plug = basename($dir);
-			$fullplug = $dir;
+    foreach($subplugins as $type => $subpluginpath) {
 
-	        if ($plug === 'CVS') {   // Someone has unzipped the template, ignore it
-	            continue;
-	        }
-	
-	        if ($plug === 'NEWMODULE') {   // Someone has unzipped the template, ignore it
-	            continue;
-	        }
-			
-			vmoodle_uninstall_plugin($type, $plug, $fullplug);
-		}
-	}
+        $plugindirs = glob($CFG->dirroot.'/'.$subpluginpath.'/*');
+
+        foreach ($plugindirs as $dir) {
+
+            $plug = basename($dir);
+            $fullplug = $dir;
+
+            if ($plug === 'CVS') {   // Someone has unzipped the template, ignore it.
+                continue;
+            }
+    
+            if ($plug === 'NEWMODULE') {   // Someone has unzipped the template, ignore it.
+                continue;
+            }
+
+            vmoodle_uninstall_plugin($type, $plug, $fullplug);
+        }
+    }
 }
 
 /**
@@ -245,40 +257,40 @@ function vmoodle_uninstall_plugin($type, $name, $plugindirectory) {
         }
     }
 
-    // perform clean-up task common for all the plugin/subplugin types
+    // Perform clean-up task common for all the plugin/subplugin types.
 
-    //delete the web service functions and pre-built services
+    // Delete the web service functions and pre-built services.
     require_once($CFG->dirroot.'/lib/externallib.php');
     external_delete_descriptions($component);
 
-    // delete calendar events
+    // Delete calendar events.
     $DB->delete_records('event', array('modulename' => $pluginname));
 
-    // delete all the logs
+    // Delete all the logs.
     $DB->delete_records('log', array('module' => $pluginname));
 
-    // delete log_display information
+    // Delete log_display information.
     $DB->delete_records('log_display', array('component' => $component));
 
-    // delete the module configuration records
+    // Delete the module configuration records.
     unset_all_config_for_plugin($pluginname);
 
     // delete message provider
     message_provider_uninstall($component);
 
-    // delete message processor
+    // Delete message processor.
     if ($type === 'message') {
         message_processor_uninstall($name);
     }
 
-    // delete the plugin tables
+    // Delete the plugin tables.
     $xmldbfilepath = $plugindirectory . '/db/install.xml';
     drop_plugin_tables($component, $xmldbfilepath, false);
 
-    // delete the capabilities that were defined by this module
+    // Delete the capabilities that were defined by this module.
     capabilities_cleanup($component);
 
-    // remove event handlers and dequeue pending events
+    // Remove event handlers and dequeue pending events.
     events_uninstall($component);
 
     echo $OUTPUT->notification(get_string('success'), 'notifysuccess');
@@ -294,36 +306,36 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
     global $DB, $CFG;
 
     list($type, $plugin) = explode('_', $component);
-    
+
     $publishes = array();
     $subscribes = array();
     if (file_exists($path . '/db/mnet.php')) {
-        require_once($path . '/db/mnet.php'); // $publishes comes from this file
+        require_once($path . '/db/mnet.php'); // $publishes comes from this file.
     }
     if (empty($publishes)) {
-        $publishes = array(); // still need this to be able to disable stuff later
+        $publishes = array(); // Still need this to be able to disable stuff later.
     }
     if (empty($subscribes)) {
-        $subscribes = array(); // still need this to be able to disable stuff later
+        $subscribes = array(); // Still need this to be able to disable stuff later.
     }
 
     static $servicecache = array();
 
-    // rekey an array based on the rpc method for easy lookups later
+    // Rekey an array based on the rpc method for easy lookups later.
     $publishmethodservices = array();
     $subscribemethodservices = array();
-    foreach($publishes as $servicename => $service) {
+    foreach ($publishes as $servicename => $service) {
         if (is_array($service['methods'])) {
-            foreach($service['methods'] as $methodname) {
+            foreach ($service['methods'] as $methodname) {
                 $service['servicename'] = $servicename;
                 $publishmethodservices[$methodname][] = $service;
             }
         }
     }
 
-    // Disable functions that don't exist (any more) in the source
+    // Disable functions that don't exist (any more) in the source.
     // Should these be deleted? What about their permissions records?
-    foreach ($DB->get_records('mnet_rpc', array('pluginname'=>$plugin, 'plugintype'=>$type), 'functionname ASC ') as $rpc) {
+    foreach ($DB->get_records('mnet_rpc', array('pluginname' => $plugin, 'plugintype' => $type), 'functionname ASC ') as $rpc) {
         if (!array_key_exists($rpc->functionname, $publishmethodservices) && $rpc->enabled) {
             $DB->set_field('mnet_rpc', 'enabled', 0, array('id' => $rpc->id));
         } else if (array_key_exists($rpc->functionname, $publishmethodservices) && !$rpc->enabled) {
@@ -331,9 +343,9 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
         }
     }
 
-    // reflect all the services we're publishing and save them
+    // Reflect all the services we're publishing and save them.
     require_once($CFG->dirroot . '/lib/zend/Zend/Server/Reflection.php');
-    static $cachedclasses = array(); // to store reflection information in
+    static $cachedclasses = array(); // To store reflection information in.
     foreach ($publishes as $service => $data) {
         $f = $data['filename'];
         $c = $data['classname'];
@@ -348,7 +360,7 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
             if (is_string($method)) {
                 $dataobject->functionname = $method;
 
-            } else if (is_array($method)) { // wants to override file or class
+            } else if (is_array($method)) { // Wants to override file or class.
                 $dataobject->functionname = $method['method'];
                 $dataobject->classname     = $method['classname'];
                 $dataobject->filename      = $method['filename'];
@@ -358,13 +370,13 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
             $dataobject->static = false;
 
             require_once($path . '/' . $dataobject->filename);
-            $functionreflect = null; // slightly different ways to get this depending on whether it's a class method or a function
+            $functionreflect = null; // Slightly different ways to get this depending on whether it's a class method or a function.
             if (!empty($dataobject->classname)) {
                 if (!class_exists($dataobject->classname)) {
                     throw new moodle_exception('installnosuchmethod', 'mnet', '', (object)array('method' => $dataobject->functionname, 'class' => $dataobject->classname));
                 }
                 $key = $dataobject->filename . '|' . $dataobject->classname;
-                if (!array_key_exists($key, $cachedclasses)) { // look to see if we've already got a reflection object
+                if (!array_key_exists($key, $cachedclasses)) { // Look to see if we've already got a reflection object.
                     try {
                         $cachedclasses[$key] = Zend_Server_Reflection::reflectClass($dataobject->classname);
                     } catch (Zend_Server_Reflection_Exception $e) { // catch these and rethrow them to something more helpful
@@ -405,8 +417,10 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
                 $dataobject->id = $DB->insert_record('mnet_rpc', $dataobject, true);
             }
 
-            // TODO this API versioning must be reworked, here the recently processed method
-            // sets the service API which may not be correct
+            /*
+             * TODO this API versioning must be reworked, here the recently processed method
+             * sets the service API which may not be correct
+             */
             foreach ($publishmethodservices[$dataobject->functionname] as $service) {
                 if ($serviceobj = $DB->get_record('mnet_service', array('name'=>$service['servicename']))) {
                     $serviceobj->apiversion = $service['apiversion'];
@@ -429,7 +443,7 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
             }
         }
     }
-    // finished with methods we publish, now do subscribable methods
+    // Finished with methods we publish, now do subscribable methods.
     foreach($subscribes as $service => $methods) {
         if (!array_key_exists($service, $servicecache)) {
             if (!$serviceobj = $DB->get_record('mnet_service', array('name' =>  $service))) {

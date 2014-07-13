@@ -8,14 +8,17 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 
+namespace vmoodleadminset_roles;
+Use \block_vmoodle\commands\Command_Category;
+
 // Creating category
-$category = new Vmoodle_Command_Category('roles');
+$category = new Command_Category('roles');
 
 // Adding commands
-$category->addCommand(new Vmoodle_Command_Role_Sync());
-$category->addCommand(new Vmoodle_Command_Role_Compare());
-$category->addCommand(new Vmoodle_Command_Role_Allow_Sync());
-$category->addCommand(new Vmoodle_Command_Role_Allow_Compare());
-					
+$category->addCommand(new Command_Role_Sync());
+$category->addCommand(new Command_Role_Compare());
+$category->addCommand(new Command_Role_Allow_Sync());
+$category->addCommand(new Command_Role_Allow_Compare());
+
 // Returning the category
 return $category;

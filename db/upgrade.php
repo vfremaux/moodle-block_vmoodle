@@ -1,5 +1,4 @@
-<?php  
-
+<?php
 // This file keeps track of upgrades to 
 // the vmoodle block
 //
@@ -17,13 +16,13 @@
 // The commands in here will all be database-neutral,
 // using the functions defined in lib/ddllib.php
 
-function xmldb_block_vmoodle_upgrade($oldversion=0) {
+function xmldb_block_vmoodle_upgrade($oldversion = 0) {
 
     global $CFG, $THEME, $DB;
 
     $result = true;
 
-	/// Moodle 2.0 Upgrade break
+    // Moodle 2.0 Upgrade break.
 
     return $result;
 }

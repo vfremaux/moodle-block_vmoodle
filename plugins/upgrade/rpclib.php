@@ -40,8 +40,6 @@ function mnetadmin_rpc_upgrade($user, $json_response = true){
 		}
 	}
 
-	// debug_trace('Remote Upgrade : Start Upgrade');
-
 	// Creating response
 	$response = new stdclass();
 	$response->status = RPC_SUCCESS;
@@ -75,7 +73,6 @@ function mnetadmin_rpc_upgrade($user, $json_response = true){
 	// debug_trace('Remote Upgrade : Environment check');
 	list($envstatus, $environment_results) = check_moodle_environment(normalize_version($release), ENV_SELECT_NEWER);
 	if (!$envstatus) {
-	    // debug_trace("Upgrade fails ($envstatus) for environment issue : ".serialize($environment_results));
 		$response->status = RPC_FAILURE_RUN;
 	    $response->error = vmoodle_get_string('environmentissues', 'vmoodleadminset_upgrade');
 	    $response->errors[] = vmoodle_get_string('environmentissues', 'vmoodleadminset_upgrade');

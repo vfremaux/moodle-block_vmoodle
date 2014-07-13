@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * This file contains the mnet services for the user_mnet_host plugin
  *
@@ -27,8 +26,8 @@
 
 $publishes = array(
     'mnetadmin' => array(
-		'servicename' => 'mnetadmin',
-		'description' => get_string('mnetadmin_name', 'block_vmoodle'),
+        'servicename' => 'mnetadmin',
+        'description' => get_string('mnetadmin_name', 'block_vmoodle'),
         'apiversion' => 1,
         'classname'  => '',
         'filename'   => 'rpclib.php',

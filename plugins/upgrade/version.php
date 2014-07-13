@@ -7,5 +7,7 @@
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  */
 $plugin = new Stdclass();
-$plugin->version = 2013092009;
+$plugin->version = 2014071300;
 $plugin->component = 'vmoodleadminset_upgrade';
+$plugin->requires = 2013111800;
+$plugin->dependencies = array('block_vmoodle' => 2014020400);
