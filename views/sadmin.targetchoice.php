@@ -25,9 +25,9 @@
  */
 
 // Loading librairies.
-require_once(VMOODLE_CLASSES_DIR.'Command_Form.class.php');
-require_once(VMOODLE_CLASSES_DIR.'Target_Filter_Form.class.php');
-require_once(VMOODLE_CLASSES_DIR.'Target_Form.class.php');
+Use \block_vmoodle\commands\Command_Form;
+Use \block_vmoodle\Target_Filter_Form;
+Use \block_vmoodle\Target_Form;
 
 // Getting retrieve platform command.
 if (!isset($rpcommand) && isset($SESSION->vmoodle_sa['command'])) {
@@ -52,13 +52,13 @@ if (isset($SESSION->vmoodle_sa['platforms'])) {
 }
 
 // Instantiating forms.
-$command_form = new Vmoodle_Command_Form($command, Vmoodle_Command_Form::MODE_DISPLAY_COMMAND);
-$target_filter_form = new Vmoodle_Target_Filter_Form();
+$command_form = new Command_Form($command, Command_Form::MODE_DISPLAY_COMMAND);
+$target_filter_form = new Target_Filter_Form();
 if (!isset($target_form)) {
-    $target_form = new Vmoodle_Target_Form(array('aplatforms' => $aplatforms, 'splatforms' => $splatforms));
+    $target_form = new Target_Form(array('aplatforms' => $aplatforms, 'splatforms' => $splatforms));
 }
 if (!(is_null($rpcommand) || isset($rpcommand_form))) {
-    $rpcommand_form  = new Vmoodle_Command_Form($rpcommand, Vmoodle_Command_Form::MODE_RETRIEVE_PLATFORM);
+    $rpcommand_form  = new Command_Form($rpcommand, Command_Form::MODE_RETRIEVE_PLATFORM);
 }
 
 // Display forms.

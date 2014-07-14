@@ -3,7 +3,7 @@
 namespace vmoodleadminset_sql;
 
 /**
- * Exception about Vmoodle_Command_Sql.
+ * Exception about Command_Sql.
  * 
  * @package block-vmoodle
  * @category blocks

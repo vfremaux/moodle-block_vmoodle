@@ -3,7 +3,7 @@
 namespace vmoodleadminset_generic;
 
 /**
- * Exception about Vmoodle_Command_Maintenance.
+ * Exception about Command_Maintenance.
  * 
  * @package block-vmoodle
  * @category blocks

@@ -53,7 +53,7 @@ class Command_Role_Sync extends Command {
         require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
 
         // Checking capabilities.
-        if (!has_capability('block/vmoodle:execute', context_system::instance())) {
+        if (!has_capability('block/vmoodle:execute', \context_system::instance())) {
             throw new Command_Exception('insuffisantcapabilities');
         }
 
@@ -68,7 +68,7 @@ class Command_Role_Sync extends Command {
         }
 
         // Creating peer to read role configuration.
-        $mnet_host = new mnet_peer();
+        $mnet_host = new \mnet_peer();
         if (!$mnet_host->bootstrap($this->getParameter('platform')->getValue(), null, 'moodle')) {
             $response = (object) array(
                             'status' => MNET_FAILURE,

@@ -3,7 +3,7 @@
 namespace vmoodleadminset_generic;
 
 /**
- * Exception about Vmoodle_Command_Sql.
+ * Exception about Command_PurgeCaches.
  * 
  * @package block-vmoodle
  * @category blocks

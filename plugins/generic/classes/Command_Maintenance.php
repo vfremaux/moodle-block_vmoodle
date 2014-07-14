@@ -42,14 +42,14 @@ class Command_Maintenance extends Command {
      * @param string $name Command's name.
      * @param string $description Command's description.
      * @param string $sql SQL command.
-     * @param string $parameters Command's parameters (optional / could be null, Vmoodle_Command_Parameter object or Vmoodle_Command_Parameter array).
-     * @param Vmoodle_Command $rpcommand Retrieve platforms command (optional / could be null or Vmoodle_Command object).
-     * @throws Vmoodle_Command_Exception
+     * @param string $parameters Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
+     * @param Command $rpcommand Retrieve platforms command (optional / could be null or Command object).
+     * @throws Command_Exception
      */
     public function __construct($name, $description, $parameters = null, $rpcommand = null) {
         global $vmcommands_constants;
 
-        // Creating Vmoodle_Command
+        // Creating Command
         parent::__construct($name, $description, $parameters, $rpcommand);
 
         if (is_null($parameters) || is_array($parameters)) {
@@ -64,7 +64,7 @@ class Command_Maintenance extends Command {
     /**
      * Execute the command.
      * @param mixed $host The hosts where run the command (may be wwwroot or an array).
-     * @throws Vmoodle_Command_Maintenance_Exception
+     * @throws Command_Maintenance_Exception
      */
     public function run($hosts) {
         global $CFG, $USER;
@@ -78,7 +78,7 @@ class Command_Maintenance extends Command {
         }
 
         // Checking capabilities.
-        if (!has_capability('block/vmoodle:execute', context_system::instance())) {
+        if (!has_capability('block/vmoodle:execute', \context_system::instance())) {
             throw new Command_Maintenance_Exception('insuffisantcapabilities');
         }
 
@@ -88,7 +88,7 @@ class Command_Maintenance extends Command {
         // Creating peers.
         $mnet_hosts = array();
         foreach ($hosts as $host => $name) {
-            $mnet_host = new mnet_peer();
+            $mnet_host = new \mnet_peer();
             if ($mnet_host->bootstrap($host, null, 'moodle')) {
                 $mnet_hosts[] = $mnet_host;
             } else {
@@ -132,7 +132,7 @@ class Command_Maintenance extends Command {
      * Get the result of command execution for one host.
      * @param string $host The host to retrieve result (optional, if null, returns general result).
      * @param string $key The information to retrieve (ie status, error / optional).
-     * @throws Vmoodle_Command_Sql_Exception
+     * @throws Command_Sql_Exception
      */
     public function getResult($host = null, $key = null) {
         // Checking if command has been runned.

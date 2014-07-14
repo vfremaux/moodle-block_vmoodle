@@ -5,7 +5,7 @@ namespace block_vmoodle;
 // Moodle form's library.
 
 require_once($CFG->libdir.'/formslib.php');
-if (file_exists($CFG->libdir.'/pear/HTML/QuickForm/elementgrid.php')){
+if (file_exists($CFG->libdir.'/pear/HTML/QuickForm/elementgrid.php')) {
     require_once($CFG->libdir.'/pear/HTML/QuickForm/elementgrid.php');
 } else {
     require_once('__other/elementgrid.php');

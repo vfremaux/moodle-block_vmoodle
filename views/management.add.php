@@ -33,9 +33,9 @@ echo $OUTPUT->box_start();
 
 // Displays the form.
 if (isset($SESSION->vmoodle_mg['dataform'])) {
-    $platform_form = new Vmoodle_Host_Form('add', $SESSION->vmoodle_mg['dataform']);
+    $platform_form = new \block_vmoodle\Host_Form('add', $SESSION->vmoodle_mg['dataform']);
 } else {
-    $platform_form = new Vmoodle_Host_Form('add', null);
+    $platform_form = new \block_vmoodle\Host_Form('add', null);
 
     if ($CFG->block_vmoodle_automatedschema) {
         if ($CFG->block_vmoodle_mnet == 'NEW') {

@@ -40,7 +40,7 @@ class Command_Role_Compare extends Command {
         $cmd_desc = vmoodle_get_string('cmdcomparedesc', 'vmoodleadminset_roles');
 
         // Getting role parameter
-        $roles = role_fix_names(get_all_roles(), context_system::instance(), ROLENAME_ORIGINAL);
+        $roles = role_fix_names(get_all_roles(), \context_system::instance(), ROLENAME_ORIGINAL);
         $rolemenu = array();
         foreach($roles as $r){
             $rolemenu[$r->shortname] = $r->localname;
@@ -63,7 +63,7 @@ class Command_Role_Compare extends Command {
         require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
 
         // Checking capabilities.
-        if (!has_capability('block/vmoodle:execute', context_system::instance())) {
+        if (!has_capability('block/vmoodle:execute', \context_system::instance())) {
             throw new Command_Exception('insuffisantcapabilities');
         }
 
@@ -81,7 +81,7 @@ class Command_Role_Compare extends Command {
         // Creating peers.
         $mnet_hosts = array();
         foreach ($hosts as $host => $name) {
-            $mnet_host = new mnet_peer();
+            $mnet_host = new \mnet_peer();
             if ($mnet_host->bootstrap($host, null, 'moodle')) {
                 $mnet_hosts[] = $mnet_host;
             } else {

@@ -1,8 +1,8 @@
 <?php
 
-require_once($CFG->libdir.'/formslib.php');
-
 namespace block_vmoodle;
+
+require_once($CFG->libdir.'/formslib.php');
 
 /**
  * Define forms to get platforms by original value.
@@ -13,7 +13,7 @@ namespace block_vmoodle;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 // TODO Comming.
-class Target_Value_Form extends moodleform {
+class Target_Value_Form extends \moodleform {
 
     /**
      * Constructor.
@@ -26,10 +26,8 @@ class Target_Value_Form extends moodleform {
      * Describes form.
      */
     public function definition() {
-        // Setting variables
+        // Setting variables.
         $mform = &$this->_form;
-        
-        
     }
     
 }

@@ -1,8 +1,8 @@
 <?php
 
-require_once($CFG->libdir.'/formslib.php');
-
 namespace block_vmoodle;
+
+require_once($CFG->libdir.'/formslib.php');
 
 /**
  * Define form to choose targets.
@@ -12,7 +12,7 @@ namespace block_vmoodle;
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-class Target_Form extends moodleform {
+class Target_Form extends \moodleform {
     /**
      * Constructor.
      * @param    $customdata        array        The data about the form such as available platforms (optional).    
@@ -52,8 +52,13 @@ class Target_Form extends moodleform {
 
         // Adding hidden field.
         $mform->addElement('hidden', 'view', 'sadmin');
+        $mform->setType('view', PARAM_TEXT);
+
         $mform->addElement('hidden', 'what', 'sendcommand');
+        $mform->setType('what', PARAM_TEXT);
+
         $mform->addElement('hidden', 'achoices', json_encode($achoices));
+        $mform->setType('achoices', PARAM_TEXT);
 
         // Adding selects group.
         $selectarray = array();

@@ -1215,7 +1215,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
             if ($ok) {
                 // We can do it.
                 $userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
-                $rpc_client = new Vmoodle_XmlRpc_Client();
+                $rpc_client = new \block_vmoodle\XmlRpc_Client();
                 $rpc_client->reset_method();
                 $rpc_client->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_create_user');
                 $caller = new StdClass();

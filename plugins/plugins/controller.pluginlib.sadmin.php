@@ -60,7 +60,7 @@ switch ($action) {
 
         // Retrieving previous command
         $command = unserialize($SESSION->vmoodle_sa['command']);
-        if ($SESSION->vmoodle_sa['wizardnow'] != 'report' || !($command instanceof Vmoodle_Command_Plugins_Compare)){
+        if ($SESSION->vmoodle_sa['wizardnow'] != 'report' || !($command instanceof \vmoodleadminset_roles\Command_Plugins_Compare)){
             header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
         }
 
@@ -92,7 +92,7 @@ switch ($action) {
         // Getting old command.
         if (!isset($SESSION->vmoodle_sa['rolelib']['command']) 
                 || !isset($SESSION->vmoodle_sa['rolelib']['platforms']) 
-                        || !($SESSION->vmoodle_sa['rolelib']['command'] instanceof Vmoodle_Command_Role_Compare)) {
+                        || !($SESSION->vmoodle_sa['rolelib']['command'] instanceof \vmoodleadminset_roles\Command_Role_Compare)) {
             header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
         }
         $command = unserialize($SESSION->vmoodle_sa['rolelib']['command']);

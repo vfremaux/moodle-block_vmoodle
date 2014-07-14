@@ -17,7 +17,7 @@ class Command_Plugins_Sync extends Command {
 
     /**
      * Constructor.
-     * @throws                Vmoodle_Command_Exception.
+     * @throws                Command_Exception.
      */
     function __construct() {
         global $DB;
@@ -40,7 +40,7 @@ class Command_Plugins_Sync extends Command {
     /**
      * Execute the command.
      * @param    $hosts        mixed            The host where run the command (may be wwwroot or an array).
-     * @throws                Vmoodle_Command_Exception
+     * @throws                Command_Exception
      */
     function run($hosts) {
         global $CFG, $USER;
@@ -160,7 +160,7 @@ class Command_Plugins_Sync extends Command {
      * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
      * @param    $key        string            The information to retrieve (ie status, error / optional).
      * @return                mixed            The result or null if result does not exist.
-     * @throws                Vmoodle_Command_Exception.
+     * @throws                Command_Exception.
      */
     function getResult($host=null, $key=null) {
 

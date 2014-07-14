@@ -63,7 +63,7 @@ foreach ($plugin_libs as $lib) {
 }
 
 /**
- * Get available platforms to send Vmoodle_Command.
+ * Get available platforms to send Command.
  * @return array The availables platforms based on MNET or Vmoodle table.
  */
 function get_available_platforms() {
@@ -201,7 +201,7 @@ function print_collapsable_block_end() {
 /**
  * Load a vmoodle plugin and cache it.
  * @param string $plugin_name The plugin name.
- * @return Vmoodle_Command_Category The category plugin.
+ * @return Command_Category The category plugin.
  */
 function load_vmplugin($plugin_name) {
     global $CFG;
@@ -882,7 +882,7 @@ function vmoodle_bind_to_network($submitteddata, &$newmnet_host){
         // Member(s) of the subnetwork add the new host.
         if (!empty($subnetwork_hosts)) {
             // debug_trace("step 4.4.4 : bind peers");
-            $rpc_client = new Vmoodle_XmlRpc_Client();
+            $rpc_client = new \block_vmoodle\XmlRpc_Client();
             $rpc_client->reset_method();
             $rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
             // Authentication params.
@@ -908,7 +908,7 @@ function vmoodle_bind_to_network($submitteddata, &$newmnet_host){
                 }
 
                 // debug_trace("step 4.4.4.1 : bind from <- $subnetwork_host->wwwroot");
-                $rpc_client_2 = new Vmoodle_XmlRpc_Client();
+                $rpc_client_2 = new \block_vmoodle\XmlRpc_Client();
                 $rpc_client_2->reset_method();
                 $rpc_client_2->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
                 // Authentication params.
@@ -958,7 +958,7 @@ function vmoodle_bind_to_network($submitteddata, &$newmnet_host){
     }
 
     // debug_trace('step 4.4.5.4 : Binding remote service strategy to main');
-    $rpc_client = new Vmoodle_XmlRpc_Client();
+    $rpc_client = new \block_vmoodle\XmlRpc_Client();
     $rpc_client->reset_method();
     $rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_bind_peer');
     $rpc_client->add_param($USER->username, 'string');

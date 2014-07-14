@@ -81,7 +81,7 @@ class Command_MultiSql extends Command {
         }
 
         // Checking capabilities.
-        if (!has_capability('block/vmoodle:execute', context_system::instance())) {
+        if (!has_capability('block/vmoodle:execute', \context_system::instance())) {
             throw new Command_Sql_Exception('insuffisantcapabilities');
         }
 
@@ -92,7 +92,7 @@ class Command_MultiSql extends Command {
         $mnet_hosts = array();
 
         foreach ($hosts as $host => $name) {
-            $mnet_host = new mnet_peer();
+            $mnet_host = new \mnet_peer();
 
             if ($mnet_host->bootstrap($host, null, 'moodle')) {
                 $mnet_hosts[] = $mnet_host;
@@ -143,7 +143,7 @@ class Command_MultiSql extends Command {
      * @param    $key        string            The information to retrieve (ie status, error / optional).
      * @throws                Command_Sql_Exception
      */
-    public function getResult($host=null, $key=null) {
+    public function getResult($host = null, $key = null) {
 
         // Checking if command has been runned.
         if (is_null($this->results)) {

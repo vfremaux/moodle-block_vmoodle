@@ -27,7 +27,7 @@
 
 namespace block_vmoodle;
 
-require_once($CFG->libdir . '/filelib.php'); // download_file_content() used here
+require_once($CFG->libdir.'/filelib.php'); // download_file_content() used here
 
 class Mnet_Peer {
 

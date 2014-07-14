@@ -55,7 +55,7 @@ switch ($action) {
 
         // Retrieving previous command.
         $command = unserialize($SESSION->vmoodle_sa['command']);
-        if ($SESSION->vmoodle_sa['wizardnow'] != 'report' || !($command instanceof Vmoodle_Command_Role_Compare)) {
+        if ($SESSION->vmoodle_sa['wizardnow'] != 'report' || !($command instanceof \vmoodleadminset_roles\Command_Role_Compare)) {
             header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
         }
         $role = $command->getParameter('role')->getValue();
@@ -65,7 +65,7 @@ switch ($action) {
         $SESSION->vmoodle_sa['rolelib']['platforms'] = $SESSION->vmoodle_sa['platforms'];
 
         // Creating RoleSyncCommand.
-        $rolesync_command = new Vmoodle_Command_Role_Capability_Sync();
+        $rolesync_command = new \vmoodleadminset_roles\Command_Role_Capability_Sync();
         $rolesync_command->getParameter('platform')->setValue($source_platform);
         $rolesync_command->getParameter('role')->setValue($role);
         $rolesync_command->getParameter('capability')->setValue($capability);
@@ -85,7 +85,7 @@ switch ($action) {
     // Going back to role comparison.
     case 'backtocomparison': {
         // Getting old command.
-        if (!isset($SESSION->vmoodle_sa['rolelib']['command']) || !isset($SESSION->vmoodle_sa['rolelib']['platforms']) || !($SESSION->vmoodle_sa['rolelib']['command'] instanceof Vmoodle_Command_Role_Compare)) {
+        if (!isset($SESSION->vmoodle_sa['rolelib']['command']) || !isset($SESSION->vmoodle_sa['rolelib']['platforms']) || !($SESSION->vmoodle_sa['rolelib']['command'] instanceof \vmoodleadminset_roles\Command_Role_Compare)) {
             header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
         }
         $command = unserialize($SESSION->vmoodle_sa['rolelib']['command']);

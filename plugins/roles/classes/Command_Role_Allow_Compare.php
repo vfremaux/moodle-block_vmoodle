@@ -29,7 +29,7 @@ class Command_Role_Allow_Compare extends Command {
 
     /**
      * Constructor.
-     * @throws            Vmoodle_Command_Exception.
+     * @throws            Command_Exception.
      */
     public function __construct() {
         global $DB;
@@ -51,7 +51,7 @@ class Command_Role_Allow_Compare extends Command {
     /**
      * Execute the command.
      * @param    $hosts        mixed            The host where run the command (may be wwwroot or an array).
-     * @throws                Vmoodle_Command_Exception.
+     * @throws                Command_Exception.
      */
     public function run($hosts) {
         global $CFG, $USER;
@@ -60,7 +60,7 @@ class Command_Role_Allow_Compare extends Command {
         require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
 
         // Checking capabilities.
-        if (!has_capability('block/vmoodle:execute', context_system::instance()))
+        if (!has_capability('block/vmoodle:execute', \context_system::instance()))
             throw new Command_Exception('insuffisantcapabilities');
 
         // Getting role
@@ -78,7 +78,7 @@ class Command_Role_Allow_Compare extends Command {
         // Creating peers
         $mnet_hosts = array();
         foreach($hosts as $host => $name) {
-            $mnet_host = new mnet_peer();
+            $mnet_host = new \mnet_peer();
             if ($mnet_host->bootstrap($host, null, 'moodle'))
                 $mnet_hosts[] = $mnet_host;
             else
@@ -121,7 +121,7 @@ class Command_Role_Allow_Compare extends Command {
      * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
      * @param    $key        string            The information to retrieve (ie status, error / optional).
      * @return                mixed            The result or null if result does not exist.
-     * @throws                Vmoodle_Command_Exception.
+     * @throws                Command_Exception.
      */
     public function getResult($host = null, $key = null) {
         // Checking if command has been runned
@@ -148,7 +148,7 @@ class Command_Role_Allow_Compare extends Command {
 
     /**
      * Process the role comparision.
-     * @throws            Vmoodle_Commmand_Exception.
+     * @throws            Commmand_Exception.
      */
     private function _process() {
         global $CFG,$DB,$OUTPUT;

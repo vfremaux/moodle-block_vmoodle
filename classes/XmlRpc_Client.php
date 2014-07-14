@@ -1,9 +1,9 @@
 <?php
 
-require_once $CFG->dirroot.'/mnet/peer.php';
-require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
-
 namespace block_vmoodle;
+
+require_once($CFG->dirroot.'/mnet/peer.php');
+require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 
 /**
  * Improvement of default MNET XML_RPC client.
@@ -19,7 +19,7 @@ namespace block_vmoodle;
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-class XmlRpc_Client extends mnet_xmlrpc_client {
+class XmlRpc_Client extends \mnet_xmlrpc_client {
 
     /**
      * Errors by host

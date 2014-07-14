@@ -83,7 +83,7 @@ if ($action == 'add') {
 
             unset($SESSION->vmoodledata);
             echo $OUTPUT->header();
-            $form = new Vmoodle_Host_Form('add');
+            $form = new \block_vmoodle\Host_Form('add');
             $form->set_data($platform_form);
             $form->display();
             echo $OUTPUT->footer();
@@ -110,7 +110,7 @@ if ($action == 'doadd') {
 
         // Retrieve submitted data, from the add form.
         unset($SESSION->vmoodle_mg['dataform']);
-        $platform_form    = new Vmoodle_Host_Form('add', null);
+        $platform_form    = new \block_vmoodle\Host_Form('add', null);
 
         // Check if form is cancelled.
         if ($platform_form->is_cancelled()) {
@@ -525,7 +525,7 @@ if ($action == 'edit') {
         // Print beginning of a box.
         echo $OUTPUT->box_start();
         // Displays the form with data (and errors).
-        $form = new Vmoodle_Host_Form('edit');
+        $form = new \block_vmoodle\Host_Form('edit');
         $form->set_data($platform_form);
         $form->display();
 
@@ -540,7 +540,7 @@ if ($action == 'edit') {
 
 if ($action == 'doedit') {
     // Retrieves data from the edit form.
-    $platform_form = new Vmoodle_Host_Form('edit');
+    $platform_form = new \block_vmoodle\Host_Form('edit');
 
     // Checks if form is cancelled
     if ($platform_form->is_cancelled()) {
@@ -618,7 +618,7 @@ if ($action == 'doedit') {
             if ($olddata->mnet > 0) {
 
                 // Call to 'unbind_peer'.
-                $rpc_client = new Vmoodle_XmlRpc_Client();
+                $rpc_client = new \block_vmoodle\XmlRpc_Client();
                 $rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_unbind_peer');
                 // Authentication params.
                 $rpc_client->add_param($USER->username, 'string');
@@ -642,7 +642,7 @@ if ($action == 'doedit') {
 
                     // unbind other from edited
                     // Call to 'disconnect_from_subnetwork'.
-                    $rpc_client_2 = new Vmoodle_XmlRpc_Client();
+                    $rpc_client_2 = new \block_vmoodle\XmlRpc_Client();
                     $rpc_client_2->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_unbind_peer');
                     // Authentication params.
                     $rpc_client_2->add_param($USER->username, 'string');
@@ -866,7 +866,7 @@ if (($action == 'delete') || ($action == 'fulldelete')) {
                     }
 
                     if(count($subnetwork_hosts) > 0){
-                        $rpc_client = new Vmoodle_XmlRpc_Client();
+                        $rpc_client = new \block_vmoodle\XmlRpc_Client();
                         $rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_unbind_peer');
                         $rpc_client->add_param($vmoodle->vhostname, 'string');
                         foreach($subnetwork_hosts as $subnetwork_host){
@@ -877,7 +877,7 @@ if (($action == 'delete') || ($action == 'fulldelete')) {
 
                         }
 
-                        $rpc_client = new Vmoodle_XmlRpc_Client();
+                        $rpc_client = new \block_vmoodle\XmlRpc_Client();
                         $rpc_client->set_method('blocks/vmoodle/rpclib.php/mnetadmin_rpc_disconnect_from_subnetwork');
                         $rpc_client->add_param($subnetwork_hosts, 'array');
                         $deleted_peer    =    new mnet_peer();

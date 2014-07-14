@@ -23,9 +23,9 @@
  */
 namespace block_vmoodle;
 
-require_once ($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir.'/formslib.php');
 
-class Host_Form extends moodleform {
+class Host_Form extends \moodleform {
     /**
      * Action to call from controller.
      */

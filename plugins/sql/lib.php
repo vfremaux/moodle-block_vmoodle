@@ -30,7 +30,7 @@ if (isset($vmcommands_constants))
  * @param    table            string                The table to read.
  * @param    select            mixed                The value of id or alternative field.
  * @param    fields            string                The fileds to retrieve (optional).
- * @throws                    Vmoodle_Command_Sql_Exception.
+ * @throws                    Command_Sql_Exception.
  */
 function vmoodle_get_field($host, $table, $select, $fields='*') {
     global $CFG, $USER, $DB;
