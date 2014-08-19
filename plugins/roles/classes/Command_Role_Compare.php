@@ -5,6 +5,8 @@ Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Exception;
 Use \block_vmoodle\commands\Command_Parameter;
 Use \context_system;
+Use \StdClass;
+Use \moodle_url;
 
 require_once($CFG->libdir.'/accesslib.php');
 
@@ -30,7 +32,7 @@ class Command_Role_Compare extends Command {
 
     /**
      * Constructor.
-     * @throws            Command_Exception.
+     * @throws Command_Exception.
      */
     public function __construct() {
         global $DB;
@@ -53,8 +55,8 @@ class Command_Role_Compare extends Command {
 
     /**
      * Execute the command.
-     * @param    $hosts        mixed            The host where run the command (may be wwwroot or an array).
-     * @throws                Command_Exception.
+     * @param mixed $hosts The host where run the command (may be wwwroot or an array).
+     * @throws Command_Exception.
      */
     public function run($hosts) {
         global $CFG, $USER;
@@ -113,7 +115,7 @@ class Command_Role_Compare extends Command {
             if ($response->status == RPC_SUCCESS)
                 $this->capabilities[$mnet_host->wwwroot] = $response->value;
         }
-        // Saving results
+        // Saving results.
         $this->results = $responses + $this->results;
 
         // Processing results.
@@ -122,10 +124,10 @@ class Command_Role_Compare extends Command {
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @return                mixed            The result or null if result does not exist.
-     * @throws                Command_Exception.
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @return mixed The result or null if result does not exist.
+     * @throws Command_Exception.
      */
     public function getResult($host = null, $key = null) {
         // Checking if command has been runned.
@@ -157,7 +159,7 @@ class Command_Role_Compare extends Command {
 
     /**
      * Process the role comparison.
-     * @throws            Commmand_Exception.
+     * @throws Commmand_Exception.
      */
     private function _process() {
         global $CFG,$DB,$OUTPUT;
@@ -342,8 +344,8 @@ class Command_Role_Compare extends Command {
 
     /**
      * Return counter value.
-     * @param    $counter    array            The counter.
-     * @return                int                The counter value.
+     * @param array $counter The counter.
+     * @return int The counter value.
      */
     private function _getCounterValue($counter) {
         return $counter['count'];
@@ -351,9 +353,9 @@ class Command_Role_Compare extends Command {
 
     /**
      * Give an order to capabilities (on component, contextlevel then name).
-     * @param    $cap1        object        The first capability to compare.
-     * @param    $cap2        object        The second capability to compare.
-     * @return                int            Return -1 if $cap1 is less than $cap2, 1 if more than $cap2, 0 otherwise.
+     * @param object $cap1 The first capability to compare.
+     * @param object $cap2 The second capability to compare.
+     * @return int Return -1 if $cap1 is less than $cap2, 1 if more than $cap2, 0 otherwise.
      */
     private function _orderCapability($cap1, $cap2) {
         if (!($cmp = strcmp($cap1->component, $cap2->component))) {

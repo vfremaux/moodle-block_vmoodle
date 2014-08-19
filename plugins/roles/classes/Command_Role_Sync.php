@@ -4,6 +4,7 @@ namespace vmoodleadminset_roles;
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Exception;
 Use \block_vmoodle\commands\Command_Parameter;
+Use \StdClass;
 
 /**
  * Describes a role syncrhonisation command.
@@ -89,7 +90,7 @@ class Command_Role_Sync extends Command {
 
             // Creating response.
             if (!isset($response)) {
-                $response = new stdclass;
+                $response = new StdClass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 $response->error = implode('<br/>', $rpc_client->getErrors($mnet_host));
@@ -169,10 +170,10 @@ class Command_Role_Sync extends Command {
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @return                mixed            The result or null if result does not exist.
-     * @throws                Command_Exception.
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @return mixed The result or null if result does not exist.
+     * @throws Command_Exception.
      */
     function getResult($host = null, $key = null) {
 

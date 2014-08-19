@@ -1,6 +1,6 @@
 <?php
 
-/// check keys and renew with peers.
+// check keys and renew with peers.
 
 if (!defined('MOODLE_INTERNAL')) die("This script cannot be used this way");
 
@@ -11,7 +11,7 @@ global $DB;
 
 require_once $CFG->dirroot.'/mnet/lib.php';
 // require_once $CFG->dirroot.'/blocks/vmoodle/mnet/lib.php';
-require_once $CFG->dirroot.'/blocks/vmoodle/classes/Mnet_Peer.class.php';
+Use \block_vmoodle\Mnet_Peer;
 
 $mnet = get_mnet_environment();
 
@@ -26,7 +26,7 @@ if (!isset($CFG->mnet_key_autorenew_min)) set_config('mnet_key_autorenew_min', 0
 $CFG->mnet_key_autorenew_time = $CFG->mnet_key_autorenew_hour * HOURSECS + $CFG->mnet_key_autorenew_min * MINSECS;
 
 // if autorenewal is enabled and we are mnetworking
-if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
+if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none') {
 
     include_once $CFG->dirroot.'/mnet/peer.php';
     include_once $CFG->dirroot.'/mnet/lib.php';
@@ -36,11 +36,11 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
     $trace = '';
 
     // key is getting old : check if it is time to operate
-    if ($mnet->public_key_expires - time() < $CFG->mnet_key_autorenew_gap * HOURSECS){
+    if ($mnet->public_key_expires - time() < $CFG->mnet_key_autorenew_gap * HOURSECS) {
 
-        // this one is needed as temporary global toggle between distinct cron invocations, 
+        // this one is needed as temporary global toggle between distinct cron invocations,
         // but should not be changed through the GUI
-        if (empty($CFG->mnet_autorenew_haveto)){
+        if (empty($CFG->mnet_autorenew_haveto)) {
             set_config('mnet_autorenew_haveto', 1);
             mtrace('Local key is expiring. Need renewing MNET keys...');
             $trace .= userdate(time()).' SET KEY RENEW ON on '.$CFG->wwwroot."\n";
@@ -59,11 +59,11 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
 
     // renew if needed
     $force = optional_param('forcerenew', 0, PARAM_INT);
-    if ($force){
+    if ($force) {
         mtrace("forced mode");
     }
     
-    if ($havetorenew || $force){
+    if ($havetorenew || $force) {
         mtrace("Local key will expire very soon. Renew MNET keys now !!...\n");
         // renew local key
 
@@ -73,8 +73,8 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
 
         // make a key and exchange it with all known and active peers
         $mnet_peers = $DB->get_records('mnet_host', array('deleted' => 0));
-        if ($mnet_peers){
-            foreach($mnet_peers as $peer){
+        if ($mnet_peers) {
+            foreach ($mnet_peers as $peer) {
 
                 if (($peer->id == $CFG->mnet_all_hosts_id) || ($peer->id == $CFG->mnet_localhost_id)) continue;
 
@@ -101,14 +101,14 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none'){
             }
         }       
         set_config('mnet_autorenew_haveto', 0);
-		$trace .= userdate(time()).' RESET KEY RENEW on '.$CFG->wwwroot."\n";
-		
-		/// record trace in trace file
-		if ($CFG->tracevmoodlekeyrenew){
-			if ($TRACE = fopen($CFG->dataroot.'/vmoodle_renew.log', 'w+')){
-				fputs($TRACE, $trace);
-				fclose($TRACE);
-			}
-		}
+        $trace .= userdate(time()).' RESET KEY RENEW on '.$CFG->wwwroot."\n";
+
+        /// record trace in trace file
+        if ($CFG->tracevmoodlekeyrenew) {
+            if ($TRACE = fopen($CFG->dataroot.'/vmoodle_renew.log', 'w+')) {
+                fputs($TRACE, $trace);
+                fclose($TRACE);
+            }
+        }
     }
 }

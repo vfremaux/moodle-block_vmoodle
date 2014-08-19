@@ -1,10 +1,9 @@
 <?php
 
-namespace block_vmoodle;
-
 // Moodle form's library.
 
 require_once($CFG->libdir.'/formslib.php');
+
 if (file_exists($CFG->libdir.'/pear/HTML/QuickForm/elementgrid.php')) {
     require_once($CFG->libdir.'/pear/HTML/QuickForm/elementgrid.php');
 } else {
@@ -18,7 +17,7 @@ if (file_exists($CFG->libdir.'/pear/HTML/QuickForm/elementgrid.php')) {
  * @author Moheissen Fabien (fabien.moheissen@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-class ServicesStrategy_Form extends \moodleform {
+class ServicesStrategy_Form extends moodleform {
 
     /**
      * Constructor.
@@ -41,7 +40,7 @@ class ServicesStrategy_Form extends \moodleform {
         $defaultservices    =    $DB->get_records('mnet_service', array('offer' => 1), 'name');
 
         // get version info to get real names
-        $self_mnet_peer = new \mnet_peer();
+        $self_mnet_peer = new mnet_peer();
         $self_mnet_peer->set_id($CFG->mnet_localhost_id);
         $myservices = mnet_get_service_info($self_mnet_peer);
 

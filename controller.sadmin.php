@@ -8,14 +8,15 @@
  */
  
 Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\AdvancedCommand_Form;
-Use \block_vmoodle\commands\AdvancedCommand_Upload_Form;
-Use \block_vmoodle\commands\Command_Form;
 Use \block_vmoodle\commands\Command_Exception;
 Use \block_vmoodle\commands\Command_Category;
 Use \block_vmoodle\Target_Form;
 Use \vmoodleadminset_sql\Command_Sql;
 Use \vmoodleadminset_sql\Command_MultiSql;
+
+require_once($CFG->dirroot.'/blocks/vmoodle/classes/commands/Command_Form.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/classes/commands/AdvancedCommand_Form.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/classes/commands/AdvancedCommand_Upload_Form.php');
 
 // Checking if is included from view.php in blocks/vmoodle
 if (!defined('MOODLE_INTERNAL')) {
@@ -30,12 +31,14 @@ switch ($action) {
      // Validating the assisted command
     case 'validateassistedcommand':
         // Checking the neeed values
-        $category = optional_param('category_plugin_name', null,PARAM_TEXT);
+        $category = optional_param('category_plugin_name', null, PARAM_TEXT);
 
         $index = optional_param('command_index', -1, PARAM_INT);
-        if (is_null($category) || $index < 0)
+        if (is_null($category) || $index < 0) {
             return 0;
-        // Loading command's category
+        }
+
+        // Loading command's category.
         if (is_dir(VMOODLE_PLUGINS_DIR.$category) && is_readable(VMOODLE_PLUGINS_DIR.$category.'/config.php')) {
             $command_category = load_vmplugin($_POST['category_plugin_name']);
         } else {
@@ -57,8 +60,9 @@ switch ($action) {
             $command->populate($data);
         } catch(Exception $exception) {
             $message = $exception->getMessage();
-            if (empty($message))
-                $message = get_string('unablepopulatecommand', 'block_vmoodle'); 
+            if (empty($message)) {
+                $message = get_string('unablepopulatecommand', 'block_vmoodle');
+            }
             echo $OUTPUT->notification($message);
             unset($_POST); // Done to remove form information. Otherwise, it crack all forms..
             return 0;
@@ -89,7 +93,7 @@ switch ($action) {
         }
 
         // Checking sql command.
-        if (!($data = $advancedcommand_form->get_data(false))){
+        if (!($data = $advancedcommand_form->get_data(false))) {
             return 0;
         }
         // Creating a Command_MultiSql
@@ -120,7 +124,7 @@ switch ($action) {
      // Getting available platforms by their original value.
      case 'gettargetbyvalue':
         // Including requirements
-        require_once VMOODLE_CLASSES_DIR.'Command_Form.class.php';
+        require_once $CFG->dirroot.'/blocks/vmoodle/classes/Command_Form.php';
         require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
         // Checking command
         if (!isset($SESSION->vmoodle_sa['command'])) {
@@ -173,11 +177,13 @@ switch ($action) {
             header('Location: view.php?view=sadmin');
             return -1;
         }
-        // Checking data
-        if (!($data = $target_form->get_data())){
+
+        // Checking data.
+        if (!($data = $target_form->get_data())) {
             return 0;
         }
-        // Getting platforms // BUGFIX not found why splatforms dont' come into get_data()
+
+        // Getting platforms // BUGFIX not found why splatforms dont' come into get_data().
         $form_platforms = optional_param_array('splatforms', array(), PARAM_URL);
         if (empty($form_platforms) || (count($form_platforms) == 1 && $form_platforms[0] == '0')){
             echo $OUTPUT->header();
@@ -190,13 +196,13 @@ switch ($action) {
             $platforms[$platform_root] = $all_platforms[$platform_root];
         }
 
-        // Checking command
+        // Checking command.
         if (!isset($SESSION->vmoodle_sa['command'])) {
             $SESSION['vmoodle_sa']['wizardnow'] = 'commandchoice';
             return 0;
         }
 
-        // Running command
+        // Running command.
         $command = unserialize($SESSION->vmoodle_sa['command']);
         $command->run($platforms);
         $SESSION->vmoodle_sa['command'] = serialize($command);

@@ -24,10 +24,10 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
  
-Use \block_vmoodle\commands\AdvancedCommand_Form;
-Use \block_vmoodle\commands\AdvancedCommand_Upload_Form;
+require_once($CFG->dirroot.'/blocks/vmoodle/classes/commands/AdvancedCommand_Form.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/classes/commands/AdvancedCommand_Upload_Form.php');
 
-// Display forms
+// Display forms.
 if (!isset($advancedcommand_form)) {
     $advancedcommand_form = new AdvancedCommand_Form();
 }

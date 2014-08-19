@@ -27,8 +27,8 @@
 
 $publishes = array(
     'mnetadmin' => array(
-		'servicename' => 'mnetadmin',
-		'description' => get_string('mnetadmin_name', 'block_vmoodle'),
+        'servicename' => 'mnetadmin',
+        'description' => get_string('mnetadmin_name', 'block_vmoodle'),
         'apiversion' => 1,
         'classname'  => '',
         'filename'   => 'rpclib.php',

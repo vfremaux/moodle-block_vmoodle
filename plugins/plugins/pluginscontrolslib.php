@@ -18,7 +18,7 @@
  * Remote Control objects for Moodle nework configuration.
  *
  * @package    blocks
- * @subpackage blovk_vmoodle
+ * @subpackage block_vmoodle
  * @copyright  2013 Valery Fremaux {@link http://www.mylearningfactory.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

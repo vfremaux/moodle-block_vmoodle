@@ -5,6 +5,12 @@ Implements a packaged virtualization control feature for large "Moodle Arrays"
 
 Important requirements for VMoodling :
 
+Version 2014071301 summary
+=============================
+
+Essentially redraws the internal class organization to cope qith 
+core Moodle class loading strategy.
+
 version 2013020801 summary
 =============================
 
@@ -18,6 +24,8 @@ version 2013020801 summary
 
 Summary of prerequisites
 ################################################################
+
+0. Alter the <moodle>/lib/classes/component.php in lone 48 to let subplugins be used in blocks. (add 'block' to the list).
 
 1. Installing vmoodle block in codebase
 2. Installing the master moodle as usual browsing to Administration -> notifications
@@ -38,14 +46,18 @@ Post install procedure
 ####################################################################
 
 The vmoodle block construction is using subplugins, that are plugins 
-handled inside the vmoodle block scope. 
+handled inside the vmoodle block scope.
 
-New handling of subplugins in Moodle 2.2 : 
+for Moodle 2.2
+--------------
 
 Conversely to version 1.9, now subplugins are handled as "standard architecture feature" for
 any plugin. 
 
-Since 2.4 an architecture flexibility regression caused the subplugin system for blocks to fail. We 
+Since 2.4
+---------
+
+An architecture flexibility regression caused the subplugin system for blocks to fail. We 
 now need an extra patch to get it finding plugin subcomponent path properly again. 
 
 This patch will alter 2 plugin related functions in /lib/moodlelib.php
@@ -133,6 +145,15 @@ function get_plugin_list($plugintype) {
         $fulldirs[] = $CFG->dirroot . '/blocks';
 // /PATCH
     } else if ($plugintype === 'editor') {
+
+
+Since moodle 2.6
+----------------
+
+Subplugin handling has been fluidified, with a very light change in a core library. 
+You'll just have to add the 'block' item in the subplugin capable plugins : lib/classes/component.php at line 48.
+
+    protected static $supportsubplugins = array('mod', 'editor', 'tool', 'local', 'block');
 
 
 0.2 Add possibility for blocks to handle xmlrpc the same way Moodle modules do:

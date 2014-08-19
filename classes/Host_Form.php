@@ -253,7 +253,7 @@ class Host_Form extends \moodleform {
 
         // Checks if database's name doesn't finish with '_'.
         if (strstr($data['vdbname'], '-') !== false) {
-            $errors['vdbname']    = get_string('badnohyphensindbname', 'block_vmoodle');
+            $errors['vdbname'] = get_string('badnohyphensindbname', 'block_vmoodle');
         }
 
         // Checks if table's prefix doesn't begin with restricted values (which can evolve).
@@ -262,7 +262,7 @@ class Host_Form extends \moodleform {
         );
         foreach ($restrictedvalues as $restrictedvalue) {
             if ($data['vdbprefix'] == $restrictedvalue) {
-                $errors['vdbprefix']    = get_string('baddatabaseprefixvalue', 'block_vmoodle');
+                $errors['vdbprefix'] = get_string('baddatabaseprefixvalue', 'block_vmoodle');
             }
         }
 
@@ -301,7 +301,7 @@ class Host_Form extends \moodleform {
                 $resultsqlrequest = $DB->get_record_sql($sql, array($data['vhostname']));
                 if (!empty($resultsqlrequest)) {
                     if($resultsqlrequest->deleted == 0) {
-                        $errors['vhostname']    = get_string('badhostnamealreadyused', 'block_vmoodle');
+                        $errors['vhostname'] = get_string('badhostnamealreadyused', 'block_vmoodle');
                     } else {
                         //Id the plateforme is deleted and the user want to reactivate the vhostname.
                         if ($data['vtemplate'] == 0) {
@@ -338,7 +338,7 @@ class Host_Form extends \moodleform {
             if ($this->isEqualToAnotherDataRoot($data['vdatapath'])) {
                 if ($data['vtemplate'] === 0) {
                 } else {
-                    $errors['vdatapath']    = get_string('badmoodledatapathalreadyused', 'block_vmoodle');
+                    $errors['vdatapath'] = get_string('badmoodledatapathalreadyused', 'block_vmoodle');
                 }
             }
 

@@ -26,6 +26,7 @@
  */
 
 namespace block_vmoodle;
+Use \StdClass;
 
 require_once($CFG->libdir.'/filelib.php'); // download_file_content() used here
 
@@ -48,7 +49,7 @@ class Mnet_Peer {
     var $bootstrapped       = false; // set when the object is populated
 
     function __construct() {
-        $this->updateparams = new stdClass();
+        $this->updateparams = new StdClass();
         return true;
     }
 
@@ -170,11 +171,12 @@ class Mnet_Peer {
     function count_live_sessions() {
         global $DB;
         $obj = $this->delete_expired_sessions();
-        return $DB->count_records('mnet_session', array('mnethostid'=>$this->id));
+        return $DB->count_records('mnet_session', array('mnethostid' => $this->id));
     }
 
     function delete_expired_sessions() {
         global $DB;
+
         $now = time();
         return $DB->delete_records_select('mnet_session', " mnethostid = ? AND expires < ? ", array($this->id, $now));
     }
@@ -182,15 +184,15 @@ class Mnet_Peer {
     function delete_all_sessions() {
         global $CFG, $DB;
         // TODO: Expires each PHP session individually
-        $sessions = $DB->get_records('mnet_session', array('mnethostid'=>$this->id));
+        $sessions = $DB->get_records('mnet_session', array('mnethostid' => $this->id));
 
         if (count($sessions) > 0 && file_exists($CFG->dirroot.'/auth/mnet/auth.php')) {
             require_once($CFG->dirroot.'/auth/mnet/auth.php');
-            $auth = new auth_plugin_mnet();
+            $auth = new \auth_plugin_mnet();
             $auth->end_local_sessions($sessions);
         }
 
-        $deletereturn = $DB->delete_records('mnet_session', array('mnethostid'=>$this->id));
+        $deletereturn = $DB->delete_records('mnet_session', array('mnethostid' => $this->id));
         return true;
     }
 
@@ -230,7 +232,7 @@ class Mnet_Peer {
 
     function commit() {
         global $DB;
-        $obj = new stdClass();
+        $obj = new StdClass();
 
         $obj->wwwroot               = $this->wwwroot;
         $obj->ip_address            = $this->ip_address;

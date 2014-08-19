@@ -1,8 +1,23 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace vmoodleadminset_generic;
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Exception;
+Use \StdClass;
 
 /**
  * Describes meta-administration plugin's command for Maintenance setup.
@@ -16,10 +31,10 @@ class Command_PurgeCaches extends Command {
 
     /** maintenance message. Sets maintenance mode off if empty */
     private $message;
-    
+
     /** If command's result should be returned */
     private $returned;
-    
+
     /**
      * Constructor.
      * @param    $name                string                Command's name.
@@ -31,10 +46,9 @@ class Command_PurgeCaches extends Command {
      */
     public function __construct($name, $description, $parameters = null, $rpcommand = null) {
         global $vmcommands_constants;
-        
-        // Creating Command
+
+        // Creating Command.
         parent::__construct($name, $description, $parameters, $rpcommand);
-            
     }
     
     /**
@@ -44,41 +58,42 @@ class Command_PurgeCaches extends Command {
      */
     public function run($hosts) {
         global $CFG, $USER;
-        
-        // Adding constants
+
+        // Adding constants.
         require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
-        
-        // Checking host
+
+        // Checking host.
         if (!is_array($hosts))
             $hosts = array($hosts => 'Unnamed host');
-        
-        // Checking capabilities
-        if (!has_capability('block/vmoodle:execute', \context_system::instance()))
+
+        // Checking capabilities.
+        if (!has_capability('block/vmoodle:execute', \context_system::instance())) {
             throw new Command_PurgeCaches_Exception('insuffisantcapabilities');
-            
-        // Initializing responses
+        }
+
+        // Initializing responses.
         $responses = array();
-        
-        // Creating peers
+
+        // Creating peers.
         $mnet_hosts = array();
         foreach ($hosts as $host => $name) {
             $mnet_host = new \mnet_peer();
-            if ($mnet_host->bootstrap($host, null, 'moodle')){
+            if ($mnet_host->bootstrap($host, null, 'moodle')) {
                 $mnet_hosts[] = $mnet_host;
             } else {
                 $responses[$host] = (object) array('status' => RPC_FAILURE, 'error' => get_string('couldnotcreateclient', 'block_vmoodle', $host));
             }
         }
-        
-        // Getting command
+
+        // Getting command.
         $command = $this->isReturned();
-        
-        // Creating XMLRPC client
+
+        // Creating XMLRPC client.
         $rpc_client = new \block_vmoodle\XmlRpc_Client();
         $rpc_client->set_method('blocks/vmoodle/plugins/generic/rpclib.php/mnetadmin_rpc_purge_caches');
-        
-        // Sending requests
-        foreach($mnet_hosts as $mnet_host) {
+
+        // Sending requests.
+        foreach ($mnet_hosts as $mnet_host) {
             // Sending request
             if (!$rpc_client->send($mnet_host)) {
                 $response = new StdClass();
@@ -95,11 +110,11 @@ class Command_PurgeCaches extends Command {
             // Recording response
             $responses[$mnet_host->wwwroot] = $response;
         }
-        
-        // Saving results
+
+        // Saving results.
         $this->results = $responses + $this->results;
     }
-    
+
     /**
      * Get the result of command execution for one host.
      * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
@@ -107,32 +122,35 @@ class Command_PurgeCaches extends Command {
      * @throws                Command_Sql_Exception
      */
     public function getResult($host = null, $key = null) {
-        // Checking if command has been runned
-        if (is_null($this->results))
+        // Checking if command has been runned.
+        if (is_null($this->results)) {
             throw new Command_Exception('commandnotrun');
-        
-        // Checking host (general result isn't provide in this kind of command)
-        if (is_null($host) || !array_key_exists($host, $this->results))
+        }
+
+        // Checking host (general result isn't provide in this kind of command).
+        if (is_null($host) || !array_key_exists($host, $this->results)) {
             return null;
+        }
         $result = $this->results[$host];
-        
-        // Checking key
-        if (is_null($key))
+
+        // Checking key.
+        if (is_null($key)) {
             return $result;
-        else if (property_exists($result, $key))
+        } elseif (property_exists($result, $key)) {
             return $result->$key;
-        else
+        } else {
             return null;
+        }
     }
-        
+
     /**
      * Get if the command's result is returned.
-     * @return                        boolean                True if the command's result should be returned, false otherwise.
+     * @return boolean True if the command's result should be returned, false otherwise.
      */
     public function isReturned() {
         return $this->returned;
     }
-    
+
     /**
      * Set if the command's result is returned.
      * @param    $returned            boolean                True if the command's result should be returned, false otherwise.
@@ -140,5 +158,4 @@ class Command_PurgeCaches extends Command {
     public function setReturned($returned) {
         $this->returned = $returned;
     }
-        
 }

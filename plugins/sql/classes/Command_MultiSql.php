@@ -3,6 +3,7 @@
 namespace vmoodleadminset_sql;
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Exception;
+Use \StdClass;
 
 /**
  * Describes meta-administration multiple SQL (script) command.
@@ -105,21 +106,21 @@ class Command_MultiSql extends Command {
         }
 
         // Getting command.
-        $command = $this->isReturned();
+        // $command = $this->isReturned();
 
         // Creating XMLRPC client.
         $rpc_client = new \block_vmoodle\XmlRpc_Client();
-        $rpc_client->set_method('blocks/vmoodle/plugins/sql/rpclib.php/mnetadmin_rpc_run_sql_command');                              
+        $rpc_client->set_method('blocks/vmoodle/plugins/sql/rpclib.php/mnetadmin_rpc_run_sql_command');
         $rpc_client->add_param($this->_getGeneratedCommand(), 'string');
         $rpc_client->add_param($this->values, 'array');
-        $rpc_client->add_param($command, 'boolean');
+        $rpc_client->add_param(false, 'boolean');
         $rpc_client->add_param(true, 'boolean'); // telling other side we are a multiple command
 
         // Sending requests.
         foreach($mnet_hosts as $mnet_host) {
             // Sending request.
             if (!$rpc_client->send($mnet_host)) {
-                $response = new stdclass;
+                $response = new StdClass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 if (debugging()) {
@@ -139,9 +140,9 @@ class Command_MultiSql extends Command {
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @throws                Command_Sql_Exception
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @throws Command_Sql_Exception
      */
     public function getResult($host = null, $key = null) {
 
@@ -168,7 +169,7 @@ class Command_MultiSql extends Command {
 
     /**
      * Get SQL command.
-     * @return                            SQL command.
+     * @return SQL command.
      */
     public function getSql() {
         return $this->sqls;
@@ -176,7 +177,7 @@ class Command_MultiSql extends Command {
 
     /**
      * Get if the command's result is returned.
-     * @return                        boolean                True if the command's result should be returned, false otherwise.
+     * @return boolean True if the command's result should be returned, false otherwise.
      */
     public function isReturned() {
         return $this->returned;
@@ -184,7 +185,7 @@ class Command_MultiSql extends Command {
 
     /**
      * Set if the command's result is returned.
-     * @param    $returned            boolean                True if the command's result should be returned, false otherwise.
+     * @param boolean $returned True if the command's result should be returned, false otherwise.
      */
     public function setReturned($returned) {
         $this->returned = $returned;
@@ -192,7 +193,7 @@ class Command_MultiSql extends Command {
 
     /**
      * Get the command to execute.
-     * @return                        string                The final SQL command to execute.
+     * @return string The final SQL command to execute.
      */
     private function _getGeneratedCommand() {
         return preg_replace_callback(self::placeholder, array($this, '_replaceParametersValues'), $this->getSql());
@@ -200,8 +201,8 @@ class Command_MultiSql extends Command {
 
     /**
      * Bind the replace_parameters_values function to create a callback.
-      * @param    $matches            array                The placeholders found.
-      * @return                        string|array        The parameters' values.
+      * @param array $matches The placeholders found.
+      * @return string|array The parameters' values.
      */
     private function _replaceParametersValues($matches) {
 

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-Use \block_vmoodle\ServicesStrategy_Form;
+require_once($CFG->dirroot.'/blocks/vmoodle/classes/ServicesStrategy_Form');
 
 /**
  * Displays default services strategy.

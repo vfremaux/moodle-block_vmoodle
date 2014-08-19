@@ -24,7 +24,8 @@ function vmoodle_get_hostname() {
 
     $CFG->vmoodleroot = "{$protocol}://".@$_SERVER['HTTP_HOST'];
     $CFG->vmoodlename = @$_SERVER['HTTP_HOST'];
-    if (empty($CFG->vmoodlename)) { // Try again.
+    if (empty($CFG->vmoodlename)) {
+        // Try again.
         $CFG->vmoodleroot = "{$protocol}://".$_SERVER['SERVER_NAME'];
         if ($_SERVER['SERVER_PORT'] != 80) {
             $CFG->vmoodleroot .= ':'.$_SERVER['SERVER_PORT'];
@@ -100,13 +101,14 @@ function vmoodle_boot_configuration() {
             $vmaster->vdbname = $CFG->vmasterdbname;
 
             if (!$side_cnx = vmoodle_make_connection($vmaster, true)) {
-                die ('VMoodle master server unreachable'); // if vmoodle cnx not valid
+                // If vmoodle cnx not valid.
+                die ('VMoodle master server unreachable');
             }
 
             $sql = "
-               SELECT 
+               SELECT
                *
-               FROM 
+               FROM
                   {$CFG->vmasterprefix}block_vmoodle
                WHERE
                   vhostname = '$CFG->vmoodleroot'

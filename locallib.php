@@ -12,11 +12,10 @@
 /**
  * Requires and includes
  */
-include_once("{$CFG->dirroot}/blocks/vmoodle/bootlib.php");
-include_once("{$CFG->dirroot}/blocks/vmoodle/filesystemlib.php");
+include_once($CFG->dirroot.'/blocks/vmoodle/bootlib.php');
+include_once($CFG->dirroot.'/blocks/vmoodle/filesystemlib.php');
 
 /** Define constants */
-define('VMOODLE_CLASSES_DIR', $CFG->dirroot.'/blocks/vmoodle/classes/');
 define('VMOODLE_LIBS_DIR', $CFG->dirroot.'/blocks/vmoodle/plugins/');
 define('VMOODLE_PLUGINS_DIR', $CFG->dirroot.'/blocks/vmoodle/plugins/');
 
@@ -896,7 +895,7 @@ function vmoodle_bind_to_network($submitteddata, &$newmnet_host){
 
             foreach ($subnetwork_hosts as $subnetwork_host) {
                 // debug_trace("step 4.4.4.1 : bind to -> $subnetwork_host->wwwroot");
-                $temp_member = new vmoodle_mnet_peer();
+                $temp_member = new \block_vmoodle\Mnet_Peer();
                 $temp_member->set_wwwroot($subnetwork_host->wwwroot);
                 if (!$rpc_client->send($temp_member)) {
                     echo $OUTPUT->notification(implode('<br />', $rpc_client->getErrors($temp_member)));
@@ -938,7 +937,7 @@ function vmoodle_bind_to_network($submitteddata, &$newmnet_host){
     vmoodle_get_service_strategy($submitteddata, $services, $peerservices, 'main');
 
     // debug_trace("step 4.4.5.1 : bind to -> $CFG->wwwroot");
-    $mainhost = new vmoodle_mnet_peer(); // this is us
+    $mainhost = new \block_vmoodle\Mnet_Peer(); // this is us
     $mainhost->set_wwwroot($CFG->wwwroot);
     
     // debug_trace('step 4.4.5.2 : Binding our main service strategy to remote');

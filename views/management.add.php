@@ -24,7 +24,7 @@
  */
 
 // Loading the library.
-require_once(VMOODLE_CLASSES_DIR.'Host_Form.class.php');
+Use \block_vmoodle\Host_Form;
 
 // Print title (heading).
 echo $OUTPUT->heading(get_string('newvmoodle', 'block_vmoodle'));

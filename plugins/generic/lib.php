@@ -11,7 +11,13 @@
 
 require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
 
-function vmoodle_get_remote_config($mnethost, $configkey, $domain = '') {
+/**
+ * fetches remotely a configuration value
+ * @param object $mnethost a mnet host record.
+ * @param string $configkey the configuration key
+ * @param string $module the module (frankenstyle). If empty, will fetch into the global config scope.
+ */
+function vmoodle_get_remote_config($mnethost, $configkey, $module = '') {
     global $CFG, $USER, $DB, $OUTPUT;
     
     if (empty($mnethost)) {
@@ -24,7 +30,9 @@ function vmoodle_get_remote_config($mnethost, $configkey, $domain = '') {
         $user = $USER;
     }
 
-    $userhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid));
+    if (!$userhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid))) {
+        return '';
+    }
     $user->remoteuserhostroot = $userhost->wwwroot;
     $user->remotehostroot = $CFG->wwwroot;
 
@@ -34,7 +42,7 @@ function vmoodle_get_remote_config($mnethost, $configkey, $domain = '') {
 
     $rpcclient->add_param($user, 'struct');
     $rpcclient->add_param($configkey, 'string');
-    $rpcclient->add_param($domain, 'string');
+    $rpcclient->add_param($module, 'string');
 
     $mnet_host = new mnet_peer();
 
@@ -53,12 +61,12 @@ function vmoodle_get_remote_config($mnethost, $configkey, $domain = '') {
         if (debugging()) {
             echo $OUTPUT->notification('Remote RPC failure '.implode('<br/', $rpcclient->error));
         }
-    }        
+    }
 }
 
 /**
  * Install generic plugin library.
- * @return                    boolean                TRUE if the installation is successfull, FALSE otherwise.
+ * @return boolean true if the installation is successfull, false otherwise.
  */
 function genericlib_install() {
     // No install operation

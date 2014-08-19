@@ -17,12 +17,24 @@
 // using the functions defined in lib/ddllib.php
 
 function xmldb_block_vmoodle_upgrade($oldversion = 0) {
-
-    global $CFG, $THEME, $DB;
+    global $CFG, $DB;
 
     $result = true;
+    $dbman = $DB->get_manager();
 
     // Moodle 2.0 Upgrade break.
+    if ($oldversion < 2014081300) {
+
+        // Changing precision of field vdbpass on table block_vmoodle to (32).
+        $table = new xmldb_table('block_vmoodle');
+        $field = new xmldb_field('vdbpass', XMLDB_TYPE_CHAR, '32', null, null, null, null, 'vdblogin');
+
+        // Launch change of precision for field vdbpass.
+        $dbman->change_field_precision($table, $field);
+
+        // Vmoodle savepoint reached.
+        upgrade_block_savepoint(true, 2014081300, 'vmoodle');
+    }
 
     return $result;
 }

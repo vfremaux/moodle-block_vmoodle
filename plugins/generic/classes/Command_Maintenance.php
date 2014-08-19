@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-Use \block_vmoodle\commands\Command
 namespace vmoodleadminset_generic;
+Use \block_vmoodle\commands\Command;
+Use \StdClass;
 
 /**
  * Describes meta-administration plugin's command for Maintenance setup.
@@ -49,13 +50,13 @@ class Command_Maintenance extends Command {
     public function __construct($name, $description, $parameters = null, $rpcommand = null) {
         global $vmcommands_constants;
 
-        // Creating Command
+        // Creating Command.
         parent::__construct($name, $description, $parameters, $rpcommand);
 
         if (is_null($parameters) || is_array($parameters)) {
             throw new Command_Maintenance_Exception('messageparamonly');
         }
-        
+
         if ($parameters->getName() != 'message') {
             throw new Command_Maintenance_Exception('messageparamonly');
         }
@@ -72,7 +73,7 @@ class Command_Maintenance extends Command {
         // Adding constants.
         require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
 
-        // Checking host
+        // Checking host.
         if (!is_array($hosts)) {
             $hosts = array($hosts => 'Unnamed host');
         }
@@ -82,7 +83,7 @@ class Command_Maintenance extends Command {
             throw new Command_Maintenance_Exception('insuffisantcapabilities');
         }
 
-        // Initializing responses
+        // Initializing responses.
         $responses = array();
 
         // Creating peers.
@@ -120,7 +121,7 @@ class Command_Maintenance extends Command {
             } else {
                 $response = json_decode($rpc_client->response);
             }
-            // Recording response
+            // Recording response.
             $responses[$mnet_host->wwwroot] = $response;
         }
 

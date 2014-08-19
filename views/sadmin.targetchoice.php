@@ -25,7 +25,7 @@
  */
 
 // Loading librairies.
-Use \block_vmoodle\commands\Command_Form;
+require($CFG->dirroot.'/blocks/vmoodle/classes/commands/Command_Form.php');
 Use \block_vmoodle\Target_Filter_Form;
 Use \block_vmoodle\Target_Form;
 

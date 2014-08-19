@@ -69,7 +69,7 @@ function mnetadmin_rpc_get_fields($user, $table, $fields, $select) {
 function mnetadmin_rpc_run_sql_command($user, $command, $params, $return=false, $multiple=false) {
     global $CFG, $USER, $vmcommands_constants, $DB;
 
-    // Adding requierements.
+    // Adding requirements.
     require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
     // Invoke local user and check his rights
 
@@ -87,20 +87,23 @@ function mnetadmin_rpc_run_sql_command($user, $command, $params, $return=false, 
 
     // Runnning commands.
     foreach ($commands as $command){
+        if (empty($command) || preg_match('/^\s+$/s', $command)) {
+            continue;
+        }
         if ($return) {
             try {
                 $record = $DB->get_record_sql($command, $params);
                 $response->value = $record;
             } catch(Exception $e) {
-                $response->errors[] = $e->error;
-                $response->error = $e->error;
+                $response->errors[] = $DB->get_last_error();
+                $response->error = $DB->get_last_error();
             }
         } else {
             try {
                 $DB->execute($command, $params);
             } catch(Exception $e) {
-                $response->errors[] = $e->error;
-                $response->error = $e->error;
+                $response->errors[] = $DB->get_last_error();
+                $response->error = $DB->get_last_error();
             }
         }
     }
@@ -111,6 +114,5 @@ function mnetadmin_rpc_run_sql_command($user, $command, $params, $return=false, 
     } else {
         $response->status = RPC_SUCCESS;
     }
-
     return json_encode($response);
 }

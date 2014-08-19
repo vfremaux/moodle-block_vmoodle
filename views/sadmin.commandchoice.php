@@ -23,6 +23,8 @@
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+ 
+require_once $CFG->dirroot.'/blocks/vmoodle/classes/commands/Command_Form.php';
 
 // Retrieving configuration files.
 $assistedcommands_conffiles = glob($CFG->dirroot.'/blocks/vmoodle/plugins/*/config.php');
@@ -46,11 +48,12 @@ foreach ($assistedcommands_categories as $key => $category) {
 
         print_collapsable_bloc_start($vmoodle_category->getPluginName(), $vmoodle_category->getName(), null, false);
         foreach ($vmoodle_category->getCommands() as $command) {
-            $command_form = new \block_vmoodle\commands\Command_Form($command, \block_vmoodle\commands\Command_Form::MODE_COMMAND_CHOICE);
+            $command_form = new Command_Form($command, Command_Form::MODE_COMMAND_CHOICE);
             $command_form->display();
         }
         print_collapsable_block_end();
     } catch (Exception $vce) {
+        print_collapsable_block_end();
         echo $OUTPUT->notification($vce->getMessage());
     }
 }

@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace vmoodleadminset_plugins;
 Use \block_vmoodle\commands\Command;
@@ -41,25 +55,25 @@ class Command_Plugin_Set_State extends Command {
     public function __construct() {
         global $DB, $STANDARD_PLUGIN_TYPES;
         
-        // Getting command description
+        // Getting command description.
         $cmd_name = vmoodle_get_string('cmdpluginsetupname', 'vmoodleadminset_plugins');
         $cmd_desc = vmoodle_get_string('cmdpluginsetupdesc', 'vmoodleadminset_plugins');
-        
+
         $pm = \plugin_manager::instance();
-        
+
         $allplugins = $pm->get_plugins();
 
         $pluginlist = array();
         foreach ($allplugins as $type => $plugins) {
-            foreach ($plugins as $p){
+            foreach ($plugins as $p) {
                 if (array_key_exists($type, $STANDARD_PLUGIN_TYPES)) {
                     $pluginlist[$type.'/'.$p->name] = $STANDARD_PLUGIN_TYPES[$type].' : '.$p->displayname;
                 }
             }
         }
-                
+
         asort($pluginlist, SORT_STRING);
-        
+
         $plugin_param = new Command_Parameter('plugin', 'enum', vmoodle_get_string('pluginparamdesc', 'vmoodleadminset_plugins'), null, $pluginlist);
 
         $states = array();
@@ -67,7 +81,7 @@ class Command_Plugin_Set_State extends Command {
         $states['disable'] = vmoodle_get_string('disable', 'vmoodleadminset_plugins');
         $state_param = new Command_Parameter('state', 'enum', vmoodle_get_string('pluginstateparamdesc', 'vmoodleadminset_plugins'), null, $states);
 
-        // Creating command
+        // Creating command.
         parent :: __construct($cmd_name, $cmd_desc, array($plugin_param, $state_param));
     }
 
@@ -79,30 +93,30 @@ class Command_Plugin_Set_State extends Command {
     public function run($hosts) {
         global $CFG, $USER;
 
-        // Adding constants
+        // Adding constants.
         require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
 
-        // Checking capability to run
+        // Checking capability to run.
         if (!has_capability('block/vmoodle:execute', context_system::instance()))
             throw new Command_Exception('insuffisantcapabilities');
 
-        // Getting plugin
+        // Getting plugin.
         list($type, $plugin) = explode('/', $this->getParameter('plugin')->getValue());
 
-        // Getting the state
+        // Getting the state.
         $state = $this->getParameter('state')->getValue();
 
         $pm = \plugin_manager::instance();
 
         $plugininfo = $pm->get_plugin_info($plugin);
-        if (empty($plugininfo->type)){
-            if (empty($plugininfo)){
+        if (empty($plugininfo->type)) {
+            if (empty($plugininfo)) {
                 $plugininfo = new StdClass();
             }
             $plugininfo->type = $type;
         }
         $plugininfo->action = $state;
-        
+
         $plugininfos[$plugin] = (array)$plugininfo;
 
         // Creating XMLRPC client to change remote configuration.
@@ -127,9 +141,9 @@ class Command_Plugin_Set_State extends Command {
             }
         }
 
-        // Sending requests
+        // Sending requests.
         foreach($mnet_hosts as $mnet_host) {
-            // Sending request
+            // Sending request.
             if (!$rpc_client->send($mnet_host)) {
                 $response = new stdclass;
                 $response->status = MNET_FAILURE;
@@ -143,11 +157,11 @@ class Command_Plugin_Set_State extends Command {
                 $response = json_decode($rpc_client->response);
             }
 
-            // Recording response
+            // Recording response.
             $responses[$mnet_host->wwwroot] = $response;
 
-            // Recording plugin descriptors
-            if ($response->status == RPC_SUCCESS){
+            // Recording plugin descriptors.
+            if ($response->status == RPC_SUCCESS) {
                 $this->plugins[$mnet_host->wwwroot] = @$response->value;
             }
         }
@@ -166,12 +180,12 @@ class Command_Plugin_Set_State extends Command {
      */
     public function getResult($host = null, $key = null) {
 
-        // Checking if command has been runned
+        // Checking if command has been runned.
         if (!$this->isRunned()) {
             throw new Command_Exception('commandnotrun');
         }
 
-        // Checking host (general result isn't provide in this kind of command)
+        // Checking host (general result isn't provide in this kind of command).
         if (is_null($host)) {
             return $this->report;
         } else {
@@ -181,7 +195,7 @@ class Command_Plugin_Set_State extends Command {
         }
         $result = $this->results[$host];
 
-        // Checking key
+        // Checking key.
         if (is_null($key)) {
             return $result;
         } else {

@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace block_vmoodle\commands;
+Use \block_vmoodle\commands\Command_Exception;
+Use \block_vmoodle\commands\Command;
 
 require_once($CFG->libdir.'/formslib.php');
 
@@ -27,7 +28,7 @@ require_once($CFG->libdir.'/formslib.php');
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-class Command_Form extends \moodleform {
+class Command_Form extends moodleform {
 
     /**
      * Form modes
@@ -101,8 +102,10 @@ class Command_Form extends \moodleform {
         if ($this->mode == self::MODE_COMMAND_CHOICE) {
             $mform->addElement('hidden', 'category_name', $command->getCategory()->getName());
             $mform->setType('category_name', PARAM_TEXT);
+
             $mform->addElement('hidden', 'category_plugin_name', $command->getCategory()->getPluginName());
             $mform->setType('category_plugin_name', PARAM_TEXT);
+
             $mform->addElement('hidden', 'command_index', $command->getIndex());
             $mform->setType('command_index', PARAM_TEXT);
         }
@@ -126,7 +129,7 @@ class Command_Form extends \moodleform {
                         $mform->addElement('text', $parameter->getName(), $parameter->getDescription());
                         $mform->setType($parameter->getName(), PARAM_TEXT);
                         if ($this->mode != self::MODE_DISPLAY_COMMAND) {
-                            $mform->addRule($parameter->getName(), null, 'required', null, 'client');
+                            // $mform->addRule($parameter->getName(), null, 'required', null, 'client');
                         }
                     }
                     break;
@@ -134,7 +137,7 @@ class Command_Form extends \moodleform {
                         $mform->addElement('textarea', $parameter->getName(), $parameter->getDescription(), 'wrap="virtual" rows="20" cols="50"');
                         $mform->setType($parameter->getName(), PARAM_TEXT);
                         if ($this->mode != self::MODE_DISPLAY_COMMAND) {
-                            $mform->addRule($parameter->getName(), null, 'required', null, 'client');
+                            // $mform->addRule($parameter->getName(), null, 'required', null, 'client');
                         }
                     }
                     break;

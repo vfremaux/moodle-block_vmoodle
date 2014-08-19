@@ -4,6 +4,7 @@ namespace vmoodleadminset_upgrade;
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Exception;
 Use \block_vmoodle\commands\Command_Parameter;
+Use \StdClass;
 
 require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
 
@@ -67,7 +68,7 @@ class Command_Upgrade extends Command {
         }
 
         // Checking capabilities.
-        if (!has_capability('block/vmoodle:execute', context_system::instance())) {
+        if (!has_capability('block/vmoodle:execute', \context_system::instance())) {
             throw new Command_Upgrade_Exception('insuffisantcapabilities');
         }
 
@@ -77,7 +78,7 @@ class Command_Upgrade extends Command {
         // Creating peers.
         $mnet_hosts = array();
         foreach ($hosts as $host => $name) {
-            $mnet_host = new mnet_peer();
+            $mnet_host = new \mnet_peer();
             if ($mnet_host->bootstrap($host, null, 'moodle')) {
                 $mnet_hosts[] = $mnet_host;
             } else {
@@ -115,14 +116,14 @@ class Command_Upgrade extends Command {
                 $response->status = RPC_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 if (debugging()) {
-                    echo '<pre>';
-                    var_dump($rpc_client);
-                    echo '</pre>';
+                    // echo '<pre>';
+                    // var_dump($rpc_client);
+                    // echo '</pre>';
                 }
             } else {
                 $response = json_decode($rpc_client->response);
             }
-            // Recording response
+            // Recording response.
             $responses[$mnet_host->wwwroot] = $response;
         }
         
@@ -132,12 +133,12 @@ class Command_Upgrade extends Command {
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @return                mixed            The result or null if result does not exist.
-     * @throws                Command_Exception.
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @return mixed The result or null if result does not exist.
+     * @throws Command_Exception.
      */
-    public function getResult($host=null, $key=null) {
+    public function getResult($host=null, $key = null) {
 
         // Checking if command has been runned.
         if (!$this->isRunned()) {
@@ -150,10 +151,10 @@ class Command_Upgrade extends Command {
         }
         $result = $this->results[$host];
 
-        // Checking key
+        // Checking key.
         if (is_null($key)) {
             return $result;
-        } else if (property_exists($result, $key)) {
+        } elseif (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return '';

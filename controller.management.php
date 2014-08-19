@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * This file catches an action and do the corresponding usecase.
@@ -21,9 +35,11 @@
  * @copyright valeisti (http://www.valeisti.fr)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+
+Use \block_vmoodle\Mnet_Peer;
+
 // Includes the MNET library.
 require_once($CFG->dirroot.'/mnet/lib.php');
-require_once($CFG->dirroot.'/blocks/vmoodle/classes/Mnet_Peer.class.php');
 
 // Add needed javascript here (because addonload() is needed before).
 
@@ -78,7 +94,7 @@ if ($action == 'add') {
             // Try to get crontab (Linux).
             if ($CFG->ostype != 'WINDOWS') {
                 $crontabcmd = escapeshellcmd('crontab -l');
-                $platform_form->crontab        = passthru($crontabcmd);
+                $platform_form->crontab = passthru($crontabcmd);
             }
 
             unset($SESSION->vmoodledata);
@@ -363,7 +379,7 @@ if ($action == 'doadd') {
         /// Mnet bind from master side
             if ($vmoodlestep == 4) {
 
-                $newmnet_host =    new vmoodle_mnet_peer();
+                $newmnet_host = new \bock_vmoodle\Mnet_Peer();
                 $newmnet_host->set_wwwroot($submitteddata->vhostname);
                 $newmnet_host->set_name($submitteddata->name);
 
@@ -567,7 +583,7 @@ if ($action == 'doedit') {
         if($olddata->mnet != $submitteddata->mnet){
 
             // Creating the needed mnet_peer object, to do actions.
-            $edited_host = new vmoodle_mnet_peer();
+            $edited_host = new \block_vmoodle\Mnet_Peer();
             if (!$edited_host->bootstrap($olddata->vhostname, null, 'moodle', 1)) {
                 // If bootstraping the host has failed.
                 $message_object->message = get_string('badbootstraphost', 'block_vmoodle', $olddata->vhostname).' = '.$submitteddata->mnet;
@@ -624,11 +640,11 @@ if ($action == 'doedit') {
                 $rpc_client->add_param($USER->username, 'string');
                 $userhostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $USER->mnethostid));
                 $rpc_client->add_param($userhostroot, 'string');
-                $rpc_client->add_param($CFG->wwwroot, 'string');                    
+                $rpc_client->add_param($CFG->wwwroot, 'string');
                 // Peer to unbind from.
                 $rpc_client->add_param($edited_host->wwwroot, 'string');
                 foreach($lastsubnetwork_hosts as $lastsubnetwork_host){
-                    $temp_member = new vmoodle_mnet_peer();
+                    $temp_member = new \block_vmoodle\Mnet_Peer();
                     $temp_member->set_wwwroot($lastsubnetwork_host->wwwroot);
                     // RPC error.
                     if(!$rpc_client->send($temp_member)){

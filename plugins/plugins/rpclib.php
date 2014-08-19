@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Declare RPC functions for syncrolelib.
  * 
@@ -8,9 +23,9 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 
-require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
-require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
-require_once $CFG->dirroot.'/blocks/vmoodle/plugins/plugins/pluginscontrolslib.php';
+require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
+require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/plugins/plugins/pluginscontrolslib.php');
 
 if (!defined('RPC_SUCCESS')) {
     define('RPC_TEST', 100);
@@ -41,7 +56,7 @@ function mnetadmin_rpc_get_plugins_info($user, $plugintype, $json_response = tru
     global $CFG, $USER, $DB;
 
     // Invoke local user and check his rights
-    if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')){
+    if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')) {
         if ($json_response) {
             return $auth_response;
         } else {
@@ -53,35 +68,35 @@ function mnetadmin_rpc_get_plugins_info($user, $plugintype, $json_response = tru
     $response->errors = array();
     $response->error = '';
 
-    // Creating response
+    // Creating response.
     $response->status = RPC_SUCCESS;
 
-    // Getting role
+    // Getting role.
     $pm = plugin_manager::instance();
-    
+
     $allplugins = $pm->get_plugins();
 
-    if (!array_key_exists($plugintype, $allplugins))    {
+    if (!array_key_exists($plugintype, $allplugins)) {
         $response->status = RPC_FAILURE_RECORD;
         $response->errors[] = "Non existant plugin type $plugintype.";
         $response->error = "Non existant plugin type $plugintype.";
-        if ($json_response){
+        if ($json_response) {
             return json_encode($response);
         } else {
             return $response;
         }
     }
 
-    // Setting result value
+    // Setting result value.
     $response->value = (array)$allplugins[$plugintype];
 
     $actionclass = $plugintype.'_remote_control';
 
-    // get activation status    
-    foreach($response->value as $pluginname => $foobar){
+    // Get activation status.
+    foreach ($response->value as $pluginname => $foobar) {
 
-        // ignore non implemented
-        if (!class_exists($actionclass)){
+        // Ignore non implemented.
+        if (!class_exists($actionclass)) {
             debug_trace("failing running remote action on $actionclass. Class not found");
             continue;
         }
@@ -90,8 +105,8 @@ function mnetadmin_rpc_get_plugins_info($user, $plugintype, $json_response = tru
         $response->value[$pluginname]->enabled = $control->is_enabled();
     }
 
-    // Returning response
-    if ($json_response){
+    // Returning response.
+    if ($json_response) {
         return json_encode($response);
     } else {
         return $response;
@@ -109,29 +124,29 @@ function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = 
 
     debug_trace("Plugin Set States: Entry point");
 
-    // Creating response
+    // Creating response.
     $response = new Stdclass();
     $response->status = RPC_SUCCESS;
     $response->errors = array();
     $response->error = '';
 
-    // Invoke local user and check his rights
-    if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')){
-        if ($json_response){ // we could not have a credential
+    // Invoke local user and check his rights.
+    if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')) {
+        if ($json_response){
+            // we could not have a credential.
             return $auth_response;
         } else {
             return json_decode($auth_response);
         }
     }
 
-    // Getting plugin enable/disable method
-    
-    if (!empty($plugininfos)){
-        foreach($plugininfos as $plugin => $infos){
+    // Getting plugin enable/disable method.
+    if (!empty($plugininfos)) {
+        foreach($plugininfos as $plugin => $infos) {
             $actionclass = $infos['type'].'_remote_control';
 
-            // ignore non implemented
-            if (!class_exists($actionclass)){
+            // Ignore non implemented.
+            if (!class_exists($actionclass)) {
                 debug_trace("failing running remote action on $actionclass. Class not found");
                 continue;
             }
@@ -139,7 +154,7 @@ function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = 
             $control = new $actionclass($infos['type'].'/'.$plugin);
             $action = $infos['action'];
             $return = $control->action($action);
-            if ($return !== 0){
+            if ($return !== 0) {
                 $response->status = RPC_FAILURE;
                 $response->errors[] = $return;
             }
@@ -149,11 +164,10 @@ function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = 
 
     $response->error = implode(', ', $response->errors);
 
-    // Returning response
-    if ($json_response){
+    // Returning response.
+    if ($json_response) {
         return json_encode($response);
     } else {
         return $response;
     }
 }
-

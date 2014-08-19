@@ -1,7 +1,5 @@
 <?php
 
-namespace block_vmoodle\commands;
-
 require_once ($CFG->libdir.'/formslib.php');
 
 /**
@@ -12,7 +10,7 @@ require_once ($CFG->libdir.'/formslib.php');
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-class AdvancedCommand_Upload_Form extends \moodleform {
+class AdvancedCommand_Upload_Form extends moodleform {
     /**
      * Constructor.
      */

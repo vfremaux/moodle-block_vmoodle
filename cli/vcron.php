@@ -40,10 +40,10 @@ $VCRON->TRACE_ENABLE = false;                        // enables tracing
 *
 *
 */
-function fire_vhost_cron($vhost){
+function fire_vhost_cron($vhost) {
     global $VCRON,$DB;
 
-    if ($VCRON->TRACE_ENABLE){
+    if ($VCRON->TRACE_ENABLE) {
         $CRONTRACE = fopen($VCRON->TRACE, 'a');
     }
     $ch = curl_init($vhost->vhostname.'/admin/cron.php');
@@ -63,7 +63,7 @@ function fire_vhost_cron($vhost){
 
     if ($rawresponse === false) {
         $error = curl_errno($ch) .':'. curl_error($ch);
-        if ($VCRON->TRACE_ENABLE){
+        if ($VCRON->TRACE_ENABLE) {
             if ($CRONTRACE){
                 fputs($CRONTRACE, "VCron start on $vhost->vhostname : $timestamp_send\n" );
                 fputs($CRONTRACE, "VCron Error : $error \n");
@@ -77,12 +77,12 @@ function fire_vhost_cron($vhost){
         return false;
     }
 
-    if ($VCRON->TRACE_ENABLE){
-        if ($CRONTRACE){
+    if ($VCRON->TRACE_ENABLE) {
+        if ($CRONTRACE) {
             fputs($CRONTRACE, "VCron start on $vhost->vhostname : $timestamp_send\n" );
             fputs($CRONTRACE, $rawresponse."\n");
             fputs($CRONTRACE, "VCron stop on $vhost->vhostname : $timestamp_receive\n#################\n\n" );
-            fclose($CRONTRACE);    
+            fclose($CRONTRACE);
         }
     }
     echo "VCron start on $vhost->vhostname : $timestamp_send\n";
@@ -97,14 +97,14 @@ function fire_vhost_cron($vhost){
 }
 
 /**
-* fire a cron URL using cli exec
-*
-*
-*/
-function exec_vhost_cron($vhost){
+ * fire a cron URL using cli exec
+ *
+ *
+ */
+function exec_vhost_cron($vhost) {
     global $VCRON, $DB, $CFG;
 
-    if ($VCRON->TRACE_ENABLE){
+    if ($VCRON->TRACE_ENABLE) {
         $CRONTRACE = fopen($VCRON->TRACE, 'a');
     }
     
@@ -114,12 +114,12 @@ function exec_vhost_cron($vhost){
     exec($cmd, $rawresponse);
     $timestamp_receive = time();
 
-    if ($VCRON->TRACE_ENABLE){
-        if ($CRONTRACE){
+    if ($VCRON->TRACE_ENABLE) {
+        if ($CRONTRACE) {
             fputs($CRONTRACE, "VCron start on $vhost->vhostname : $timestamp_send\n" );
             fputs($CRONTRACE, $rawresponse."\n");
             fputs($CRONTRACE, "VCron stop on $vhost->vhostname : $timestamp_receive\n#################\n\n" );
-            fclose($CRONTRACE);    
+            fclose($CRONTRACE);
         }
     }
 
@@ -133,7 +133,7 @@ function exec_vhost_cron($vhost){
     $DB->update_record('block_vmoodle', $vhost);
 }
 
-if (!$vmoodles = $DB->get_records('block_vmoodle', null)){
+if (!$vmoodles = $DB->get_records('block_vmoodle', null)) {
     die("Nothing to do. No Vhosts");
 }
 
@@ -142,35 +142,35 @@ $allvhosts = array_values($vmoodles);
 echo "Moodle VCron... start\n";
 echo "Last croned : ".@$CFG->vmoodle_cron_lasthost."\n";
 
-if ($VCRON->STRATEGY == ROUND_ROBIN){
+if ($VCRON->STRATEGY == ROUND_ROBIN) {
     $rr = 0;
-    foreach($allvhosts as $vhost){
+    foreach($allvhosts as $vhost) {
         if ($rr == 1){
             set_config('vmoodle_cron_lasthost', $vhost->id);
             echo "Round Robin : ".$vhost->vhostname."\n";
-            if ($VCRON->ACTIVATION == 'cli'){
+            if ($VCRON->ACTIVATION == 'cli') {
                 fire_vhost_cron($vhost);
             } else {
                 exec_vhost_cron($vhost);
             }
             die('Done.');
         }
-        if ($vhost->id == @$CFG->vmoodle_cron_lasthost){
+        if ($vhost->id == @$CFG->vmoodle_cron_lasthost) {
             $rr = 1; // take next one
         }
     }
     // we were at last. Loop back and take first
     set_config('vmoodle_cron_lasthost', $allvhosts[0]->id);
     echo "Round Robin : ".$vhost->vhostname."\n";
-    if ($VCRON->ACTIVATION == 'cli'){
+    if ($VCRON->ACTIVATION == 'cli') {
         exec_vhost_cron($allvhosts[0]);
     } else {
         fire_vhost_cron($allvhosts[0]);
     }
 
-} else if ($VCRON->STRATEGY == LOWEST_POSSIBLE_GAP){
+} else if ($VCRON->STRATEGY == LOWEST_POSSIBLE_GAP) {
     // first make measurement of cron period
-    if (empty($CFG->vcrontickperiod)){
+    if (empty($CFG->vcrontickperiod)) {
         set_config('vcrontime', time());
         return;
     }
@@ -178,14 +178,14 @@ if ($VCRON->STRATEGY == ROUND_ROBIN){
     $hostsperturn = max(1, $VCRON->PERIOD / $CFG->vcrontickperiod * count($allvhosts));
     $i = 0;
     foreach ($allvhosts as $vhost) {
-        if ((time() - $vhost->lastcron) > $VCRON->PERIOD){
-            if ($VCRON->ACTIVATION == 'cli'){
+        if ((time() - $vhost->lastcron) > $VCRON->PERIOD) {
+            if ($VCRON->ACTIVATION == 'cli') {
                 exec_vhost_cron($vhost);
             } else {
                 fire_vhost_cron($vhost);
             }
             $i++;
-            if ($i >= $hostsperturn){
+            if ($i >= $hostsperturn) {
                 return;
             }
         }

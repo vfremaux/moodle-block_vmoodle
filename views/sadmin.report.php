@@ -41,7 +41,7 @@ foreach ($platforms as $host => $platform) {
     }
 }
 
-// Displaying general result
+// Displaying general result.
 if (!is_null($command->getResult())) {
     echo $command->getResult();
 }

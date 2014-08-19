@@ -14,7 +14,7 @@
         <FIELD NAME="vdbtype" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="mysql" SEQUENCE="false" PREVIOUS="vhostname" NEXT="vdbhost"/>
         <FIELD NAME="vdbhost" TYPE="char" LENGTH="80" NOTNULL="true" DEFAULT="localhost" SEQUENCE="false" PREVIOUS="vdbtype" NEXT="vdblogin"/>
         <FIELD NAME="vdblogin" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="root" SEQUENCE="false" PREVIOUS="vdbhost" NEXT="vdbpass"/>
-        <FIELD NAME="vdbpass" TYPE="char" LENGTH="16" NOTNULL="false" SEQUENCE="false" PREVIOUS="vdblogin" NEXT="vdbname"/>
+        <FIELD NAME="vdbpass" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false" PREVIOUS="vdblogin" NEXT="vdbname"/>
         <FIELD NAME="vdbname" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false" PREVIOUS="vdbpass" NEXT="vdbprefix"/>
         <FIELD NAME="vdbprefix" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="mdl_" SEQUENCE="false" PREVIOUS="vdbname" NEXT="vdbpersist"/>
         <FIELD NAME="vdbpersist" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="vdbprefix" NEXT="vdatapath"/>

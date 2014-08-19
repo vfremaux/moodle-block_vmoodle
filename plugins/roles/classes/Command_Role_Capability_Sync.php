@@ -1,10 +1,13 @@
 <?php
 
-require_once($CFG->libdir.'/accesslib.php');
 namespace vmoodleadminset_roles;
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Exception;
 Use \block_vmoodle\commands\Command_Parameter;
+Use \StdClass;
+Use \moodle_url;
+
+require_once($CFG->libdir.'/accesslib.php');
 
 /**
  * Describes a role syncrhonisation command.
@@ -18,17 +21,19 @@ class Command_Role_Capability_Sync extends Command {
 
     /**
      * Constructor.
-     * @throws                Command_Exception.
+     * @throws Command_Exception.
      */
     public function __construct() {
         global $DB;
         
-        // Getting command description
+        // Getting command description.
         $cmd_name = vmoodle_get_string('cmdsynccapabilityname', 'vmoodleadminset_roles');
         $cmd_desc = vmoodle_get_string('cmdsynccapabilitydesc', 'vmoodleadminset_roles');
-        // Creating platform parameter
+
+        // Creating platform parameter.
         $platform_param = new Command_Parameter('platform',    'enum', vmoodle_get_string('platformparamsyncdesc', 'vmoodleadminset_roles'), null, get_available_platforms());
-        // Getting role parameter
+
+        // Getting role parameter.
         $roles = role_fix_names(get_all_roles(), \context_system::instance(), ROLENAME_ORIGINAL);
         $rolemenu = array();
 
@@ -36,7 +41,8 @@ class Command_Role_Capability_Sync extends Command {
             $rolemenu[$r->shortname] = $r->name;
         }
         $role_param = new Command_Parameter('role', 'enum', vmoodle_get_string('roleparamsyncdesc', 'vmoodleadminset_roles'), null, $rolemenu);
-        // Creating capability parameter
+
+        // Creating capability parameter.
         $records = $DB->get_records('capabilities', null, 'name', 'name');
         $capabilities = array();
 
@@ -53,8 +59,8 @@ class Command_Role_Capability_Sync extends Command {
 
     /**
      * Execute the command.
-     * @param    $hosts        mixed            The host where run the command (may be wwwroot or an array).
-     * @throws                Command_Exception.
+     * @param mixed $hosts The host where run the command (may be wwwroot or an array).
+     * @throws Command_Exception.
      */
     public function run($hosts) {
         global $CFG, $USER;
@@ -109,9 +115,9 @@ class Command_Role_Capability_Sync extends Command {
                     in_array($response->error, 'No role capability found.'))
                 )
             ))) {
-            // Creating response
+            // Creating response.
             if (!isset($response)) {
-                $response = new stdclass;
+                $response = new StdClass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
             }

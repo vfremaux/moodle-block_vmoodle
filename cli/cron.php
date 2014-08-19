@@ -34,9 +34,9 @@ global $CLI_VMOODLE_PRECHECK;
 $CLI_VMOODLE_PRECHECK = true; // Force first config to be minimal.
 
 // Config preload to get real roots.
-require(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once($CFG->libdir.'/clilib.php');      // cli only functions
-require_once($CFG->libdir.'/cronlib.php');
+require('../../../config.php');
+require_once($CFG->dirroot.'/lib/clilib.php');      // cli only functions
+require_once($CFG->dirroot.'/lib/cronlib.php');
 
 // now get cli options
 list($options, $unrecognized) = cli_get_params(array('help' => false, 'host' => true),

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * This file contains the mnet services for the user_mnet_host plugin
  *
@@ -27,8 +26,8 @@
 
 $publishes = array(
     'dataexchange' => array(
-		'servicename' => 'dataexchange',
-		'description' => vmoodle_get_string('dataexchange_name', 'vmoodleadminset_generic'),
+        'servicename' => 'dataexchange',
+        'description' => vmoodle_get_string('dataexchange_name', 'vmoodleadminset_generic'),
         'apiversion' => 1,
         'classname'  => '',
         'filename'   => 'rpclib.php',
@@ -36,17 +35,17 @@ $publishes = array(
             'dataexchange_rpc_fetch_config',
         ),
     ),
-	'mnetadmin' => array(
-		'servicename' => 'mnetadmin',
-		'description' => get_string('mnetadmin_name', 'block_vmoodle'),
-		'apiversion' => 1,
-		'classname'  => '',
-		'filename'   => 'rpclib.php',
-		'methods'    => array(
+    'mnetadmin' => array(
+        'servicename' => 'mnetadmin',
+        'description' => get_string('mnetadmin_name', 'block_vmoodle'),
+        'apiversion' => 1,
+        'classname'  => '',
+        'filename'   => 'rpclib.php',
+        'methods'    => array(
             'mnetadmin_rpc_set_maintenance',
             'mnetadmin_rpc_purge_caches'
-		),
-	),
+        ),
+    ),
 );
 $subscribes = array(
     'dataexchange' => array(

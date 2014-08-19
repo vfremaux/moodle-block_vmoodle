@@ -81,13 +81,14 @@ class XmlRpc_Client extends \mnet_xmlrpc_client {
      * @param                    mnet_peer            An host to get errors (optional).
      * @return                    array                The host error.
      */
-    public function getErrors(mnet_peer $host=null) {
-        if (is_null($host))
+    public function getErrors($host = null) {
+        if (is_null($host)) {
             return $this->host_errors;
-        else if (array_key_exists($host->wwwroot, $this->host_errors))
+        } elseif (array_key_exists($host->wwwroot, $this->host_errors)) {
             return $this->host_errors[$host->wwwroot];
-        else
+        } else {
             return null;
+        }
     }
 
     /**

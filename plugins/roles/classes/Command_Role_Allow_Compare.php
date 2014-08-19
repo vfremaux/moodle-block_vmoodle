@@ -4,6 +4,8 @@ namespace vmoodleadminset_roles;
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Parameter;
 Use \block_vmoodle\commands\Command_Exception;
+Use \StdClass;
+Use \moodle_url;
 
 require_once($CFG->libdir.'/accesslib.php');
 
@@ -75,7 +77,7 @@ class Command_Role_Allow_Compare extends Command {
         // Initializing responses
         $responses = array();
 
-        // Creating peers
+        // Creating peers.
         $mnet_hosts = array();
         foreach($hosts as $host => $name) {
             $mnet_host = new \mnet_peer();
@@ -88,11 +90,11 @@ class Command_Role_Allow_Compare extends Command {
                 );
         }
 
-        // Sending requests
+        // Sending requests.
         foreach($mnet_hosts as $mnet_host) {
-            // Sending request
+            // Sending request.
             if (!$rpc_client->send($mnet_host)) {
-                $response = new stdclass;
+                $response = new StdClass;
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 if (debugging()) {
@@ -103,109 +105,113 @@ class Command_Role_Allow_Compare extends Command {
             } else {
                 $response = json_decode($rpc_client->response);
             }
-            // Recording response
+            // Recording response.
             $responses[$mnet_host->wwwroot] = $response;
-            // Recording capabilities
+            // Recording capabilities.
             if ($response->status == RPC_SUCCESS)
                 $this->capabilities[$mnet_host->wwwroot] = $response->value;
         }
-        // Saving results
+        // Saving results.
         $this->results = $responses + $this->results;
 
-        // Processing results
+        // Processing results.
         $this->_process();
     }
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @return                mixed            The result or null if result does not exist.
-     * @throws                Command_Exception.
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @return mixed The result or null if result does not exist.
+     * @throws Command_Exception.
      */
     public function getResult($host = null, $key = null) {
-        // Checking if command has been runned
+        // Checking if command has been runned.
         if (!$this->isRunned())
             throw new Command_Exception('commandnotrun');
 
-        // Checking host (general result isn't provide in this kind of command)
-        if (is_null($host))
+        // Checking host (general result isn't provide in this kind of command).
+        if (is_null($host)) {
             return $this->report;
-        else
-            if (!array_key_exists($host, $this->results))
+        } else {
+            if (!array_key_exists($host, $this->results)) {
                 return null;
+            }
+        }
         $result = $this->results[$host];
 
-        // Checking key
-        if (is_null($key))
+        // Checking key.
+        if (is_null($key)) {
             return $result;
-        else
-            if (property_exists($result, $key))
+        } else {
+            if (property_exists($result, $key)) {
                 return $result-> $key;
-            else
+            } else {
                 return null;
+            }
+        }
     }
 
     /**
      * Process the role comparision.
-     * @throws            Commmand_Exception.
+     * @throws Commmand_Exception.
      */
     private function _process() {
         global $CFG,$DB,$OUTPUT;
 
-        // Checking if command has been runned
-        if (!$this->isRunned())
+        // Checking if command has been runned.
+        if (!$this->isRunned()) {
             throw new Command_Exception('commandnotrun');
+        }
 
-        // Getting table name
+        // Getting table name.
         $table = $this->getParameter('table')->getValue();
           
-        // Getting hosts
+        // Getting hosts.
         $hosts = array_keys($this->capabilities);
         $host_labels = get_available_platforms();
 
-        // Getting local roles
+        // Getting local roles.
         $roles = $DB->get_records('role', null, '', 'sortorder');
 
         /*
          * processing results
          */
 
-        // Creating header
+        // Creating header.
         $this->report = '<h3>'.get_string('allowcompare', 'vmoodleadminset_roles', vmoodle_get_string($table.'table', 'vmoodleadminset_roles')).help_button_vml('rolelib', 'allowcompare', 'vmoodleadminset_roles').'</h3>';
         // Adding edit role link
         $this->report.= '<center><p>'.$OUTPUT->single_button(new moodle_url($CFG->wwwroot.'/admin/roles/allow.php?mode='.$table, array('roleid' => $role->id, 'action' => 'edit')), vmoodle_get_string('editallowtable', 'vmoodleadminset_roles'), 'get').'</p></center>';
-        // Creation form
+        // Creation form.
         $this->report .= '<form action="'.$CFG->wwwroot.'/blocks/vmoodle/plugins/roles/controller.rolelib.sadmin.php?what=syncallow" method="post" onsubmit="return validate_syncrole()">';
         $this->report .= '<input id="target" type="hidden" name="target" value=""/>';
         $this->report .= '<input id="role" type="hidden" name="role" value=""/>';
         $this->report .= '<input id="source_platform" type="hidden" name="source_platform" value=""/>';
 
-        // Creating table
+        // Creating table.
         $this->report.= '<table id="allowcompare" cellspacing="1" cellpadding="5" class="generaltable boxaligncenter" style="min-width: 75%;"><tbody>';
 
-        // Creating header
+        // Creating header.
         $this->report.= '<tr><th scope="col" class="header c0" style="vertical-align: bottom; text-align: left;">&nbsp</th>';
         $col = 1;
-        foreach($hosts as $host) {
+        foreach ($hosts as $host) {
             $this->report.= '<th id="cap_'.$col.'" scope="col" class="header c'.$col.'" style="vertical-align: bottom; text-align: center;"><label for="platform_'.$col.'"><img src="'.$CFG->wwwroot.'/blocks/vmoodle/plugins/roles/draw_platformname.php?caption='.urlencode($host_labels[$host]).'" alt="'.$host_labels[$host].'"/></label><br/><input id="platform_'.$col.'" type="checkbox" name="platforms[]" value="'.$host.'" disabled="disabled"/></th>';
             $col++;
         }
         $this->report.= '</tr>';
 
-        // Initializing variables
+        // Initializing variables.
         $row = 0;
-        // Creating table data
-        foreach($allroles as $rolename => $role){
+        // Creating table data.
+        foreach ($allroles as $rolename => $role) {
             $localrole = $DB->get_field('role', 'name', array('shortname' => $rolename));
             $displayrole = ($localrole) ? $localrole : '--'.$rolename.'--';
             $this->report .= "<tr valign='top'>$displayrole</td>";
             $row++;
         }
 
-        // Closing table
+        // Closing table.
         $this->report.= '</tboby></table><br/>';
         $this->report .= '<center><input type="submit" value="'.vmoodle_get_string('synchronize', 'vmoodleadminset_roles').'"/><div id="allowcompare_validation_message"></div></center></form><br/><br/>';
     }
-
 }

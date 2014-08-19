@@ -24,10 +24,6 @@
  * @category blocks
  */
 
-// Adding autoloader
-
-require_once('autoloader.php');
-
 // Adding requirements.
 
 require_once('../../config.php');
@@ -35,9 +31,12 @@ require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/debuglib.php');
 require_once($CFG->dirroot.'/mnet/lib.php');
 
-//Loading jQuery
-
-$PAGE->requires->js('/blocks/vmoodle/js/lib/jquery-1.7.2.min.js');
+// Loading jQuery.
+global $JQUERYVERSION;
+if (empty($JQUERYVERSION)) {
+    $JQUERYVERSION = '1.7.2';
+    $PAGE->requires->js('/blocks/vmoodle/js/lib/jquery-1.7.2.min.js');
+}
 
 // Loading javascript files.
 
@@ -67,10 +66,7 @@ $action = optional_param('what', '', PARAM_TEXT);
 
 $system_context = context_system::instance();
 require_login();
-
-if (!has_capability('block/vmoodle:managevmoodles', context_system::instance())) {
-    print_error('onlyadministrators', 'block_vmoodle');
-}
+require_capability('block/vmoodle:managevmoodles', $system_context);
 
 $plugins = get_list_of_plugins('/blocks/vmoodle/plugins');
 foreach ($plugins as $plugin) {
@@ -98,7 +94,6 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($strtitle,'view.php?view='.$view,'misc');
-
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
 $PAGE->set_button('');
@@ -107,7 +102,7 @@ $PAGE->set_headingmenu('');
 $url = new moodle_url('/blocks/vmoodle/view.php');
 $PAGE->set_url($url,array('view' => $view,'what' => $action));
 
- // Capturing action.
+// Capturing action.
 
 if ($action != '') {
     try {
