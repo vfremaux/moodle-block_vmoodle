@@ -41,7 +41,7 @@ class Host_Form extends \moodleform {
      * @param string $mode The action to call from controler.
      * @param array $platform_form Data to input in fields.
      */
-    public function __construct($mode, $platform_form=null) {
+    public function __construct($mode, $platform_form = null) {
         // Settings mode and data.
         $this->mode = $mode;
         $this->platform_form = $platform_form;
@@ -76,20 +76,21 @@ class Host_Form extends \moodleform {
         $mform->addElement('text', 'name', get_string('addformname', 'block_vmoodle'), $size_input_text);
         $mform->addHelpButton('name', 'name','block_vmoodle');
         $mform->setType('name', PARAM_TEXT);
-        if($this->isInAddMode()) {
+        if ($this->isInAddMode()) {
             // Shortname.
             $elmname = get_string('addformshortname', 'block_vmoodle');
             $mform->addElement('text', 'shortname', $elmname, ($this->mode == 'edit' ? 'disabled="disabled" ' : ''));
             $mform->addHelpButton('shortname', 'shortname', 'block_vmoodle');
             $mform->setType('shortname', PARAM_TEXT);
         }
+
         // Description.
         $elmname = get_string('addformdescription', 'block_vmoodle');
         $mform->addElement('textarea', 'description', $elmname, 'rows="15" cols="40"');
         $mform->addHelpButton('description', 'description', 'block_vmoodle');
         $mform->setType('description', PARAM_TEXT);
 
-        if($this->isInAddMode()) {
+        if ($this->isInAddMode()) {
             // Host's name.
             $elmname = get_string('vhostname', 'block_vmoodle');
             $mform->addElement('text', 'vhostname', $elmname, ($this->mode == 'edit' ? 'disabled="disabled" ' : '').$size_input_text);
@@ -172,7 +173,7 @@ class Host_Form extends \moodleform {
         $subnetworksrecords = $DB->get_records_sql($sql);
 
         $newsubnetwork = 1;
-        if(!empty($subnetworksrecords)) {
+        if (!empty($subnetworksrecords)) {
             $maxmnet = 0;
             foreach ($subnetworksrecords as $subnetworksrecord) {
                 $subnetworks[$subnetworksrecord->mnet] = $subnetworksrecord->mnet;
@@ -228,7 +229,7 @@ class Host_Form extends \moodleform {
      * @see lib/moodleform#validation($data, $files)
      */
     function validation($data, $files = null) {
-        global $CFG;
+        global $CFG, $DB;
 
         // Empty array.
         $errors = parent::validation($data, null);
