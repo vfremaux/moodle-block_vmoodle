@@ -126,7 +126,7 @@ if ($action == 'doadd') {
 
         // Retrieve submitted data, from the add form.
         unset($SESSION->vmoodle_mg['dataform']);
-        $platform_form    = new \block_vmoodle\Host_Form('add', null);
+        $platform_form = new \block_vmoodle\Host_Form('add', null);
 
         // Check if form is cancelled.
         if ($platform_form->is_cancelled()) {
@@ -918,10 +918,10 @@ if (($action == 'delete') || ($action == 'fulldelete')) {
                                 id='.$id;
             if($DB->execute($sqlrequest)) {
                 $message_object->message = get_string('successdeletehost', 'block_vmoodle');
-                $message_object->style    =    'notifysuccess';
+                $message_object->style = 'notifysuccess';
             } else {
                 $message_object->message = get_string('badhostalreadydeleted', 'block_vmoodle');
-                $message_object->style    =    'notifysuccess';
+                $message_object->style = 'notifysuccess';
             }
         }
     } else {

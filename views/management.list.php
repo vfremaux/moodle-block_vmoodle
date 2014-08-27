@@ -55,7 +55,7 @@ if ($vmoodles) {
     $strcrons = get_string('crons', 'block_vmoodle');
     $strcmds = get_string('commands', 'block_vmoodle');
 
-    // Defining html table
+    // Defining html table.
     $table = new html_table();
     $table->head = array('', "<b>$strname</b>","<b>$strhost</b>","<b>$strstatus</b>","<b>$strmnet</b>","<b>$strcrons</b>","<b>$strlastcron</b>","<b>$strlastcrongap</b>","<b>$strcmds</b>");
     $table->align = array ('CENTER', 'LEFT', 'LEFT', 'CENTER', 'CENTER', 'CENTER', 'CENTER', 'CENTER', 'CENTER');

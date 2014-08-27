@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Declare RPC functions for syncrolelib.
  * 
@@ -8,8 +23,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 
-require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
-require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
+require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
+require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 
 if (!defined('RPC_SUCCESS')) {
     define('RPC_TEST', 100);
@@ -26,9 +41,9 @@ if (!defined('RPC_SUCCESS')) {
 
 /**
  * Get role capabilities of a virtual platform.
- * @param    $user                    array or object        The calling user.
- * @param    $role                    string                The role to read capabilities.
- * @param    $capabilitues            mixed                The capabilities to read (optional / may be string or array).
+ * @param mixed $user The calling user.
+ * @param string $role The role to read capabilities.
+ * @param mixed $capabilities The capabilities to read (optional / may be string or array).
  */
 function mnetadmin_rpc_get_role_capabilities($user, $role, $capabilities = null, $json_response = true) {
     global $CFG, $USER, $DB;
@@ -58,9 +73,10 @@ function mnetadmin_rpc_get_role_capabilities($user, $role, $capabilities = null,
             return $response;
         }
     }
-    // Creating SQL filter in WHERE clause
+
+    // Creating SQL filter in WHERE clause.
     if ($capabilities) {
-        // Formatting capabilities
+        // Formatting capabilities.
         if (!is_array($capabilities))
             $capabilities = array($capabilities);
         $in_capabilities = $capabilities;
@@ -68,12 +84,11 @@ function mnetadmin_rpc_get_role_capabilities($user, $role, $capabilities = null,
                $in_capability = $in_capability;
         $in_capabilities = join(',', $in_capabilities);
     }
-    // Getting capabilities
-   
-    
+
+    // Getting capabilities.
     $where = '';
     $params = array();
-    if(!is_null($capabilities)) {
+    if (!is_null($capabilities)) {
         $where = 'where name IN (:cap)';
         $params = array('cap' => $in_capabilities);    
     }
@@ -89,18 +104,20 @@ function mnetadmin_rpc_get_role_capabilities($user, $role, $capabilities = null,
             return $response;
         }
     }
-    // Getting role capabilities
+
+    // Getting role capabilities.
     $records_role_capabilities = $DB->get_records_sql('select capability,contextid,permission from {role_capabilities} where roleid = '.$record_role->id.' AND contextid = 1'.($capabilities ? ' AND capability IN (?)' : ''),array($in_capabilities));
     @ob_clean();
     ob_start();    // Used to prevent HTML output from dmllib methods and capture errors
     if (!$records_role_capabilities) {
         $sql_error = parse_wlerror();
-        // Checking if there was a sql error
+
+        // Checking if there was a sql error.
         if (empty($sql_error)) {
-            // Defining empty record set
+            // Defining empty record set.
             $records_role_capabilities = array();
         } else {
-            // Returning error
+            // Returning error.
             $response->status = RPC_FAILURE_RECORD;
             $response->errors[] = 'Unable to retrieve role capabilites: '.$sql_error;
             $response->error = 'Unable to retrieve role capabilites: '.$sql_error;
@@ -112,23 +129,28 @@ function mnetadmin_rpc_get_role_capabilities($user, $role, $capabilities = null,
         }
     }
     ob_end_clean();
-    // Creating result
+
+    // Creating result.
     $result = array();
     foreach ($records_capabilities as $capability_name => $record_capability) {
-        // Checking if role_capability is set
+
+        // Checking if role_capability is set.
         if (!array_key_exists($capability_name, $records_role_capabilities)) {
             $result[$capability_name] = null;
         } else {
-            // Getting role capatiliy
+            // Getting role capability.
             $role_capability = $records_role_capabilities[$capability_name];
-            // Adding capability contextlevel
+
+            // Adding capability contextlevel.
             $role_capability->contextlevel = $record_capability->contextlevel;
             $result[$capability_name] = $role_capability;
         }
     }
-    // Setting value
+
+    // Setting value.
     $response->value = $result;
-    // Returning response
+
+    // Returning response.
     if ($json_response) {
         return json_encode($response);
     } else {
@@ -138,10 +160,10 @@ function mnetadmin_rpc_get_role_capabilities($user, $role, $capabilities = null,
 
 /**
  * Set role capabilities of a virtual platform.
- * @param    $user                    string                The calling user.
- * @param    $role                    string                The role to set capabilities.
- * @param    $role_capabilities        mixed                The role capabilities (array or object due to xmlrpc failures).
- * @param    $clear                    bool                True if the role capabilities should be cleared before, false otherwise.
+ * @param string $user The calling user.
+ * @param string $role The role to set capabilities.
+ * @param mixed $role_capabilities The role capabilities (array or object due to xmlrpc failures).
+ * @param bool $clear True if the role capabilities should be cleared before, false otherwise.
  */
 function mnetadmin_rpc_set_role_capabilities($user, $role, $role_capabilities, $clear = false, $json_response = true) {
     global $CFG, $USER, $DB;
@@ -209,10 +231,10 @@ function mnetadmin_rpc_set_role_capabilities($user, $role, $role_capabilities, $
         }
     }
 
-    // Setting role capabilities
+    // Setting role capabilities.
     @ob_clean(); ob_start();    // Used to prevent HTML output from dmllib methods and capture errors
     foreach ($role_capabilities as $role_capability_name => $role_capability) {
-        // Checking if capability exists
+        // Checking if capability exists.
         if (!array_key_exists($role_capability_name, $records_capabilities)) {
             $response->status = RPC_FAILURE_RECORD;
             $response->errors[] = 'Set role capability : Capability "'.$role_capability_name.'" does not exist.';
@@ -292,14 +314,14 @@ function mnetadmin_rpc_set_role_capabilities($user, $role, $role_capabilities, $
 /**
  * Get role allowances of a virtual platform.
  * As being a cross platform match, do only rely on shortnames and never on ids
- * @param    $user                    array or object        The calling user.
- * @param    $table                    string                'assign' or 'override'.
- * @param    $rolename                    string                The role shortname to get allowance from.
+ * @param mixed $user The calling user.
+ * @param string $table 'assign' or 'override'.
+ * @param string $rolename The role shortname to get allowance from.
  */
 function mnetadmin_rpc_get_role_allow_table($user, $table, $rolename = '', $json_response = true) {
     global $CFG, $USER, $DB;
 
-    // Invoke local user and check his rights
+    // Invoke local user and check his rights.
     if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')) {
         if ($json_response) {
             return $auth_response;
@@ -309,10 +331,12 @@ function mnetadmin_rpc_get_role_allow_table($user, $table, $rolename = '', $json
     }
     $response->errors = array();
     $response->error = '';
-    // Creating response
+
+    // Creating response.
     $response = new StdClass();
     $response->status = RPC_SUCCESS;
-    // Getting allowance records
+
+    // Getting allowance records.
     if ($rolename) {
         if (!$role = $DB->get_record('role', array('shortname' => $rolename))) {
             $response->status = RPC_FAILURE_RECORD;
@@ -338,9 +362,10 @@ function mnetadmin_rpc_get_role_allow_table($user, $table, $rolename = '', $json
         }
     }
 
-    // Setting value
+    // Setting value.
     $response->value = $result;
-    // Returning response
+
+    // Returning response.
     if ($json_response) {
         return json_encode($response);
     } else {
@@ -350,15 +375,15 @@ function mnetadmin_rpc_get_role_allow_table($user, $table, $rolename = '', $json
 
 /**
  * Get role allowances of a virtual platform.
- * @param    $user                    array or object        The calling user.
- * @param    $table                    string                'assign' or 'override'.
- * @param    $rolename                string                The role shortname to get allowance from.
- * @param    $targetrolenames        string                comma separated lists of role shortnames.
+ * @param mixed $user The calling user.
+ * @param string $table 'assign' or 'override'.
+ * @param string $rolename The role shortname to get allowance from.
+ * @param string $targetrolenames comma separated lists of role shortnames.
  */
 function mnetadmin_rpc_set_role_allow($user, $table, $rolename, $targetrolenames, $json_response = true) {
     global $CFG, $USER, $DB;
 
-    // Invoke local user and check his rights
+    // Invoke local user and check his rights.
     if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')) {
         if ($json_response) {
             return $auth_response;
@@ -368,10 +393,12 @@ function mnetadmin_rpc_set_role_allow($user, $table, $rolename, $targetrolenames
     }
     $response->errors = array();
     $response->error = '';
-    // Creating response
+
+    // Creating response.
     $response = new StdClass();
     $response->status = RPC_SUCCESS;
-    // Getting allowance records
+
+    // Getting allowance records.
     if ($rolename) {
         if($role = $DB->get_record('role', array('shortname' => $rolename))) {
             $DB->delete_records('role_allow_'.$table, array('roleid' => $role->id));
@@ -409,9 +436,10 @@ function mnetadmin_rpc_set_role_allow($user, $table, $rolename, $targetrolenames
         }
     }
 
-    // Setting value
+    // Setting value.
     $response->value = '';
-    // Returning response
+
+    // Returning response.
     if ($json_response) {
         return json_encode($response);
     } else {
@@ -421,12 +449,12 @@ function mnetadmin_rpc_set_role_allow($user, $table, $rolename, $targetrolenames
 
 /**
  * asks for a role assignation on a context.
- * @param    $callinguser            object                The calling user.
- * @param    $targetuser                string                The username of the user to assign a role remotely.
- * @param    $rolename                mixed                The role shortname to assign
- * @param    $contextidentityfield    string                Tells the field to use to get context real object instance
- * @param    $contextlevel            integer                The contextlevel concerned, defaults to SYSTEM 
- * @param    $contextidentity        string                Some identifying value allowing to remotely point the context instance
+ * @param object $callinguser The calling user.
+ * @param string $targetuser The username of the user to assign a role remotely.
+ * @param mixed $rolename The role shortname to assign
+ * @param string $contextidentityfield Tells the field to use to get context real object instance
+ * @param integer $contextlevel The contextlevel concerned, defaults to SYSTEM 
+ * @param string $contextidentity Some identifying value allowing to remotely point the context instance
  *
  * Identifying context from remote aplications : 
  * CONTEXT_SYSTEM : unused
@@ -445,7 +473,7 @@ function mnetadmin_rpc_has_role($callinguser, $targetuser, $userhostroot, $rolen
     $response->errors = array();
     $response->error = '';
 
-    // Invoke local user and check his rights
+    // Invoke local user and check his rights.
     if ($auth_response = invoke_local_user((array)$callinguser, 'block/vmoodle:execute')) {
         if ($json_response) {
             return $auth_response;
@@ -454,10 +482,11 @@ function mnetadmin_rpc_has_role($callinguser, $targetuser, $userhostroot, $rolen
         }
     }
     if (empty($whereroot) || $whereroot == $CFG->wwwroot) {
-    // check it locally
+
+    	// check it locally.
         if (function_exists('debug_trace')) debug_trace("check locally for $targetuser as $rolename in context $contextidentity of level $contextlevel keyed by $contextidentityfield in ".$whereroot);
 
-        // Getting role
+        // Getting role.
         $record_role = $DB->get_record('role', array('shortname' => $rolename));
         if (!$record_role) {
             $response->status = RPC_FAILURE_RECORD;
@@ -516,8 +545,7 @@ function mnetadmin_rpc_has_role($callinguser, $targetuser, $userhostroot, $rolen
         }
         $response->message = "Has role";
     } else {
-        // Make remote call
-        // debug_trace('check remotely at '.$whereroot);
+        // Make remote call.
         $userhostroot = $DB->get_field_select('mnet_host', 'wwwroot', " id = ? AND deleted = 0 ", array($USER->mnethostid)); 
         if (!$userhostroot) {
             $extresponse->error = 'Unkown userroot (or deleted).';        
@@ -589,12 +617,12 @@ function mnetadmin_rpc_has_role_wrapped($wrap) {
 
 /**
  * assign remotely a role based on role shortname and user username.
- * @param    $callinguser            object                The calling user.
- * @param    $targetuser                string                The username of the user to assign a role remotely.
- * @param    $rolename                mixed                The role shortname to assign
- * @param    $contextidentityfield    string                Tells the field to use to get context real object instance
- * @param    $contextlevel            integer                The contextlevel concerned, defaults to SYSTEM 
- * @param    $contextidentity        string                Some identifying value allowing to remotely point the context instance
+ * @param object $callinguser The calling user.
+ * @param string $targetuser The username of the user to assign a role remotely.
+ * @param string $rolename The role shortname to assign
+ * @param string $contextidentityfield Tells the field to use to get context real object instance
+ * @param integer $contextlevel The contextlevel concerned, defaults to SYSTEM 
+ * @param string $contextidentity Some identifying value allowing to remotely point the context instance
  *
  * Identifying context from remote aplications : 
  * CONTEXT_SYSTEM : unused
@@ -612,7 +640,7 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
     $response->error = '';
     $response->message = '';
 
-    // Invoke local user and check his rights
+    // Invoke local user and check his rights.
     if ($auth_response = invoke_local_user((array)$callinguser, 'block/vmoodle:execute')) {
         if ($json_response) {
             return $auth_response;
@@ -621,16 +649,14 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
         }
     }
 
-/// Getting true role
-
+	// Getting true role.
     $unassign = (strstr($rolename, '-') !== false);
     $rolename = str_replace('-', '', $rolename);
 
     $siteadmin = (strstr($rolename, '+') !== false);
     $rolename = str_replace('+', '', $rolename);
 
-/// Process site admin operation
-
+	// Process site admin operation.
     if (!$targetuser = $DB->get_record('user', array('username' => $targetuser))) {
         $response->status = RPC_FAILURE_RECORD;
         $response->errors[] = ' Not such target user.';
@@ -698,7 +724,7 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 
 /// Check context target
 
-    switch($contextlevel) {
+    switch ($contextlevel) {
         case CONTEXT_SYSTEM:
             $context = context_system::instance();
             break;
@@ -869,9 +895,9 @@ function mnetadmin_rpc_assign_role_wrapped($wrap) {
 
 /**
  * allows checking if a user exists.
- * @param    $callinguser            object                The calling user.
- * @param    $targetuser                string                The username of the user to be created.
- * @param    $userhostname            string                the user's supposed origin .
+ * @param object $callinguser The calling user.
+ * @param string $targetuser The username of the user to be created.
+ * @param string $userhostname the user's supposed origin .
  *
  * if userhostname is empty, the user is checked locally and his known userhost is mentionned.
  *
@@ -896,7 +922,7 @@ function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $
         }
     }
 
-    // local search
+    // local search.
     if (function_exists('debug_trace')) {
         debug_trace("$CFG->wwwroot : asked for $whereroot");
     }
@@ -1000,12 +1026,12 @@ function mnetadmin_rpc_user_exists_wrapped($wrap) {
 
 /**
  * force user account creation.
- * @param    $callinguser            object                The calling user.
- * @param    $targetuser                string                The username of the user to be created.
- * @param    $userparams                array                an array containing all data for user.
- * @param    $userhostname            string                the user's origin account.
- * @param    $bounceto                array                an array of or a string containing hostnames to propagate users to.
- * @param    $onlybounce                boolean                if true, do not try to create the user locally, just bounce.
+ * @param object $callinguser The calling user.
+ * @param string $targetuser The username of the user to be created.
+ * @param array $userparams an array containing all data for user.
+ * @param string $userhostname the user's origin account.
+ * @param array $bounceto an array of or a string containing hostnames to propagate users to.
+ * @param boolean $onlybounce if true, do not try to create the user locally, just bounce.
  *
  * if userhostname is empty, the user is created with an account bound to the localhost mnethost id (local account) and
  * reset to manual auth if the auth is 'mnet' (note the auth will remain unchanged if other than mnet, so it is possible to preset
@@ -1142,7 +1168,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
             if (function_exists('debug_trace')) debug_trace("REMOTE CALL : Reviving user");
             if ($user->deleted == 1) {
                 $user->deleted = 0;
-                foreach($userparams as $key => $value) {
+                foreach ($userparams as $key => $value) {
                     $user->$key = $value;
                 }
                 $user->username = $targetuser;
@@ -1188,7 +1214,8 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
             debug_trace('Create user REMOTE CALL : got user data as '.json_encode($userparams));
         }
     }
-    /// Now proceed to bounces if any.
+
+    // Now proceed to bounces if any.
     if (!empty($bounceto)) {
         if (is_string($bounceto)) {
             $bounceto = explode(';', $bounceto);
@@ -1278,14 +1305,14 @@ function mnetadmin_rpc_create_user_wrapped($wrap) {
  * This XML-RPC call fetches for a remotely known course and enroll the user inside
  * This is essentially intended to use by foreign systems to slave the user management
  * in a MNET network.
- * @param    $callinguser        string            The calling user.
- * @param    $targetuser            string            The username or user identifier of the user to assign a role remotely.
- * @param    $useridfield        string            The field used for identifying the user (id, idnumber or username).
- * @param    $courseidfield        string            The identifying value of the remote course 
- * @param    $courseidentifier    string            The identifying value of the remote course 
- * @param    $rolename            string            The remote role name to be assigned as
- * @param    $starttime            string            The starting date
- * @param    $endtime            string            The enrollement ending date
+ * @param string $callinguser  The calling user.
+ * @param string $targetuser  The username or user identifier of the user to assign a role remotely.
+ * @param string $useridfield  The field used for identifying the user (id, idnumber or username).
+ * @param string $courseidfield  The identifying value of the remote course 
+ * @param string $courseidentifier  The identifying value of the remote course 
+ * @param string $rolename  The remote role name to be assigned as
+ * @param string $starttime The starting date
+ * @param string $endtime The enrollement ending date
  *
  */
 function mnetadmin_rpc_remote_enrol($callinguser, $targetuser, $rolename, $whereroot, $courseidfield, $courseidentifier, $starttime = 0, $endtime = 0, $json_response = true) {
@@ -1350,7 +1377,7 @@ function mnetadmin_rpc_remote_enrol($callinguser, $targetuser, $rolename, $where
         }
     } else {    
         if (function_exists('debug_trace')) debug_trace('remote source process');
-        // Make remote call
+        // Make remote call.
         $userhostroot = $DB->get_field_select('mnet_host', 'wwwroot', " id = $USER->mnethostid AND deleted = 0 "); 
         if (!$userhostroot) {
             $extresponse->error = 'Unkown user host root (or deleted).';
@@ -1429,7 +1456,8 @@ function mnetadmin_rpc_remote_enrol_wrapped($wrap) {
 
 function rpc_check_context_target($contextlevel, $contextidentityfield, $contextidentity, &$response, $json_response) {
     global $DB;
-    // Check context target
+
+    // Check context target.
     switch($contextlevel) {
         case CONTEXT_SYSTEM:
             $context = context_system::instance();
