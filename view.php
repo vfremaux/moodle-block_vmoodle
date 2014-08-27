@@ -26,7 +26,7 @@
 
 // Adding requirements.
 
-require_once('../../config.php');
+require('../../config.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/debuglib.php');
 require_once($CFG->dirroot.'/mnet/lib.php');

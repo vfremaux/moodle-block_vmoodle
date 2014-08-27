@@ -105,6 +105,7 @@ class Host_Form extends \moodleform {
          * Database fieldset.
          */
         $mform->addElement('header', 'dbform', get_string('addformdbgroup', 'block_vmoodle'));
+
         // Database type.
         $dbtypearray = array('mysqli' => 'MySQL', 'postgres' => 'PostgreSQL');
         $mform->addElement('select', 'vdbtype', get_string('vdbtype', 'block_vmoodle'), $dbtypearray);

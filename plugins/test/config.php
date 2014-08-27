@@ -8,6 +8,7 @@ Use \block_vmoodle\commands\Command_Parameter_Internal;
 Use \block_vmoodle\commands\Command_Exception;
 Use \vmoodleadminset_sql\Command_Sql;
 Use \vmoodleadminset_sql\Command_MultiSql;
+Use \Exception;
 
 /**
  * Description of assisted commands for testing generic oommands.
@@ -247,7 +248,7 @@ $cmd = new Command_Sql(
     )
 );
 $category->addCommand($cmd);
-                    
+
 function myTestFunction() {
     throw new Exception();
 }

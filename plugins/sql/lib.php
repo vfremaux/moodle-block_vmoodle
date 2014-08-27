@@ -26,16 +26,16 @@ if (isset($vmcommands_constants))
 
 /**
  * Get fields values of a virtual platform via MNET service.
- * @param    host            string                The virtual platform to aim.
- * @param    table            string                The table to read.
- * @param    select            mixed                The value of id or alternative field.
- * @param    fields            string                The fileds to retrieve (optional).
- * @throws                    Command_Sql_Exception.
+ * @param string host The virtual platform to aim.
+ * @param string table The table to read.
+ * @param string select The value of id or alternative field.
+ * @param string fields The fileds to retrieve (optional).
+ * @throws Command_Sql_Exception.
  */
 function vmoodle_get_field($host, $table, $select, $fields='*') {
     global $CFG, $USER, $DB;
 
-    // Checking capabilities
+    // Checking capabilities.
     if (!has_capability('block/vmoodle:execute', context_system::instance())) {
         throw new Command_Sql_Exception('unsiffisantcapability');
     }
@@ -45,12 +45,12 @@ function vmoodle_get_field($host, $table, $select, $fields='*') {
         throw new Command_Sql_Exception('invalidhost');
     }
 
-    // Checking table
+    // Checking table.
     if (empty($table) || !is_string($table)) {
         throw new Command_Sql_Exception('invalidtable');
     }
 
-    // Checkig select
+    // Checkig select.
     if (empty($select) || (!is_array($select) && !is_int($select))) {
         throw new Command_Sql_Exception('invalidselect');
     }
@@ -58,7 +58,7 @@ function vmoodle_get_field($host, $table, $select, $fields='*') {
         $select = array('id' => $select);
     }
 
-    // Checking field
+    // Checking field.
     if (empty($fields)) {
         throw new Command_Sql_Exception('invalidfields');
     }
@@ -67,7 +67,7 @@ function vmoodle_get_field($host, $table, $select, $fields='*') {
         $fields = array($fields);
     }
 
-    // Creating peer
+    // Creating peer.
     $mnet_host = new mnet_peer();
     if (!$mnet_host->bootstrap($host, null, 'moodle')) {
         return (object) array(
@@ -97,7 +97,7 @@ function vmoodle_get_field($host, $table, $select, $fields='*') {
 
 /**
  * Install sqllib plugin library.
- * @return                    boolean                TRUE if the installation is successfull, FALSE otherwise.
+ * @return boolean true if the installation is successfull, false otherwise.
  */
 function sqllib_install() {
     global $DB, $OUTPUT;
@@ -105,18 +105,18 @@ function sqllib_install() {
     $result = true;
     $rpc = new stdclass;
     $rpcmap = new stdclass;
-    // Retrieve service
+    // Retrieve service.
 
-    // Returning result
+    // Returning result.
     return $result;
 }
 
 /**
  * Uninstall sqlib plugin library.
- * @return                    boolean                TRUE if the uninstallation is successfull, FALSE otherwise.
+ * @return boolean true if the uninstallation is successfull, false otherwise.
  */
 function sqllib_uninstall() {
-    // Initializing
+    // Initializing.
     global $DB, $OUTPUT;
 
     $result = true;

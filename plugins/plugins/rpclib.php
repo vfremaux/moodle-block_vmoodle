@@ -48,9 +48,9 @@ define('VMOODLE_PLUGIN_DISABLE', 0);
 
 /**
  * Get role capabilities of a virtual platform.
- * @param    $user                    array or object        The calling user.
- * @param    $role                    string                The role to read capabilities.
- * @param    $capabilitues            mixed                The capabilities to read (optional / may be string or array).
+ * @param mixed $user The calling user.
+ * @param string $role The role to read capabilities.
+ * @param mixed $capabilities The capabilities to read (optional / may be string or array).
  */
 function mnetadmin_rpc_get_plugins_info($user, $plugintype, $json_response = true) {
     global $CFG, $USER, $DB;
@@ -115,14 +115,13 @@ function mnetadmin_rpc_get_plugins_info($user, $plugintype, $json_response = tru
 
 /**
  * Enables or disables a plugin of a virtual platform.
- * @param    $user                    string                The calling user.
- * @param    $plugininfos            string                a structure with info for each plugin to setup.
+ * @param string $user The calling user.
+ * @param string $plugininfos a structure with info for each plugin to setup.
  */
-
 function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = true) {
     global $CFG, $USER, $DB;
 
-    debug_trace("Plugin Set States: Entry point");
+    // debug_trace("Plugin Set States: Entry point");
 
     // Creating response.
     $response = new Stdclass();

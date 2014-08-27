@@ -69,11 +69,12 @@ function vmoodle_get_remote_config($mnethost, $configkey, $module = '') {
  * @return boolean true if the installation is successfull, false otherwise.
  */
 function genericlib_install() {
-    // No install operation
     global $DB;
-    $result = true;
-    // installing Data Exchange
 
+    // No install operation.
+    $result = true;
+
+    // installing Data Exchange.
     if ($previous = get_config('dataexchangesafekeys')) {
         $genericconfigs[] = $previous;
     }
@@ -86,7 +87,7 @@ function genericlib_install() {
 
 /**
  * Uninstall generic plugin library.
- * @return                    boolean                TRUE if the uninstallation is successfull, FALSE otherwise.
+ * @return boolean true if the uninstallation is successfull, false otherwise.
  */
 function genericlib_uninstall() {
     global $DB,$OUTPUT;

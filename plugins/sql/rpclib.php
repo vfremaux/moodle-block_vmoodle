@@ -23,10 +23,10 @@ if (!defined('RPC_SUCCESS')) {
 
 /**
  * Get fields values of a virtual platform.
- * @param    $user                    string                The calling user.
- * @param    $table                    string                The table to read.
- * @param    $fields                    string                The fileds to retrieve.
- * @param    $select                    mixed                The value of id or alternative field.
+ * @param string $user The calling user.
+ * @param string $table The table to read.
+ * @param string $fields The fileds to retrieve.
+ * @param mixed $select The value of id or alternative field.
  */
 function mnetadmin_rpc_get_fields($user, $table, $fields, $select) {
     global $CFG, $USER, $DB;
@@ -62,19 +62,20 @@ function mnetadmin_rpc_get_fields($user, $table, $fields, $select) {
 
 /**
  * Get fields values of a virtual platform.
- * @param    $user                    string                The calling user.
- * @param    $command                string                The sql command to run.
- * @param    $return                    boolean                True if the result of SQL should be returned, false otherwise. In that case query CANNOT be multiple
+ * @param string $user The calling user.
+ * @param string $command The sql command to run.
+ * @param boolean $return True if the result of SQL should be returned, false otherwise. In that case query CANNOT be multiple
  */
 function mnetadmin_rpc_run_sql_command($user, $command, $params, $return=false, $multiple=false) {
     global $CFG, $USER, $vmcommands_constants, $DB;
 
     // Adding requirements.
-    require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
-    // Invoke local user and check his rights
+    include_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
+
+    // Invoke local user and check his rights.
 
 //    invoke_local_user($user, 'block/vmoodle:execute');
-    // Creating response
+    // Creating response.
     $response = new stdclass;
     $response->status = RPC_SUCCESS;
 
@@ -86,7 +87,7 @@ function mnetadmin_rpc_run_sql_command($user, $command, $params, $return=false, 
     }
 
     // Runnning commands.
-    foreach ($commands as $command){
+    foreach ($commands as $command) {
         if (empty($command) || preg_match('/^\s+$/s', $command)) {
             continue;
         }
