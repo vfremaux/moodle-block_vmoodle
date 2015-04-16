@@ -29,10 +29,10 @@ require_once $CFG->dirroot.'/blocks/vmoodle/bootlib.php';
 
 // Retrieve parameters for database connection test.
 $database = new stdClass;
-$database->vdbtype    = required_param('vdbtype', PARAM_TEXT);
-$database->vdbhost    = required_param('vdbhost', PARAM_TEXT);
-$database->vdblogin    = required_param('vdblogin', PARAM_TEXT);
-$database->vdbpass    = required_param('vdbpass', PARAM_TEXT);
+$database->vdbtype = required_param('vdbtype', PARAM_TEXT);
+$database->vdbhost = required_param('vdbhost', PARAM_TEXT);
+$database->vdblogin = required_param('vdblogin', PARAM_TEXT);
+$database->vdbpass = required_param('vdbpass', PARAM_TEXT);
 
 // Works, but need to improve the style...
 if (vmoodle_make_connection($database, false)) {

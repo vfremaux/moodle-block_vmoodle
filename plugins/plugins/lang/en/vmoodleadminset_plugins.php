@@ -15,6 +15,7 @@ $string['cmdsyncname'] = 'Synchronization of the plugin equipement';
 $string['cmdpluginsetupdesc'] = 'Enables disables remote plugins.';
 $string['cmdpluginsetupname'] = 'Plugin control';
 $string['compareplugins'] = 'Comparing plugins "{$a}"';
+$string['errorblockdoesnotexit'] = 'The block {$a} is not found';
 $string['manageplugins'] = 'Manage plugins "{$a}"';
 $string['mnetadmin_name'] = 'MNET Meta Administration';
 $string['mnetadmin_description'] = 'Provides functions to perform network scoped administration operations, such as role or configuration settigns synchronisation.';

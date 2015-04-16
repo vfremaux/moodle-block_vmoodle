@@ -24,11 +24,11 @@
 define('CLI_SCRIPT', true);
 
 require(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
+require_once($CFG->libdir.'/clilib.php'); // cli only functions
+require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
+require_once('clilib.php'); // vmoodle cli only functions
 require_once($CFG->libdir.'/adminlib.php'); // various admin-only functions
 require_once($CFG->libdir.'/upgradelib.php'); // general upgrade/install related functions
-require_once($CFG->libdir.'/clilib.php'); // cli only functions
-require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
-require_once('clilib.php'); // vmoodle cli only functions
 
 // Fakes an admin identity for all the process.
 $USER = get_admin();
@@ -185,6 +185,7 @@ foreach ($nodes as $n) {
     if (!empty($n->config)) {
         $confiarr = (array) $n->config;
         foreach ($confiarr as $key => $value) {
+            mtrace("Setting up main config {$key} to $value");
             if ($oldrec = $VDB->get_record('config', array('name' => $key))) {
                 $oldrec->value = $value;
                 $VDB->update_record('config', $oldrec);
@@ -199,7 +200,9 @@ foreach ($nodes as $n) {
 
     if (!empty($n->local)) {
         foreach ($n->local as $pluginname => $plugin) {
+            mtrace("Setting up local_{$pluginname} :\n");
             foreach ($plugin as $setting => $value) {
+                mtrace("Setting up local_{$pluginname} {$setting} to $value");
                 if ($oldrec = $VDB->get_record('config_plugins', array('plugin' => 'local_'.$pluginname, 'name' => $setting))) {
                     $oldrec->value = $value;
                     $VDB->update_record('config_plugins', $oldrec);
@@ -216,7 +219,9 @@ foreach ($nodes as $n) {
 
     if (!empty($n->block)) {
         foreach ($n->block as $plugin) {
+            mtrace("Setting up block_{$plugin} :\n");
             foreach ($plugin as $setting => $value) {
+                mtrace("Setting up block_{$pluginkey} to $value");
                 if ($oldrec = $VDB->get_record('config_plugins', array('plugin' => 'block_'.$plugin, 'name' => $setting))) {
                     $oldrec->value = $value;
                     $VDB->update_record('config_plugins', $oldrec);
@@ -233,7 +238,9 @@ foreach ($nodes as $n) {
 
     if (!empty($n->mod)) {
         foreach ($n->mod as $plugin) {
+            mtrace("Setting up mod_{$plugin} :\n");
             foreach ($plugin as $setting => $value) {
+                mtrace("Setting up mod_{$pluginkey} to $value");
                 if ($oldrec = $VDB->get_record('config_plugins', array('plugin' => 'mod_'.$plugin, 'name' => $setting))) {
                     $oldrec->value = $value;
                     $VDB->update_record('config_plugins', $oldrec);
@@ -250,7 +257,9 @@ foreach ($nodes as $n) {
 
     if (!empty($n->format)){
         foreach ($n->format as $plugin) {
+            mtrace("Setting up format_{$plugin} :\n");
             foreach ($plugin as $setting => $value) {
+                mtrace("Setting up format_{$pluginkey} to $value");
                 if ($oldrec = $VDB->get_record('config_plugins', array('plugin' => 'format_'.$plugin, 'name' => $setting))) {
                     $oldrec->value = $value;
                     $VDB->update_record('config_plugins', $oldrec);
@@ -267,7 +276,9 @@ foreach ($nodes as $n) {
 
     if (!empty($n->auth)) {
         foreach ($n->auth as $pluginkey => $plugin) {
+            mtrace("Setting up auth/{$pluginkey} :\n");
             foreach ($plugin as $setting => $value) {
+                mtrace("Setting up auth/{$pluginkey}|{$setting} to $value");
                 if ($oldrec = $VDB->get_record('config_plugins', array('plugin' => 'auth/'.$pluginkey, 'name' => $setting))) {
                     $oldrec->value = $value;
                     $VDB->update_record('config_plugins', $oldrec);

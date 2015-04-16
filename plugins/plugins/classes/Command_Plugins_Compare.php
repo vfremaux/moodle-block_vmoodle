@@ -73,7 +73,7 @@ class Command_Plugins_Compare extends Command {
         include_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
 
         // Checking capability to run
-        if (!has_capability('block/vmoodle:execute', context_system::instance())) {
+        if (!has_capability('block/vmoodle:execute', \context_system::instance())) {
             throw new Command_Exception('insuffisantcapabilities');
         }
 
@@ -91,7 +91,7 @@ class Command_Plugins_Compare extends Command {
         // Creating peers.
         $mnet_hosts = array();
         foreach ($hosts as $host => $name) {
-            $mnet_host = new mnet_peer();
+            $mnet_host = new \mnet_peer();
             if ($mnet_host->bootstrap($host, null, 'moodle')) {
                 $mnet_hosts[] = $mnet_host;
             } else {
@@ -190,7 +190,7 @@ class Command_Plugins_Compare extends Command {
         $host_labels = get_available_platforms();
 
         // Getting local plugin info.
-        $pm = plugin_manager::instance();
+        $pm = \plugin_manager::instance();
 
         $localplugins = $pm->get_plugins();
         $localtypeplugins = $localplugins[$plugintype];

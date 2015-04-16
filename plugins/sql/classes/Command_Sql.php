@@ -3,6 +3,7 @@
 namespace vmoodleadminset_sql;
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Exception;
+Use \StdClass;
 
 /**
  * Describes meta-administration plugin's SQL command.
@@ -109,7 +110,7 @@ class Command_Sql extends Command {
 
         // Creating XMLRPC client.
         $rpc_client = new \block_vmoodle\XmlRpc_Client();
-        $rpc_client->set_method('blocks/vmoodle/plugins/sql/rpclib.php/mnetadmin_rpc_run_sql_command');                              
+        $rpc_client->set_method('blocks/vmoodle/plugins/sql/rpclib.php/mnetadmin_rpc_run_sql_command');
         $rpc_client->add_param($this->_getGeneratedCommand(), 'string');
         $rpc_client->add_param($this->values, 'array');
         $rpc_client->add_param($return, 'boolean');
@@ -119,7 +120,7 @@ class Command_Sql extends Command {
 
             // Sending request.
             if (!$rpc_client->send($mnet_host)) {
-                $response = new stdclass;
+                $response = new StdClass;
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 if (debugging()) {

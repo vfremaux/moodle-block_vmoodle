@@ -1,5 +1,9 @@
 /**
  * Pop-up testing connection with database.
+ * TODO : Make this test request more network secure.
+ * Solution 1 : Remove GET params, fetch parent window form elements
+ * values and fire POST form
+ * solution 2 : Obfuscate query string into simply crypted bundle
  */
 function opencnxpopup(wwwroot) {
 

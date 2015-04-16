@@ -236,7 +236,7 @@ class Host_Form extends \moodleform {
         $errors = parent::validation($data, null);
 
         // Checks database connection again, after Javascript test.
-        $database    = new stdClass;
+        $database    = new \stdClass;
         $database->vdbtype = $data['vdbtype'];
         $database->vdbhost = $data['vdbhost'];
         $database->vdblogin = $data['vdblogin'];

@@ -9,18 +9,17 @@
 */
 function elementToggleHide(el, persistent, elementFinder, strShow, strHide) {
 
-   
-	if(!elementFinder) {
+    if (!elementFinder) {
         var obj = el;  //el:container
         el = document.getElementById('togglehide_'+obj.id);
     } else {
         var obj = elementFinder(el);  //el:button.
     }
-    
+
     obj = $(el).parent().parent().parent().find('.content');
     obj.className=$(obj).attr('class');
-    
-    if(obj.className.indexOf('hidden') == -1) {
+
+    if (obj.className.indexOf('hidden') == -1) {
         obj.className += ' hidden';
         if (el.src) {
             el.src = el.src.replace('switch_minus', 'switch_plus');
@@ -42,5 +41,13 @@ function elementToggleHide(el, persistent, elementFinder, strShow, strHide) {
  
     if(persistent == true) {
         new cookie('hide:' + obj.id, 1, (shown ? -1 : 356), '/').set();
+    }
+}
+
+function filtercapabilitytable(filterinput) {
+    $('.capabilityrow').css('display', 'table-row');
+    if (filterinput.value != '') {
+        $('.capabilityrow').css('display', 'none');
+        $('.capabilityrow[id*=\''+filterinput.value+'\']').css('display', 'table-row');
     }
 }

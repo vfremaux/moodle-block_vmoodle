@@ -1,13 +1,18 @@
 <?php
 
-namespace vmoodleadminset_text;
+namespace vmoodleadminset_test;
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Category;
 Use \block_vmoodle\commands\Command_Parameter;
 Use \block_vmoodle\commands\Command_Parameter_Internal;
 Use \block_vmoodle\commands\Command_Exception;
+Use \vmoodleadminset_roles\Command_Role_Sync;
+Use \vmoodleadminset_roles\Command_Role_Compare;
+Use \vmoodleadminset_roles\Command_Role_Capability_Sync;
+Use \vmoodleadminset_upgrade\Command_Upgrade;
 Use \vmoodleadminset_sql\Command_Sql;
 Use \vmoodleadminset_sql\Command_MultiSql;
+Use \vmoodleadminset_test\CommandWrapper;
 Use \Exception;
 
 /**
@@ -249,17 +254,13 @@ $cmd = new Command_Sql(
 );
 $category->addCommand($cmd);
 
-function myTestFunction() {
-    throw new Exception();
-}
-
 $cmd = new Command_Sql(
     'Command 13',
     'Command to  try error handling.',
     'SELECT [[?parameter1]] FROM bb',
     new Command_Parameter_Internal(
         'parameter1',
-        'myTestFunction'
+        'vmoodleadminset_test\\CommandWrapper::myTestFunction'
     )
 );
 $category->addCommand($cmd);

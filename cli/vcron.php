@@ -35,10 +35,11 @@
  */
 define('CLI_SCRIPT', true);
 
-require_once('../../../config.php');
+require_once(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
 
 define('ROUND_ROBIN', 0);
 define('LOWEST_POSSIBLE_GAP', 1);
+define('RUN_PER_TURN', 1);
 
 global $VCRON;
 
@@ -51,10 +52,10 @@ $VCRON->TRACE = $CFG->dataroot.'/vcrontrace.log';   // Trace file where to colle
 $VCRON->TRACE_ENABLE = false;                        // enables tracing
 
 /**
-* fire a cron URL using CURL.
-*
-*
-*/
+ * fire a cron URL using CURL.
+ *
+ *
+ */
 function fire_vhost_cron($vhost) {
     global $VCRON,$DB;
 
@@ -123,7 +124,7 @@ function exec_vhost_cron($vhost) {
         $CRONTRACE = fopen($VCRON->TRACE, 'a');
     }
     
-    $cmd = 'php "'.$CFG->dirroot.'/blocks/vmoodle/cli/cron.php" --host='.$vhost->wwwroot;
+    $cmd = 'php "'.$CFG->dirroot.'/blocks/vmoodle/cli/cron.php" --host='.$vhost->vhostname;
 
     $timestamp_send = time();
     exec($cmd, $rawresponse);
@@ -148,7 +149,7 @@ function exec_vhost_cron($vhost) {
     $DB->update_record('block_vmoodle', $vhost);
 }
 
-if (!$vmoodles = $DB->get_records('block_vmoodle', null)) {
+if (!$vmoodles = $DB->get_records('block_vmoodle', array('enabled' => 1))) {
     die("Nothing to do. No Vhosts");
 }
 
@@ -160,7 +161,7 @@ echo "Last croned : ".@$CFG->vmoodle_cron_lasthost."\n";
 if ($VCRON->STRATEGY == ROUND_ROBIN) {
     $rr = 0;
     foreach($allvhosts as $vhost) {
-        if ($rr == 1){
+        if ($rr == 1) {
             set_config('vmoodle_cron_lasthost', $vhost->id);
             echo "Round Robin : ".$vhost->vhostname."\n";
             if ($VCRON->ACTIVATION == 'cli') {
@@ -183,7 +184,7 @@ if ($VCRON->STRATEGY == ROUND_ROBIN) {
         fire_vhost_cron($allvhosts[0]);
     }
 
-} else if ($VCRON->STRATEGY == LOWEST_POSSIBLE_GAP) {
+} elseif ($VCRON->STRATEGY == LOWEST_POSSIBLE_GAP) {
     // first make measurement of cron period
     if (empty($CFG->vcrontickperiod)) {
         set_config('vcrontime', time());

@@ -131,8 +131,8 @@ function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = 
 
     // Invoke local user and check his rights.
     if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')) {
-        if ($json_response){
-            // we could not have a credential.
+        if ($json_response) {
+            // We could not have a credential.
             return $auth_response;
         } else {
             return json_decode($auth_response);
@@ -150,7 +150,7 @@ function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = 
                 continue;
             }
 
-            $control = new $actionclass($infos['type'].'/'.$plugin);
+            $control = new $actionclass($infos['type'], $plugin);
             $action = $infos['action'];
             $return = $control->action($action);
             if ($return !== 0) {

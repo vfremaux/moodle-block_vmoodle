@@ -29,7 +29,7 @@ Use \vmoodleadminset_roles\Command_Role_Capability_Sync;
 require('../../../../config.php');
 
 // Adding libraries.
-require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 
 // Checking login.
 require_login();
@@ -46,7 +46,7 @@ $action = optional_param('what', '', PARAM_TEXT);
 switch ($action) {
 
     // Run sync role command.
-    case 'syncplugin': {
+    case 'syncplugin':
 
         // Getting parameters.
         $plugin = optional_param('plugin', '', PARAM_RAW);
@@ -71,13 +71,13 @@ switch ($action) {
         }
 
         if (!$valid) {
-            header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
+            redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
         }
 
         // Retrieving previous command
         $command = unserialize($SESSION->vmoodle_sa['command']);
         if ($SESSION->vmoodle_sa['wizardnow'] != 'report' || !($command instanceof \vmoodleadminset_roles\Command_Plugins_Compare)) {
-            header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
+            redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
         }
 
         $plugintype = $command->getParameter('plugintype')->getValue();
@@ -100,17 +100,16 @@ switch ($action) {
         $SESSION->vmoodle_sa['platforms'] = $platforms;
 
         // Moving to the report.
-        header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
-    }
-    break;
+        redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
+        break;
 
     // Going back to role comparison.
-    case 'backtocomparison': {
+    case 'backtocomparison':
         // Getting old command.
         if (!isset($SESSION->vmoodle_sa['rolelib']['command']) 
                 || !isset($SESSION->vmoodle_sa['rolelib']['platforms']) 
                         || !($SESSION->vmoodle_sa['rolelib']['command'] instanceof \vmoodleadminset_roles\Command_Role_Compare)) {
-            header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
+            redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
         }
         $command = unserialize($SESSION->vmoodle_sa['rolelib']['command']);
         $platforms = $SESSION->vmoodle_sa['rolelib']['platforms'];
@@ -120,12 +119,10 @@ switch ($action) {
         $SESSION->vmoodle_sa['command'] = serialize($command);
         $SESSION->vmoodle_sa['platforms'] = $platforms;
         // Moving to the report
-        header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
-    }
-    break;
+        redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
+        break;
 
     // Redirecting to super admin view.
-    default: {
-        header('Location: '.$CFG->wwwroot.'/blocks/vmoodle/view.php?view=sadmin');
-    }
+    default:
+        redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
 }

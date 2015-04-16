@@ -27,7 +27,7 @@
 
 // Adding requirements
 require_once('../../config.php');
-require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 
 // Checking login.
 require_login();
@@ -43,6 +43,7 @@ $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);
 $PAGE->set_button('');
 $PAGE->set_headingmenu('');
+
 echo $OUTPUT->header();
 
 // Checking rights.
@@ -112,6 +113,7 @@ switch ($action) {
             echo $OUTPUT->notification(get_string('wrongplugin', 'block_vmoodle'));
             break;
         }
+
         // Loading plugin library
         include_once($CFG->dirroot.'/blocks/vmoodle/plugins/'.$plugin.'/lib.php');
 
@@ -158,7 +160,8 @@ echo $OUTPUT->heading(get_string('commandsadministration', 'block_vmoodle'));
 echo '<br/>';
 echo html_writer::table($table);
 echo '<br/>';
-// Retrieving vmoodle plugins
+
+// Retrieving vmoodle plugins.
 $plugins = get_list_of_plugins('/blocks/vmoodle/plugins');
 foreach($plugins as $key => $plugin) {
     if (!$DB->get_record('config', array('name' => 'vmoodle_lib_'.$plugin.'_version'))) {

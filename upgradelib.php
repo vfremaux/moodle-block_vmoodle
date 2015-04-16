@@ -360,7 +360,7 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
             if (is_string($method)) {
                 $dataobject->functionname = $method;
 
-            } else if (is_array($method)) { // Wants to override file or class.
+            } elseif (is_array($method)) { // Wants to override file or class.
                 $dataobject->functionname = $method['method'];
                 $dataobject->classname     = $method['classname'];
                 $dataobject->filename      = $method['filename'];
@@ -443,6 +443,7 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
             }
         }
     }
+
     // Finished with methods we publish, now do subscribable methods.
     foreach($subscribes as $service => $methods) {
         if (!array_key_exists($service, $servicecache)) {

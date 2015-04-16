@@ -29,7 +29,7 @@ if (isset($_GET['caption'])) {
     $caption = 'No caption';
 }
 
-// Configuring image
+// Configuring image.
 $img_width = 20;
 $img_height = ceil(strlen($caption)*6.2);
 $backgound_color = 'FFFFFF';
@@ -46,7 +46,7 @@ function make_color($color) {
 }
 
 // Sending header.
-header("Content-type: image/png");
+// header("Content-type: image/png");
 
 /*
  * Creating image
@@ -63,7 +63,7 @@ $font_color = make_color($font_color);
 imagestringup($img, $font_size, (int) ($img_width/2-$img_width/3), $img_height-3, $caption, $font_color);
 
 // Making image transparent.
-imagecolortransparent($img, $backgound_color);
+imagecolortransparent($img, 0 + $backgound_color);
 
 // Returning image.
 imagepng($img);

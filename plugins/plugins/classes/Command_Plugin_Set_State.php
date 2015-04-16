@@ -97,7 +97,7 @@ class Command_Plugin_Set_State extends Command {
         require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
 
         // Checking capability to run.
-        if (!has_capability('block/vmoodle:execute', context_system::instance()))
+        if (!has_capability('block/vmoodle:execute', \context_system::instance()))
             throw new Command_Exception('insuffisantcapabilities');
 
         // Getting plugin.
@@ -111,7 +111,7 @@ class Command_Plugin_Set_State extends Command {
         $plugininfo = $pm->get_plugin_info($plugin);
         if (empty($plugininfo->type)) {
             if (empty($plugininfo)) {
-                $plugininfo = new StdClass();
+                $plugininfo = new \StdClass();
             }
             $plugininfo->type = $type;
         }
@@ -129,15 +129,17 @@ class Command_Plugin_Set_State extends Command {
 
         // Creating peers.
         $mnet_hosts = array();
-        foreach ($hosts as $host => $name) {
-            $mnet_host = new mnet_peer();
-            if ($mnet_host->bootstrap($host, null, 'moodle')) {
-                $mnet_hosts[] = $mnet_host;
-            } else {
-                $responses[$host] = (object) array(
-                    'status' => MNET_FAILURE,
-                    'error' => get_string('couldnotcreateclient', 'block_vmoodle', $host)
-                );
+        if (!empty($hosts)) {
+            foreach ($hosts as $host => $name) {
+                $mnet_host = new \mnet_peer();
+                if ($mnet_host->bootstrap($host, null, 'moodle')) {
+                    $mnet_hosts[] = $mnet_host;
+                } else {
+                    $responses[$host] = (object) array(
+                        'status' => MNET_FAILURE,
+                        'error' => get_string('couldnotcreateclient', 'block_vmoodle', $host)
+                    );
+                }
             }
         }
 
@@ -145,7 +147,7 @@ class Command_Plugin_Set_State extends Command {
         foreach($mnet_hosts as $mnet_host) {
             // Sending request.
             if (!$rpc_client->send($mnet_host)) {
-                $response = new stdclass;
+                $response = new \StdClass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 if (debugging()) {

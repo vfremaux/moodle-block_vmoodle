@@ -26,8 +26,8 @@
 
 // Adding requirements.
 
-require('../../config.php');
-require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
+require_once('../../config.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/debuglib.php');
 require_once($CFG->dirroot.'/mnet/lib.php');
 
@@ -62,7 +62,7 @@ if ((@$SESSION->vmoodle_sa['wizardnow'] == 'report')
 $view = optional_param('view', 'management', PARAM_TEXT);
 $action = optional_param('what', '', PARAM_TEXT);
 
-// Security
+// Security.
 
 $system_context = context_system::instance();
 require_login();

@@ -67,7 +67,8 @@ $cmd = new Command_PurgeCaches(
 $category->addCommand($cmd);
 
 
-// Distribute a config value to all nodes
+// Distribute a config value to all nodes (Using Generic SQL)
+/*
 $param1 = new Command_Parameter(
     'source1',
     'enum',
@@ -91,9 +92,35 @@ $cmd = new Command_Sql(
     array($param1,$param2)
 );
 $category->addCommand($cmd);
+*/
+
+// Distribute a config value to all nodes (Using SetConfig)
+$param1 = new Command_Parameter(
+    'key',
+    'enum',
+    'Config Key',
+    null,
+    vmoodle_config_get_params()
+);
+
+$param2 = new Command_Parameter(
+    'value',
+    'text',
+    'Config Value',
+    null,
+    null
+);
+
+$cmd = new Command_SetConfig(
+    'Vmoodle Config Value',
+    'Distributing a configuration value',
+    array($param1,$param2)
+);
+$category->addCommand($cmd);
+
 
 $param1 = new Command_Parameter(
-    'source1',
+    'key',
     'enum',
     'Config Key',
     null,
@@ -101,17 +128,16 @@ $param1 = new Command_Parameter(
 );
 
 $param2 = new Command_Parameter(
-    'source2',
+    'value',
     'text',
     'Config Value',
     null,
     null
 );
 
-$cmd = new Command_Sql(
+$cmd = new Command_SetPluginConfig(
     'Vmoodle Plugin Config Value',
     'Distributing a configuration value in Config Plugin',
-    'UPDATE {config_plugins} SET value = [[?source2]] WHERE CONCAT (plugin,\'/\',name) = [[?source1]] ',
     array($param1,$param2)
 );
 $category->addCommand($cmd);

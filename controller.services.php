@@ -11,7 +11,7 @@
  *
  * @usecase redefineservices
  */
-
+require_once($CFG->dirroot.'/blocks/vmoodle/classes/ServicesStrategy_Form.php');
 
 // It must be included from 'view.php' in blocks/vmoodle.
 if (!defined('MOODLE_INTERNAL')) {
@@ -28,7 +28,7 @@ if ($action == 'redefineservices') {
 
     // Processing.
     $defaultservices = $DB->get_records('mnet_service', array('offer' => 1), 'name');
-    if(!empty($defaultservices)){
+    if (!empty($defaultservices)) {
 
         // Retrieve submitted data, from the services strategy form.
         $services_form = new ServicesStrategy_Form();

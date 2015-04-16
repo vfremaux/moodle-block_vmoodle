@@ -70,7 +70,7 @@ if (!empty($options['host'])) {
 }
 
 // Replay full config whenever. If vmoodle switch is armed, will switch now config.
-require(dirname(dirname(dirname(__FILE__))).'/config.php');
+require(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
 echo('Config check : playing for '.$CFG->wwwroot);
 
 cron_run();

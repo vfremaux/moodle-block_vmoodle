@@ -52,10 +52,10 @@ $VCRON->TRACE_ENABLE = false;                       // Enables tracing
 *
 *
 */
-function fire_vhost_cron($vhost){
+function fire_vhost_cron($vhost) {
     global $VCRON, $DB;
 
-    if ($VCRON->TRACE_ENABLE){
+    if ($VCRON->TRACE_ENABLE) {
         $CRONTRACE = fopen($VCRON->TRACE, 'a');
     }
     $ch = curl_init($vhost->vhostname.'/admin/cron.php');
@@ -108,7 +108,7 @@ function fire_vhost_cron($vhost){
 
 }
 
-if (!$vmoodles = $DB->get_records('block_vmoodle', null)){
+if (!$vmoodles = $DB->get_records('block_vmoodle', array('enabled' => 1))) {
     die("Nothing to do. No Vhosts");
 }
 

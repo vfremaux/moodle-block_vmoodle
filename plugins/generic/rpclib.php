@@ -112,6 +112,38 @@ function mnetadmin_rpc_set_maintenance($user, $message, $hardmaintenance = false
 }
 
 /**
+ * Set some config values.
+ * @param object $user The calling user, containing mnethostroot reference and hostroot reference.
+ * @param string $key the config key.
+ * @param string $value the config value.
+ * @param string $plugin the config plugin, core if empty.
+ */
+function mnetadmin_rpc_set_config($user, $key, $value, $plugin, $json_response = true) {
+    global $CFG, $USER;
+
+    debug_trace('RPC '.json_encode($user));
+
+    if ($auth_response = invoke_local_user((array)$user)) {
+        if ($json_response) {
+            return $auth_response;
+        } else {
+            return json_decode($auth_response);
+        }
+    }
+
+    // Creating response.
+    $response = new stdClass;
+    $response->status = RPC_SUCCESS;
+
+    set_config($key, $value, $plugin);
+
+    debug_trace('RPC Bind : Sending response');
+
+    // Returns response (success or failure).
+    return json_encode($response);
+}
+
+/**
  * Purge internally all caches.
  * @param object $user The calling user, containing mnethostroot reference and hostroot reference.
  */

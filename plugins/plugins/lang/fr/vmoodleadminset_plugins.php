@@ -15,6 +15,7 @@ $string['cmdsyncname'] = 'Synchronisation des plugins';
 $string['compareplugins'] = 'Comparaison des plugins "{$a}"';
 $string['cmdpluginsetupdesc'] = 'Active ou désactive les plugins à distance.';
 $string['cmdpluginsetupname'] = 'Activation de plugin';
+$string['errorblockdoesnotexit'] = 'Le bloc {$a} n\'est pas trouvé.';
 $string['mnetadmin_name'] = 'Meta Administration Réseau Moodle';
 $string['mnetadmin_description'] = 'Fournit des fonctions pour exécuter des commandes d\'administration à travers le réseau MNET, telles que la synchronisation de configuration ou de roles.';
 $string['nosrcpltfrm'] = 'Pas de plate-forme source.';

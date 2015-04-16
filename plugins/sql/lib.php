@@ -1,6 +1,6 @@
 <?php
 
-defined('VMOODLE_CLASSSES_DIR') || require_once $CFG->dirroot.'/blocks/vmoodle/locallib.php';
+defined('VMOODLE_CLASSSES_DIR') || require_once $CFG->dirroot.'/blocks/vmoodle/lib.php';
 
 Use \vmoodleadminset_sql\Command_Sql_Exception;
 
@@ -26,11 +26,11 @@ if (isset($vmcommands_constants))
 
 /**
  * Get fields values of a virtual platform via MNET service.
- * @param string host The virtual platform to aim.
- * @param string table The table to read.
- * @param string select The value of id or alternative field.
- * @param string fields The fileds to retrieve (optional).
- * @throws Command_Sql_Exception.
+ * @param string $host The virtual platform to aim.
+ * @param string $table The table to read.
+ * @param mixed $select The value of id or alternative field.
+ * @param string $fields The fileds to retrieve (optional).
+ * @throws Vmoodle_Command_Sql_Exception.
  */
 function vmoodle_get_field($host, $table, $select, $fields='*') {
     global $CFG, $USER, $DB;
@@ -50,11 +50,11 @@ function vmoodle_get_field($host, $table, $select, $fields='*') {
         throw new Command_Sql_Exception('invalidtable');
     }
 
-    // Checkig select.
+    // Checking select.
     if (empty($select) || (!is_array($select) && !is_int($select))) {
         throw new Command_Sql_Exception('invalidselect');
     }
-    if (!is_array($select))  {
+    if (!is_array($select)) {
         $select = array('id' => $select);
     }
 
@@ -121,6 +121,6 @@ function sqllib_uninstall() {
 
     $result = true;
 
-    // Returning result
+    // Returning result.
     return $result;
 }

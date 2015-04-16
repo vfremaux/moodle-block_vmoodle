@@ -58,7 +58,7 @@ if (is_dir($dataroot)) {
     } else {
         echo(get_string('datapathavailable', 'block_vmoodle'));
     }
-} else {    
+} else {
     if (filesystem_create_dir('', true, $dataroot)) {
         echo get_string('datapathcreated', 'block_vmoodle');
     } else {

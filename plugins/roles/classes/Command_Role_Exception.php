@@ -10,7 +10,7 @@ namespace vmoodleadminset_roles;
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-class Command_Role_Exception extends Exception {
+class Command_Role_Exception extends \Exception {
 
     /**
      * Constructor with localized message.

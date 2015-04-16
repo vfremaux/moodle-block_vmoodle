@@ -79,7 +79,7 @@ class Command_Role_Allow_Sync extends Command {
         }
 
         // Creating peer to read role configuration.
-        $mnet_host = new mnet_peer();
+        $mnet_host = new \mnet_peer();
         if (!$mnet_host->bootstrap($this->getParameter('platform')->getValue(), null, 'moodle')) {
             $response = (object) array(
                             'status' => RPC_FAILURE,
@@ -101,7 +101,7 @@ class Command_Role_Allow_Sync extends Command {
         if (!($rpc_client->send($mnet_host) && ($response = json_decode($rpc_client->response)) && $response->status == RPC_SUCCESS)) {
             // Creating response.
             if (!isset($response)) {
-                $response = new stdclass;
+                $response = new \StdClass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 $response->error = implode('<br/>', $rpc_client->getErrors($mnet_host));
@@ -149,7 +149,7 @@ class Command_Role_Allow_Sync extends Command {
         foreach ($mnet_hosts as $mnet_host) {
             // Sending request
             if (!$rpc_client->send($mnet_host)) {
-                $response = new stdclass;
+                $response = new \StdClass();
                 $response->status = RPC_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 $response->error = 'Set remote role capability : Remote call error';

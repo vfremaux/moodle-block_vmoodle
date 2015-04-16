@@ -23,7 +23,8 @@
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
- 
+
+// Loading the libraries.
 require_once $CFG->dirroot.'/blocks/vmoodle/classes/commands/Command_Form.php';
 
 // Retrieving configuration files.
@@ -41,6 +42,7 @@ foreach ($assistedcommands_conffiles as $conffile) {
 
 // Displaying commands categories.
 foreach ($assistedcommands_categories as $key => $category) {
+
     // Reading commands.
     try {
         $vmoodle_category = load_vmplugin($category);

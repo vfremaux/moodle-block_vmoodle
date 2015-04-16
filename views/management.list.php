@@ -79,7 +79,7 @@ if ($vmoodles) {
         $strmnet = $vmoodle->mnet;
         if ($strmnet < 0) {
             $strmnet = get_string('mnetdisabled', 'block_vmoodle');
-        } else if ($strmnet == 0) {
+        } elseif ($strmnet == 0) {
             $strmnet = get_string('mnetfree', 'block_vmoodle');
         }
         $vmoodlelnk = "<a href=\"{$CFG->wwwroot}/auth/mnet/jump.php?hostwwwroot=".urlencode($vmoodle->vhostname)."\" target=\"_blank\" >$vmoodle->name</a>";

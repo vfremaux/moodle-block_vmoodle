@@ -6,6 +6,6 @@
 header('Content-Type: application/x-javascript');
 
 require_once('../../../../../config.php');
-require_once('../../../locallib.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 
 // echo 'var vmoodle_exemplelib_mystring = "'.get_string('mystring', 'vmoodleadminset_example').'"; ';

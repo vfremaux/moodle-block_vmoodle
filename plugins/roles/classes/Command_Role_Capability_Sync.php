@@ -117,7 +117,7 @@ class Command_Role_Capability_Sync extends Command {
             ))) {
             // Creating response.
             if (!isset($response)) {
-                $response = new StdClass();
+                $response = new \StdClass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
             }
@@ -150,7 +150,7 @@ class Command_Role_Capability_Sync extends Command {
         $mnet_hosts = array();
 
         foreach ($hosts as $host => $name) {
-            $mnet_host = new mnet_peer();
+            $mnet_host = new \mnet_peer();
             if ($mnet_host->bootstrap($host, null, 'moodle')) {
                 $mnet_hosts[] = $mnet_host;
             } else {
@@ -172,7 +172,7 @@ class Command_Role_Capability_Sync extends Command {
         foreach ($mnet_hosts as $mnet_host) {
             // Sending request.
             if (!$rpc_client->send($mnet_host)) {
-                $response = new stdclass;
+                $response = new \StdClass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 $response->error = 'Remote Set role capability : Remote proc error';

@@ -122,9 +122,9 @@ class Mnet_Peer {
 
             // start bootstraping as usual through the system command
             $pubkeytemp = clean_param(mnet_get_public_key($this->wwwroot, $this->application), PARAM_PEM);
-            if(empty($pubkey)) {
+            if (empty($pubkey)) {
                 // This is the key difference : force the exchange using vmoodle RPC keyswap !!
-                if (empty($pubkeytemp)){
+                if (empty($pubkeytemp)) {
                     $pubkeytemp = clean_param(mnet_get_public_key($this->wwwroot, $this->application, $force), PARAM_PEM);
                 }
             } else {

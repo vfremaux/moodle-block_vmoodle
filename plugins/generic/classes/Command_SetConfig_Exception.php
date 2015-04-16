@@ -14,28 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace vmoodleadminset_generic;
+Use \Exception;
+
 /**
- * Displays default services strategy.
- *
+ * Exception about Command_SetConfig.
+ * 
  * @package block-vmoodle
  * @category blocks
- * @author Moheissen Fabien (fabien.moheissen@gmail.com)
+ * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-
-// Loading the library.
-require_once($CFG->dirroot.'/blocks/vmoodle/classes/ServicesStrategy_Form.php');
-
-$defaultservices = $DB->get_records('mnet_service', array('offer' => 1), 'name');
-
-// Displays the form.
-$services_form = new ServicesStrategy_Form();
-if ($services = unserialize(get_config(null, 'block_vmoodle_services_strategy'))) {
-    $services_form->set_data($services);
+class Command_SetConfig_Exception extends Exception {
+    /**
+     * Constructor with localized message.
+     * @param string $identifier The key identifier for the localized string.
+     * @param mixed $a An object, string or number that can be used (optional).
+    */
+    public function __construct($identifier, $a=null) {
+        parent::__construct(vmoodle_get_string($identifier, 'vmoodleadminset_generic', $a));
+    }
 }
-
-echo $OUTPUT->box_start();
-
-$services_form->display();
-
-echo $OUTPUT->box_end();
