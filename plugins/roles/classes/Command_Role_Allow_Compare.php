@@ -79,22 +79,23 @@ class Command_Role_Allow_Compare extends Command {
 
         // Creating peers.
         $mnet_hosts = array();
-        foreach($hosts as $host => $name) {
+        foreach ($hosts as $host => $name) {
             $mnet_host = new \mnet_peer();
-            if ($mnet_host->bootstrap($host, null, 'moodle'))
+            if ($mnet_host->bootstrap($host, null, 'moodle')) {
                 $mnet_hosts[] = $mnet_host;
-            else
+            } else {
                 $responses[$host] = (object) array(
                     'status' => MNET_FAILURE,
                     'error' => get_string('couldnotcreateclient', 'block_vmoodle', $host)
                 );
+            }
         }
 
         // Sending requests.
-        foreach($mnet_hosts as $mnet_host) {
+        foreach ($mnet_hosts as $mnet_host) {
             // Sending request.
             if (!$rpc_client->send($mnet_host)) {
-                $response = new StdClass;
+                $response = new \StdClass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 if (debugging()) {

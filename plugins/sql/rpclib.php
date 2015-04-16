@@ -35,13 +35,14 @@ function mnetadmin_rpc_get_fields($user, $table, $fields, $select) {
     invoke_local_user($user, 'block/vmoodle:execute');
 
     // Creating response.
-    $response = new stdclass;
+    $response = new StdClass();
     $response->status = RPC_SUCCESS;
 
     // Getting record.
     ob_clean(); ob_start();    // Used to prevent HTML output from dmllib methods and capture errors.
     $field = array_keys($select);
     $record = $DB->get_record($table, array($field[0] => $select[$field[0]], isset($select[1]) ? $field[1] : '' => isset($select[1]) ? $select[1] : '', isset($select[2]) ? $field[2] : '' => isset($select[2]) ? $select[2] : ''), implode(',', $fields));
+
     if (!$record) {
         $error = parse_wlerror();
         if (empty($error)) {
@@ -64,19 +65,18 @@ function mnetadmin_rpc_get_fields($user, $table, $fields, $select) {
  * Get fields values of a virtual platform.
  * @param string $user The calling user.
  * @param string $command The sql command to run.
- * @param boolean $return True if the result of SQL should be returned, false otherwise. In that case query CANNOT be multiple
+ * @param boolean $return true if the result of SQL should be returned, false otherwise. In that case query CANNOT be multiple
  */
-function mnetadmin_rpc_run_sql_command($user, $command, $params, $return=false, $multiple=false) {
+function mnetadmin_rpc_run_sql_command($user, $command, $params, $return = false, $multiple = false) {
     global $CFG, $USER, $vmcommands_constants, $DB;
 
     // Adding requirements.
-    include_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
+    include_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 
     // Invoke local user and check his rights.
 
-//    invoke_local_user($user, 'block/vmoodle:execute');
     // Creating response.
-    $response = new stdclass;
+    $response = new StdClass();
     $response->status = RPC_SUCCESS;
 
     // Split multiple, non return commands, or save unique as first of array.
@@ -101,7 +101,11 @@ function mnetadmin_rpc_run_sql_command($user, $command, $params, $return=false, 
             }
         } else {
             try {
-                $DB->execute($command, $params);
+                debug_trace("Vmoodle Remote sql : $command ".serialize($params));
+                if (!$DB->execute($command, $params)) {
+                    $response->errors[] = 'No rows affected.';
+                    $response->error = 'No rows affected.';
+                }
             } catch(Exception $e) {
                 $response->errors[] = $DB->get_last_error();
                 $response->error = $DB->get_last_error();
@@ -115,5 +119,6 @@ function mnetadmin_rpc_run_sql_command($user, $command, $params, $return=false, 
     } else {
         $response->status = RPC_SUCCESS;
     }
+
     return json_encode($response);
 }

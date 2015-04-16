@@ -23,6 +23,7 @@
  * @copyright 2012 Valery Fremaux
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 
 $publishes = array(
     'dataexchange' => array(
@@ -42,6 +43,7 @@ $publishes = array(
         'classname'  => '',
         'filename'   => 'rpclib.php',
         'methods'    => array(
+            'mnetadmin_rpc_set_config',
             'mnetadmin_rpc_set_maintenance',
             'mnetadmin_rpc_purge_caches'
         ),
@@ -51,6 +53,7 @@ $subscribes = array(
     'dataexchange' => array(
         'dataexchange_rpc_fetch_config' => 'blocks/vmoodle/plugins/generic/rpclib.php/dataexchange_rpc_fetch_config',
         'mnetadmin_rpc_set_maintenance' => 'blocks/vmoodle/plugins/generic/rpclib.php/mnetadmin_rpc_set_maintenance',
+        'mnetadmin_rpc_set_config' => 'blocks/vmoodle/plugins/generic/rpclib.php/mnetadmin_rpc_set_config',
         'mnetadmin_rpc_purge_caches' => 'blocks/vmoodle/plugins/generic/rpclib.php/mnetadmin_rpc_purge_caches',
     ),
 );

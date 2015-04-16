@@ -43,7 +43,7 @@ $sadminreturnurl = new moodle_url('/blocks/vmoodle/view.php', array('view' => 's
 // Checking action to do
 switch ($action) {
 
-     // Validating the assisted command
+    // Validating the assisted command.
     case 'validateassistedcommand':
         // Checking the neeed values
         $category = optional_param('category_plugin_name', null, PARAM_TEXT);
@@ -57,13 +57,12 @@ switch ($action) {
         if (is_dir(VMOODLE_PLUGINS_DIR.$category) && is_readable(VMOODLE_PLUGINS_DIR.$category.'/config.php')) {
             $command_category = load_vmplugin($_POST['category_plugin_name']);
         } else {
-             return 0;
+            return 0;
         }
 
         // Invoking a form.
         try {
-       
-             $command = $command_category->getCommands($index);
+            $command = $command_category->getCommands($index);
         } catch (Command_Exception $vce) {
             return 0;
         }
@@ -78,6 +77,7 @@ switch ($action) {
             if (empty($message)) {
                 $message = get_string('unablepopulatecommand', 'block_vmoodle');
             }
+
             echo $OUTPUT->notification($message);
             unset($_POST); // Done to remove form information. Otherwise, it crack all forms..
             return 0;
@@ -96,11 +96,12 @@ switch ($action) {
         redirect($sadminreturnurl);
         break;
 
-     // Validating the advanced command.
-     case 'validateadvancedcommand':
+    // Validating the advanced command.
+    case 'validateadvancedcommand':
         // Invoking form.
         $advancedcommand_form = new AdvancedCommand_Form();
-        // Checking if the fom is cancelled
+
+        // Checking if the fom is cancelled.
         if ($advancedcommand_form->is_cancelled()) {
             $SESSION->vmoodle_sa['wizardnow'] = 'commandchoice';
             header('Location: view.php?view=sadmin');
@@ -111,37 +112,38 @@ switch ($action) {
         if (!($data = $advancedcommand_form->get_data(false))) {
             return 0;
         }
-        // Creating a Command_MultiSql
+
+        // Creating a Command_MultiSql.
         $command = new Command_MultiSql(
-                         get_string('manualcommand', 'block_vmoodle'),
-                         get_string('manualcommand', 'block_vmoodle'),
-                         $data->sqlcommand
-                     );
-         // Record the wizard status.
-         $SESSION->vmoodle_sa['command'] = serialize($command);
-         $SESSION->vmoodle_sa['wizardnow'] = 'targetchoice';
+                        get_string('manualcommand', 'block_vmoodle'),
+                        get_string('manualcommand', 'block_vmoodle'),
+                        $data->sqlcommand
+                    );
+        // Record the wizard status.
+        $SESSION->vmoodle_sa['command'] = serialize($command);
+        $SESSION->vmoodle_sa['wizardnow'] = 'targetchoice';
 
         // Move to the next step.
         redirect($sadminreturnurl);
         break;
 
-     // Uploading a SQL script to fill Command_Sql
-     case 'uploadsqlscript': {
-         // Checking uploaded file.
-         $advancedcommand_form = new AdvancedCommand_Form();
-         $advancedcommand_upload_form = new AdvancedCommand_Upload_Form();
-         if ($file_content = $advancedcommand_upload_form->get_file_content('script')){
-             $advancedcommand_form->set_data(array('sqlcommand' => $file_content));
-         }
-     }
-     break;
+    // Uploading a SQL script to fill Command_Sql
+    case 'uploadsqlscript':
+        // Checking uploaded file.
+        $advancedcommand_form = new AdvancedCommand_Form();
+        $advancedcommand_upload_form = new AdvancedCommand_Upload_Form();
+        if ($file_content = $advancedcommand_upload_form->get_file_content('script')){
+            $advancedcommand_form->set_data(array('sqlcommand' => $file_content));
+        }
+        break;
 
-     // Getting available platforms by their original value.
-     case 'gettargetbyvalue':
-        // Including requirements
+    // Getting available platforms by their original value.
+    case 'gettargetbyvalue':
+        // Including requirements.
         require_once $CFG->dirroot.'/blocks/vmoodle/classes/Command_Form.php';
         require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
-        // Checking command
+
+        // Checking command.
         if (!isset($SESSION->vmoodle_sa['command'])) {
             $SESSION['vmoodle_sa']['wizardnow'] = 'commandchoice';
             return 0;
@@ -149,7 +151,7 @@ switch ($action) {
         // Getting retrieve platforms command
         $command = unserialize($SESSION->vmoodle_sa['command']);
         $rpcommand = $command->getRPCommand();
-        if (is_null($rpcommand)){
+        if (is_null($rpcommand)) {
             return 0;
         }
 
@@ -182,11 +184,12 @@ switch ($action) {
         redirect($sadminreturnurl);
         break;
 
-     // Sending command on virtual platforms.
-     case 'sendcommand':
-        // Invoking form
+    // Sending command on virtual platforms.
+    case 'sendcommand':
+        // Invoking form.
         $target_form = new Target_Form();
-        // Checking if form is canceled
+
+        // Checking if form is cancelled.
         if ($target_form->is_cancelled()) {
             unset($SESSION->vmoodle_sa);
             header('Location: view.php?view=sadmin');
@@ -255,19 +258,21 @@ switch ($action) {
 
     // Run an other command on selected platforms.
     case 'runothercmd':
-        // Removing selected command from session
-        if (isset($SESSION->vmoodle_sa['command'])){
+        // Removing selected command from session.
+        if (isset($SESSION->vmoodle_sa['command'])) {
             unset($SESSION->vmoodle_sa['command']);
         }
-        // Modifying wizard state
+
+        // Modifying wizard state.
         $SESSION->vmoodle_sa['wizardnow'] = 'commandchoice';
-        // Move to the step
+
+        // Move to the step.
         redirect($sadminreturnurl);
         break;
 
     // Run the command again on a platform.
     case 'runcmdagain':
-        // Checking wizard session
+        // Checking wizard session.
         if (!isset($SESSION->vmoodle_sa['command'], $_GET['platform'])) {
             return -1;
         }
@@ -276,18 +281,20 @@ switch ($action) {
         $command = unserialize($SESSION->vmoodle_sa['command']);
 
         // Getting platform.
-        $platform = urldecode($_GET['platform']);
+        $platform = required_param('platform', PARAM_URL);
         $available_platforms = get_available_platforms();
 
-        if (!array_key_exists($platform, get_available_platforms())) {
+        if (!array_key_exists($platform, $available_platforms)) {
             return -1;
         }
-        // Running command
-        // $platform = $available_platforms[$platform]; // error using the display name for making the client
-        $command->run($platform);
-        // Saving result
+
+        // Running command again on single host.
+        $command->run(array($platform => $available_platforms[$platform]));
+
+        // Saving result.
         $SESSION->vmoodle_sa['command'] = serialize($command);
-        // Moving to report step
+
+        // Moving to report step.
         redirect($sadminreturnurl);
         break;
 }

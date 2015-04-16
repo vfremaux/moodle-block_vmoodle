@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  *
  *
@@ -62,6 +61,8 @@ function vmoodle_boot_configuration() {
      *
      */
 
+    $CFG->mainwwwroot = $CFG->wwwroot;
+
     if ($CFG->vmoodleroot != $CFG->wwwroot) {
         if ($CFG->vmasterdbtype == 'mysql') {
             $vmaster = new StdClass();
@@ -77,11 +78,11 @@ function vmoodle_boot_configuration() {
             if (!mysql_select_db($CFG->vmasterdbname, $side_cnx)) {
                 return; // If vmoodle cnx not valid.
             }
-            
+
             $sql = "
-               SELECT 
+               SELECT
                *
-               FROM 
+               FROM
                   {$CFG->vmasterprefix}block_vmoodle
                WHERE
                   vhostname = '$CFG->vmoodleroot'
@@ -98,7 +99,7 @@ function vmoodle_boot_configuration() {
                     $CFG->dbpass    = $vmoodle->vdbpass;
                     $CFG->dboptions['dbpersist'] = $vmoodle->vdbpersist;
                     $CFG->prefix    = $vmoodle->vdbprefix;
-                    
+
                     $CFG->wwwroot   = $CFG->vmoodleroot;
                     $CFG->dataroot  = $vmoodle->vdatapath;
                 } else {
@@ -158,9 +159,9 @@ function vmoodle_boot_configuration() {
             $side_cnx = vmoodle_make_connection($vmaster);
 
             $sql = "
-               SELECT 
+               SELECT
                *
-               FROM 
+               FROM
                   {$CFG->vmasterprefix}block_vmoodle
                WHERE
                   vhostname = '$CFG->vmoodleroot'
@@ -198,14 +199,14 @@ function vmoodle_boot_configuration() {
 }
 
 /**
-* provides a side connection to a vmoodle database
-* @param object $vmoodle
-* @return a connection
-*/
+ * provides a side connection to a vmoodle database
+ * @param object $vmoodle
+ * @return a connection
+ */
 function vmoodle_make_connection(&$vmoodle, $binddb = false) {
 
     if ($vmoodle->vdbtype == 'mysql') {
-        // Important : force new link here
+        // Important : force new link here.
         $mysql_side_cnx = @mysql_connect($vmoodle->vdbhost, $vmoodle->vdblogin, $vmoodle->vdbpass, true);
         if (!$mysql_side_cnx) {
             die ("VMoodle_make_connection : Server $vmoodle->vdbhost unreachable\n");
@@ -217,21 +218,21 @@ function vmoodle_make_connection(&$vmoodle, $binddb = false) {
         }
         return $mysql_side_cnx;
     } elseif($vmoodle->vdbtype == 'mysqli') {
-        // Important : force new link here
+        // Important : force new link here.
 
         $mysql_side_cnx = @mysqli_connect($vmoodle->vdbhost, $vmoodle->vdblogin, $vmoodle->vdbpass,$vmoodle->vdbname ,3306);
         if (!$mysql_side_cnx) {
             die ("VMoodle_make_connection : Server {$vmoodle->vdblogin}@{$vmoodle->vdbhost} unreachable");
         }
         if ($binddb) {
-            if (!mysqli_select_db( $mysql_side_cnx,$vmoodle->vdbname)){
+            if (!mysqli_select_db( $mysql_side_cnx,$vmoodle->vdbname)) {
                 die ("VMoodle_make_connection : Database not found");
             }
         }
         return $mysql_side_cnx;
     } elseif($vmoodle->vdbtype == 'postgres') {
 
-        if (preg_match("/:/", $vmoodle->vdbhost)){
+        if (preg_match("/:/", $vmoodle->vdbhost)) {
             list($host, $port) = explode(":", $vmoodle->vdbhost);
             $port = "port=$port";
         } else {
@@ -239,7 +240,7 @@ function vmoodle_make_connection(&$vmoodle, $binddb = false) {
             $port = '';
         }
 
-        $dbname = ($binddb) ? "dbname={$vmoodle->vdbname} " : '' ;
+        $dbname = ($binddb) ? "dbname={$vmoodle->vdbname} " : '';
 
         $postgres_side_cnx = @pg_connect("host={$host} {$port} user={$vmoodle->vdblogin} password={$vmoodle->vdbpass} {$dbname}");
         return $postgres_side_cnx;
@@ -247,4 +248,3 @@ function vmoodle_make_connection(&$vmoodle, $binddb = false) {
         echo "vmoodle_make_connection : Database not supported<br/>";
     }
 }
-

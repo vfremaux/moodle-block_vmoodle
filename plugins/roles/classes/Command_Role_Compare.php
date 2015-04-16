@@ -98,7 +98,7 @@ class Command_Role_Compare extends Command {
         foreach ($mnet_hosts as $mnet_host) {
             // Sending request
             if (!$rpc_client->send($mnet_host)) {
-                $response = new stdclass;
+                $response = new \StdClass();
                 $response->status = RPC_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 if (debugging()) {
@@ -216,7 +216,7 @@ class Command_Role_Compare extends Command {
         $capabilities = array();
         foreach ($capability_names as $capability_name) {
             // Creating capability.
-            $capability = new stdclass;
+            $capability = new \StdClass();
             $capability->name = $capability_name;
 
             // Initializing counters.
@@ -278,10 +278,16 @@ class Command_Role_Compare extends Command {
         $this->report = '<h3>'.get_string('comparerole', 'vmoodleadminset_roles', $role->name).help_button_vml('rolelib', 'rolecompare', 'rolecompare').'</h3>';
 
         // Adding edit role link.
-        $this->report.= '<center><p>'.$OUTPUT->single_button(new moodle_url($CFG->wwwroot.'/admin/roles/define.php', array('roleid' => $role->id, 'action' => 'edit')), get_string('editrole', 'vmoodleadminset_roles'), 'get').'</p></center>';
+        $this->report.= '<center><p>'.$OUTPUT->single_button(new moodle_url('/admin/roles/define.php', array('roleid' => $role->id, 'action' => 'edit')), get_string('editrole', 'vmoodleadminset_roles'), 'get').'</p></center>';
+
+        // Adding a capability client side filter.
+        $this->report .= get_string('capfilter', 'block_vmoodle').': '.'<input type="text" name="capfilter" value="" onchange="filtercapabilitytable(this)" />';
 
         // Creation form.
-        $this->report.= '<form action="'.$CFG->wwwroot.'/blocks/vmoodle/plugins/roles/controller.rolelib.sadmin.php?what=syncrole" method="post" onsubmit="return validate_syncrole()"><input id="capability" type="hidden" name="capability" value=""/><input id="source_platform" type="hidden" name="source_platform" value=""/>';
+        $rolecapsyncurl = new moodle_url('/blocks/vmoodle/plugins/roles/controller.rolelib.sadmin.php', array('what' => 'syncrole'));
+        $this->report .= '<form action="'.$rolecapsyncurl.'" method="post" onsubmit="return validate_syncrole()">';
+        $this->report .= '<input id="capability" type="hidden" name="capability" value="" />';
+        $this->report .= '<input id="source_platform" type="hidden" name="source_platform" value="" />';
 
         // Creating table.
         $this->report.= '<table id="rolecompare" cellspacing="1" cellpadding="5" class="generaltable boxaligncenter" style="min-width: 75%;"><tbody>';
@@ -299,19 +305,20 @@ class Command_Role_Compare extends Command {
         $row = 0;
         $contextlevel = 0;
         $component = '';
+        $rowtitleids = array();
 
         // Creating table data.
         foreach ($capabilities as $capability) {
             $col = 1;
-            // Adding contextual heading.
-            if (component_level_changed($capability, $component, $contextlevel)) {
-                $this->report.= '<tr><td colspan="'.(count($hosts)+1).'" class="header"><strong>'.($capability->component == $problematic_component_name ? $problematic_component_name : get_component_string($capability->component, $capability->contextlevel)).'</strong></td></tr>';
-            }
+
+            $componentlevelchanged = component_level_changed($capability, $component, $contextlevel);
 
             // Recording context.
             $contextlevel = $capability->contextlevel;
             $component = $capability->component;
-            $this->report.= '<tr class="r'.($row % 2).'"><td id="cap_0_'.$row.'" class="cell c0" style="vertical-align: middle; text-align: left;"><a onclick="this.target=\'docspopup\'" href="'.$CFG->docroot.'/'.$lang.'/'.$strcapabilities.'/'.$capability->name.'">'.get_capability_string($capability->name).'</a><br/>'.$capability->name.'</td>';
+            $rowtitleids[] = $capability->name;
+            $rowcontent = '<tr class="r'.($row % 2).' capabilityrow" id="'.$capability->name.'">';
+            $rowcontent .= '<td id="cap_0_'.$row.'" class="cell c0" style="vertical-align: middle; text-align: left;"><a onclick="this.target=\'docspopup\'" href="'.$CFG->docroot.'/'.$lang.'/'.$strcapabilities.'/'.$capability->name.'">'.get_capability_string($capability->name).'</a><br/>'.$capability->name.'</td>';
 
             foreach ($hosts as $host) {
                 $extra_class = false;
@@ -331,10 +338,18 @@ class Command_Role_Compare extends Command {
                 } else {
                     $cell = '<img src="'.$CFG->wwwroot.'/blocks/vmoodle/plugins/roles/pix/nocapability.png" alt="No capability" title="'.$title.'"/>';
                 }
-                $this->report.= '<td id="cap_'.$col.'_'.$row.'" class="cell c'.$col.($extra_class ? ' '.$extra_class : '').'" style="vertical-align: middle; text-align: center;" onmouseout="cellOut('.$col.','.$row.');" onmouseover="cellOver('.$col.','.$row.');">'.$cell.'</td>';
+                $rowcontent .= '<td id="cap_'.$col.'_'.$row.'" class="cell c'.$col.($extra_class ? ' '.$extra_class : '').'" style="vertical-align: middle; text-align: center;" onmouseout="cellOut('.$col.','.$row.');" onmouseover="cellOver('.$col.','.$row.');">'.$cell.'</td>';
                 $col++;
             }
-            $this->report.= '</tr>';
+
+            // Adding contextual heading.
+            if ($componentlevelchanged) {
+                $rowhead = '<tr class="capabilityrow" id="'.implode(',', $rowtitleids).'"><td colspan="'.(count($hosts)+1).'" class="header"><strong>'.($capability->component == $problematic_component_name ? $problematic_component_name : get_component_string($capability->component, $capability->contextlevel)).'</strong></td></tr>';
+                $rowtitleids = array();
+            }
+
+            $this->report .= $rowhead.$rowcontent.'</tr>';
+
             $row++;
         }
 

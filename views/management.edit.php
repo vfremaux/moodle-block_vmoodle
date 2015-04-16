@@ -35,4 +35,5 @@ if (!isset($platform_form)) {
 }
 
 $platform_form->display();
+
 echo $OUTPUT->box_end();

@@ -28,14 +28,23 @@ class Command_Parameter_Internal extends Command_Parameter {
         parent::__construct($name, 'internal', null, null);
             
         // Checking parameter's function
-        if (!function_exists($function)) {
-            throw new Command_Exception('parameterinternalfunctionnotexists', (object) array('function_name' => $function, 'parameter_name' => $this->name));
-        } else
-            $this->fct = $function;
-        
+        if (strpos($function, '::') !== false) {
+            list($classname, $method) = explode('::', $function);
+            if (!method_exists($classname, $method)) {
+                throw new Command_Exception('parameterinternalfunctionnotexists', (object) array('function_name' => $function, 'parameter_name' => $this->name));
+            }
+        } else {
+            if (!function_exists($function)) {
+                throw new Command_Exception('parameterinternalfunctionnotexists', (object) array('function_name' => $function, 'parameter_name' => $this->name));
+            }
+        }
+
+        $this->fct = $function;
+
         // Setting parameters
-        if (!(is_array($parameters) || is_null($parameters)))
+        if (!(is_array($parameters) || is_null($parameters))) {
             $parameters = array($parameters);
+        }
         $this->parameters = $parameters;
     }
 

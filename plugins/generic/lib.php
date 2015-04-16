@@ -27,7 +27,11 @@ function vmoodle_get_remote_config($mnethost, $configkey, $module = '') {
     if (!isset($USER)) {
         $user = $DB->get_record('user', array('username' => 'guest'));
     } else {
-        $user = $USER;
+        if (empty($USER->id)) {
+            $user = $DB->get_record('user', array('username' => 'guest'));
+        } else {
+            $user = $DB->get_record('user', array('id' => $USER->id));
+        }
     }
 
     if (!$userhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid))) {
@@ -45,9 +49,10 @@ function vmoodle_get_remote_config($mnethost, $configkey, $module = '') {
     $rpcclient->add_param($module, 'string');
 
     $mnet_host = new mnet_peer();
+    if (empty($mnet_host)) return;
 
     $mnet_host->set_wwwroot($mnethost->wwwroot);
-    
+
     if ($rpcclient->send($mnet_host)) {
         $response = json_decode($rpcclient->response);
         if ($response->status == 200) {

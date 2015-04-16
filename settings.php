@@ -22,7 +22,12 @@ if (!$DB->get_records('block', array('name' => 'vmoodle'))) {
     return;
 }
 
-$ADMIN->add('server', new admin_externalpage('vmoodle', get_string('vmoodleadministration', 'block_vmoodle'), $CFG->wwwroot . '/blocks/vmoodle/view.php', 'block/vmoodle:managevmoodles'));
+global $CFG;
+
+if (@$CFG->mainwwwroot == $CFG->wwwroot) {
+    // Only master moodle can have this menu.
+    $ADMIN->add('server', new admin_externalpage('vmoodle', get_string('vmoodleadministration', 'block_vmoodle'), $CFG->wwwroot . '/blocks/vmoodle/view.php', 'block/vmoodle:managevmoodles'));
+}
 
 if ($ADMIN->fulltree) {
     $yesnoopts[0] = get_string('no');
@@ -88,4 +93,9 @@ if ($ADMIN->fulltree) {
     $encodingopts[0] = 'UTF-8';
     $encodingopts[1] = 'ISO-5889-1';
     $settings->add(new admin_setting_configselect('block_vmoodle_encoding', get_string('csvencoding', 'block_vmoodle'), get_string('csvencoding_desc', 'block_vmoodle'), 1, $encodingopts));
+
+    $settings->add(new admin_setting_heading('tools', get_string('tools', 'block_vmoodle'), ''));
+    $yesno = array(0 => get_string('no'), 1 => get_string('yes'));
+    $settings->add(new admin_setting_configselect('vmoodle_force_https_proto', get_string('forcehttpsproto', 'block_vmoodle'), get_string('multimnet_desc', 'block_vmoodle'), 0, $yesno));
+    $settings->add(new admin_setting_configselect('allow_mnet_user_system_admin', get_string('allowmentusersasadmin', 'block_vmoodle'), get_string('multimnet_desc', 'block_vmoodle'), 0, $yesno));
 }

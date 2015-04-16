@@ -4,15 +4,15 @@
 var pfilters = new Array();
 var pfilters_counter = 0;
 
-/*
+/**
  * Define a filter platform
  */
 function Pfilter(type, value) {
-    // Checking parameters
+    // Checking parameters.
     if (type != 'contains' && type != 'notcontains' && type != 'regexp' || value == '')
         return;
     
-    // Defining members
+    // Defining members.
     this.type = type;
     this.value = value;
     switch (this.type) {

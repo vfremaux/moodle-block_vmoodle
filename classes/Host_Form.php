@@ -41,7 +41,7 @@ class Host_Form extends \moodleform {
      * @param string $mode The action to call from controler.
      * @param array $platform_form Data to input in fields.
      */
-    public function __construct($mode, $platform_form = null) {
+    public function __construct($mode, $platform_form=null) {
         // Settings mode and data.
         $this->mode = $mode;
         $this->platform_form = $platform_form;
@@ -236,7 +236,7 @@ class Host_Form extends \moodleform {
         $errors = parent::validation($data, null);
 
         // Checks database connection again, after Javascript test.
-        $database    = new stdClass;
+        $database    = new \stdClass;
         $database->vdbtype = $data['vdbtype'];
         $database->vdbhost = $data['vdbhost'];
         $database->vdblogin = $data['vdblogin'];

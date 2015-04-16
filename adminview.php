@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * view.php
  * 
@@ -8,16 +23,20 @@
  * @package block-vmoodle
  * @category blocks
  */
-// Adding requierements
+// Adding requirements.
 require_once('../../config.php');
-require_once($CFG->dirroot.'/blocks/vmoodle/locallib.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/debuglib.php');
 require_once($CFG->dirroot.'/mnet/lib.php');
 
-//Loading jQuery 
- $PAGE->requires->js('/blocks/vmoodle/js/lib/jquery-1.7.2.min.js');  
+// Loading jQuery.
+global $JQUERYVERSION;
+if (empty($JQUERYVERSION)) {
+    $PAGE->requires->js('/blocks/vmoodle/js/lib/jquery-1.7.2.min.js');
+    $JQUERYVERSION = '1.7.2';
+}
  
-// Loading javascript files
+// Loading javascript files.
 $PAGE->requires->js('/blocks/vmoodle/js/strings.php');
 $PAGE->requires->js ('/blocks/vmoodle/js/target_choice.js');
 
@@ -31,7 +50,6 @@ $action = optional_param('what', '', PARAM_TEXT);
 // Checking login
 $system_context = context_system::instance();
 require_login();
-
 
 $plugins = get_list_of_plugins('/blocks/vmoodle/plugins');
 foreach ($plugins as $plugin) {
@@ -114,11 +132,11 @@ if ($action != '') {
     }
 }
 
-// Displaying headers
+// Displaying headers.
 ob_end_flush();
 
 // Including contents.
-switch($view) {
+switch ($view) {
     case 'management': {
         include $CFG->dirroot.'/blocks/vmoodle/views/management.main.php';
     }

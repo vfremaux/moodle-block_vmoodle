@@ -51,6 +51,7 @@ abstract class Command {
 
     /**
      * Constructor.
+     * Build parameters array whatever is received in parameters input.
      * @param    $name                string                    Command's name.
      * @param    $description        string                    Command's description.
      * @param    $parameters            mixed                    Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
@@ -70,31 +71,34 @@ abstract class Command {
             $this->description = $description;
         
         // Checking parameters' format
-        if (is_null($parameters))
+        if (is_null($parameters)) {
             $this->parameters = array();
-        else {
-            if ($parameters instanceof Command_Parameter)
+        } else {
+            if ($parameters instanceof Command_Parameter) {
                 $parameters = array($parameters);
-            
+            }
+
             $i_parameters = array();
             if (is_array($parameters)) {
                 foreach ($parameters as $parameter) {
-                    if ($parameter instanceof Command_Parameter)
+                    if ($parameter instanceof Command_Parameter) {
                         $i_parameters[$parameter->getName()] = $parameter;
-                    else
+                    } else {
                         throw new Command_Exception('commandnotaparameter', $this->name);
+                    }
                 }
-            } else
+            } else {
                 throw new Command_Exception('commandwrongparametertype', $this->name);
-            
+            }
+
             $this->parameters = $i_parameters;
         }
     }
     
     /**
      * Populate parameters with their values.
-     * @param    $data        object                        The data from Command_From.
-     * @throws                Command_Exception
+     * @param object $data The data from Command_From.
+     * @throws Command_Exception
      */
     public function populate($data) {
         $parameters = $this->getParameters();
@@ -117,13 +121,13 @@ abstract class Command {
     
     /**
      * Execute the command.
-     * @param    $hosts        mixed            The host where run the command (may be wwwroot or an array).
+     * @param mixed $hosts The host where run the command (may be wwwroot or an array).
      */
     public abstract function run($hosts);
     
     /**
      * Return if the command were runned.
-     * @return                boolean            TRUE if the command were runned, FALSE otherwise.
+     * @return boolean TRUE if the command were runned, FALSE otherwise.
      */
     public function isRunned() {
         return !empty($this->results);
@@ -131,8 +135,8 @@ abstract class Command {
     
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
      */
     public abstract function getResult($host=null, $key=null);
     
@@ -145,7 +149,7 @@ abstract class Command {
     
     /**
      * Get the command's name.
-     * @return                        string            Command's name.
+     * @return string Command's name.
      */
     public function getName() {
         return $this->name;
@@ -153,7 +157,7 @@ abstract class Command {
     
     /**
      * Get the command's description.
-     * @return                        string            Command's description.
+     * @return string Command's description.
      */
     public function getDescription() {
         return $this->description;
@@ -161,8 +165,8 @@ abstract class Command {
     
     /**
      * Get the command's parameter from name.
-     * @param    name                string            A command parameter name.
-     * @return                        mixed            The command parameter.
+     * @param string $name A command parameter name.
+     * @return mixed The command parameter.
      */
     public function getParameter($name) {
         if (!array_key_exists($name, $this->parameters))
@@ -173,7 +177,7 @@ abstract class Command {
      
     /**
      * Get the command's parameters.
-     * @return                        mixed            Command's parameters.
+     * @return mixed Command's parameters.
      */
     public function getParameters() {
         return $this->parameters;
@@ -181,7 +185,7 @@ abstract class Command {
     
     /**
      * Get the retrieve platforms command.
-     * @return                        Command                    Retrieve platforms command.
+     * @return Command Retrieve platforms command.
      */
     public function getRPCommand() {
         return $this->rpcommand;
@@ -189,8 +193,8 @@ abstract class Command {
     
     /**
      * Attach a retrieve platform command to the command.
-     * @param    $rpcommand            Command            Retrieve platforms command (optional / could be null or Command object).
-     * @throws                        Command_Exception
+     * @param Command $rpcommand Retrieve platforms command (optional / could be null or Command object).
+     * @throws Command_Exception
      */
     public function attachRPCommand($rpcommand) {
         // Checking retrieve platforms command
@@ -202,7 +206,7 @@ abstract class Command {
     
     /**
      * Get the command's category.
-     * @return                        Command_Category        Command's category.
+     * @return Command_Category Command's category.
      */
     public function getCategory() {
         return $this->category;
@@ -210,7 +214,7 @@ abstract class Command {
     
     /**
      * Define the command's category.
-     * @param    $category            Command_Category        Command's category.
+     * @param Command_Category $category Command's category.
      */
     public function setCategory(Command_Category $category) {
         $this->category = $category;
@@ -218,7 +222,7 @@ abstract class Command {
     
     /**
      * Get command's index on this category. 
-     * @returm                        mixed            The index of the command if is in a category or null otherwise.
+     * @returm mixed The index of the command if is in a category or null otherwise.
      */
     public function getIndex() {
         if (is_null($this->category))
@@ -229,12 +233,10 @@ abstract class Command {
 
     /**
      * Safe comparator.
-     * @param    $command            Command    The commande to compare to.
-     * @return                        boolean            True if the compared command is the same of command parameter, false otherwise.
+     * @param Command $command The commande to compare to.
+     * @return boolean True if the compared command is the same of command parameter, false otherwise.
      */    
     public function equals($command) {
         return ($command->getName() == $this->name);
     }
 }
-
-?>

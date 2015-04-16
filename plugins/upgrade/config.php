@@ -33,3 +33,4 @@ $category->addCommand(new Command_Upgrade(
     'Drives the logical upgrade of all Moodles in the network'));
 
 return $category;
+

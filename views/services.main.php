@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once($CFG->dirroot.'/blocks/vmoodle/classes/ServicesStrategy_Form');
-
 /**
  * Displays default services strategy.
  *
@@ -26,6 +24,7 @@ require_once($CFG->dirroot.'/blocks/vmoodle/classes/ServicesStrategy_Form');
  */
 
 // Loading the library.
+require_once($CFG->dirroot.'/blocks/vmoodle/classes/ServicesStrategy_Form.php');
 
 $defaultservices = $DB->get_records('mnet_service', array('offer' => 1), 'name');
 
@@ -36,5 +35,7 @@ if ($services = unserialize(get_config(null, 'block_vmoodle_services_strategy'))
 }
 
 echo $OUTPUT->box_start();
+
 $services_form->display();
+
 echo $OUTPUT->box_end();

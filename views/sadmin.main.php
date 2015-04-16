@@ -22,7 +22,7 @@
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
- $PAGE->requires->js('/blocks/vmoodle/js/sadmin.js');
+$PAGE->requires->js('/blocks/vmoodle/js/sadmin.js');
 
 // Declaring parameters.
 if (isset($SESSION->vmoodle_sa['wizardnow'])) {
@@ -32,26 +32,25 @@ if (isset($SESSION->vmoodle_sa['wizardnow'])) {
 }
 
 // Include the step wizard.
-switch($wizardnow) {
-    case 'commandchoice': {
+switch ($wizardnow) {
+    case 'commandchoice':
         $result = include 'sadmin.commandchoice.php';
-    }
-    break;
-    case 'advancedcommand' : {
+        break;
+
+    case 'advancedcommand':
         $result = include 'sadmin.advancedcommand.php';
-    }
-    break;
-    case 'targetchoice': {
+        break;
+
+    case 'targetchoice':
         $result = include 'sadmin.targetchoice.php';
-    }
-    break;
-    case 'report': {
+        break;
+
+	case 'report':
         $result = include 'sadmin.report.php';
-    }
-    break;
-    default: {
+        break;
+
+    default:
         $result = -1;
-    }
 }
 
 // If an error happens.
