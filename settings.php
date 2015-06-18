@@ -24,12 +24,26 @@ if (!$DB->get_records('block', array('name' => 'vmoodle'))) {
 
 global $CFG;
 
-if (@$CFG->mainwwwroot == $CFG->wwwroot) {
-    // Only master moodle can have this menu.
-    $ADMIN->add('server', new admin_externalpage('vmoodle', get_string('vmoodleadministration', 'block_vmoodle'), $CFG->wwwroot . '/blocks/vmoodle/view.php', 'block/vmoodle:managevmoodles'));
+$systemcontext = context_system::instance();
+$hasadmin = false;
+if (is_dir($CFG->dirroot.'/local/adminsettings')) {
+    // This is AdminSettings Edunao driven administration 
+    if (has_capability('local/adminsettings:nobody', $systemcontext)) {
+        $hasadmin = true;
+    }
+} else {
+    // this is Moodle Standard
+    if ($ADIN->fulltree) {
+        $hasadmin = true;
+    }
 }
 
-if ($ADMIN->fulltree) {
+if ($hasadmin) {
+    if (@$CFG->mainwwwroot == $CFG->wwwroot) {
+        // Only master moodle can have this menu.
+        $ADMIN->add('server', new admin_externalpage('vmoodle', get_string('vmoodleadministration', 'block_vmoodle'), $CFG->wwwroot . '/blocks/vmoodle/view.php', 'block/vmoodle:managevmoodles'));
+    }
+
     $yesnoopts[0] = get_string('no');
     $yesnoopts[1] = get_string('yes');
 

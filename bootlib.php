@@ -225,7 +225,7 @@ function vmoodle_make_connection(&$vmoodle, $binddb = false) {
             die ("VMoodle_make_connection : Server {$vmoodle->vdblogin}@{$vmoodle->vdbhost} unreachable");
         }
         if ($binddb) {
-            if (!mysqli_select_db( $mysql_side_cnx,$vmoodle->vdbname)) {
+            if (!mysqli_select_db($mysql_side_cnx, $vmoodle->vdbname)) {
                 die ("VMoodle_make_connection : Database not found");
             }
         }
