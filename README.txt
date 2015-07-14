@@ -3,6 +3,14 @@ VMoodle block
 
 Implements a packaged virtualization control feature for large "Moodle Arrays" 
 
+Version 2015062000
+=============================
+
+This is a major architecture change. All main processes for VMoodling are
+deferered to the local_vmoodle plugin.
+
+
+
 Important requirements for VMoodling :
 
 Version 2014071301 summary

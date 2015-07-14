@@ -27,13 +27,13 @@ class block_vmoodle_renderer extends plugin_renderer_base {
 
         $parts = pathinfo($image);
 
-        $filepath = $CFG->dirroot.'/blocks/vmoodle/plugins/'.$plugin.'/pix/'.$parts['filename'];
+        $filepath = $CFG->dirroot.'/local/vmoodle/plugins/'.$plugin.'/pix/'.$parts['filename'];
 
         // We do not support SVG.
         $realpath = block_vmoodle_renderer::image_exists($filepath, false);
         $parts = pathinfo($realpath);
 
-        return $CFG->wwwroot.'/blocks/vmoodle/plugins/'.$plugin.'/pix/'.$parts['filename'].'.'.$parts['extension'];
+        return $CFG->wwwroot.'/local/vmoodle/plugins/'.$plugin.'/pix/'.$parts['filename'].'.'.$parts['extension'];
     }
 
     /**

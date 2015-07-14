@@ -2,8 +2,6 @@
 
 // Capabilities
 
-$string['vmoodle:execute'] = 'Execute meta-administration commands'; // @CORE
-$string['vmoodle:managevmoodles'] = 'Manage moodle satellites'; // @CORE
 $string['vmoodle:myaddinstance'] = 'Can add instance to my pages'; // @CORE
 $string['vmoodle:addinstance'] = 'Can add instance'; // @CORE
 
@@ -59,7 +57,6 @@ $string['badvhostname'] = 'Bad host form.';
 $string['blockname'] = 'Virtual Moodles';
 $string['blocknameplural'] = 'Moodles Farms';
 $string['cancelcommand'] = 'Cancel command';
-$string['capfilter'] = 'Capability filter';
 $string['categoryignored'] = 'The category {$a} has been ignored:';
 $string['categorywrongname'] = 'The category\'s name is wrong.';
 $string['categorywrongpluginname'] = 'The plugin\'s name linked to the category {$a} is wrong.';
@@ -302,8 +299,6 @@ $string['vmoodledoadd2'] = 'STEP 2 on 4 : The database has been converted. Next 
 $string['vmoodledoadd3'] = 'STEP 3 on 4 : Data Files are available. Next step will register the virtual platform.';
 $string['vmoodledoadd4'] = 'STEP 4 on 4 : Platform registration complete. Platform URL has been activated. Last step will enable Mnet protocols.';
 $string['vmoodlehost'] = 'Virtual Moodle host';
-$string['forcehttpsproto'] = 'Force HTTPS Proto (Cas)';
-$string['allowmentusersasadmin'] = 'Allow mnet users to be site admin (non standard)';
 $string['vmoodleip'] = 'IP Address';
 $string['vmoodleip_desc'] = 'A true XXX.XXX.XXX.XXX IP.';
 $string['vmoodlehost'] = 'Virtual Moodle Host name scheme';
