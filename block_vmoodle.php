@@ -75,12 +75,12 @@ class block_vmoodle extends block_base {
      * Return status for all defined virtual moodles.
      * @return string Status for all defined virtual moodles.
      */
-    private function _print_status(){
+    private function _print_status() {
         global $DB;
         // Initializing
         $str = '';
         // Getting virtual moodles
-        $vmoodles = $DB->get_records('block_vmoodle');
+        $vmoodles = $DB->get_records('local_vmoodle');
         // Creating table
         if ($vmoodles) {
             $str = '<table>';
