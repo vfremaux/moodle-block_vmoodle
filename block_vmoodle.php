@@ -80,7 +80,7 @@ class block_vmoodle extends block_base {
         // Initializing
         $str = '';
         // Getting virtual moodles
-        $vmoodles = $DB->get_records('block_vmoodle');
+        $vmoodles = $DB->get_records('local_vmoodle');
         // Creating table
         if ($vmoodles) {
             $str = '<table>';
