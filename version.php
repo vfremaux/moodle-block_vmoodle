@@ -26,12 +26,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016052400;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2016051900;        // Requires this Moodle version (2.4)
-$plugin->component = 'block_vmoodle'; // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2016052400;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2016120500;        // Requires this Moodle version.
+$plugin->component = 'block_vmoodle'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_RC;
-$plugin->release = "3.1.0 (Build 2015052400)";
+$plugin->release = "3.2.0 (Build 2015052400)";
 $plugin->dependencies = array('local_vmoodle' => 2016052400);
 
 // Not moodle attributes.
-$plugin->codeincrement = '3.1.0000';
+$plugin->codeincrement = '3.2.0000';
