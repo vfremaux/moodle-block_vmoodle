@@ -1,10 +1,39 @@
+VMoodle block
+#############
+
+Implements a packaged virtualization control feature for large "Moodle Arrays" 
+
+Version 2015062000
+=============================
+
+This is a major architecture change. All main processes for VMoodling are
+deferered to the local_vmoodle plugin.
+
+
+
 Important requirements for VMoodling :
+
+Version 2014071301 summary
+=============================
+
+Essentially redraws the internal class organization to cope qith 
+core Moodle class loading strategy.
+
+version 2013020801 summary
+=============================
+
+- Fixes security issue when used with local/technicalsignals plugin
+- Adds new remote plugin and equipement control
+- MultiSQL commands fixed
+- Several fixes on meta administration
+- added config file generator (to help cli migrations)
+- impove Command error and success report
+- integrates mahara patches for MNET stability.
 
 Summary of prerequisites
 ################################################################
 
-0.1 Making the master patch for block subplugins handling
-0.2 Making the master patch for block rpc function calls handling
+0. Alter the <moodle>/lib/classes/component.php in lone 48 to let subplugins be used in blocks. (add 'block' to the list).
 
 1. Installing vmoodle block in codebase
 2. Installing the master moodle as usual browsing to Administration -> notifications
@@ -19,68 +48,161 @@ Post install procedure
 7. Snapshoting the master Moodle as template for virtual moodling (may be long)
 8. Deploying vmoodle instances (may be long).
 
+0 Old patches information (vs. 1.9)
+
 0.1 Add possibility to blocks to handle subplugins and install them:
-################################################################
+####################################################################
 
 The vmoodle block construction is using subplugins, that are plugins 
-handled inside the vmoodle block scope. 
+handled inside the vmoodle block scope.
 
-The generic block upgrade function of Moodle core DOES NOT KNOW about 
-subplugins. For correct installation to be performed, lib/blocklib.php
+for Moodle 2.2
+--------------
 
-core block management library has to be added the following patch adding
-the appropriate hook at install and upgrade time : 
+Conversely to version 1.9, now subplugins are handled as "standard architecture feature" for
+any plugin. 
 
-// PATCH : (Generic) Block subplugins detection and auto upgrade
-if (method_exists($blockobj, 'update_subplugins')) {
-    $blockobj->update_subplugins($continueto);
-}
+Since 2.4
+---------
+
+An architecture flexibility regression caused the subplugin system for blocks to fail. We 
+now need an extra patch to get it finding plugin subcomponent path properly again. 
+
+This patch will alter 2 plugin related functions in /lib/moodlelib.php
+
+around L§8030
+
+/**
+ * Lists all plugin types
+ * @param bool $fullpaths false means relative paths from dirroot
+ * @return array Array of strings - name=>location
+ */
+function get_plugin_types($fullpaths=true) {
+    global $CFG;
+
+    static $info     = null;
+    static $fullinfo = null;
+
+    if (!$info) {
+        $info = array('qtype'         => 'question/type',
+                      'mod'           => 'mod',
+                      'auth'          => 'auth',
+                      'enrol'         => 'enrol',
+                      'message'       => 'message/output',
+                      'block'         => 'blocks',
+                      'filter'        => 'filter',
+                      'editor'        => 'lib/editor',
+                      'format'        => 'course/format',
+                      'profilefield'  => 'user/profile/field',
+                      'report'        => 'report',
+                      'coursereport'  => 'course/report', // must be after system reports
+                      'gradeexport'   => 'grade/export',
+                      'gradeimport'   => 'grade/import',
+                      'gradereport'   => 'grade/report',
+                      'gradingform'   => 'grade/grading/form',
+                      'mnetservice'   => 'mnet/service',
+                      'webservice'    => 'webservice',
+                      'repository'    => 'repository',
+                      'portfolio'     => 'portfolio',
+                      'qbehaviour'    => 'question/behaviour',
+                      'qformat'       => 'question/format',
+                      'plagiarism'    => 'plagiarism',
+                      'tool'          => $CFG->admin.'/tool',
+                      'cachestore'    => 'cache/stores',
+                      'cachelock'     => 'cache/locks',
+                      'theme'         => 'theme',  // this is a bit hacky, themes may be in $CFG->themedir too
+        );
+
+// PATCH : Allow subplugins in blocks
+        $subpluginowners = array_merge(array_values(get_plugin_list('mod')),
+                array_values(get_plugin_list('editor')), array_values(get_plugin_list('block')));
+// /PATCH 
+        foreach ($subpluginowners as $ownerdir) {
+
+around L§8106
+
+/**
+ * Simplified version of get_list_of_plugins()
+ * @param string $plugintype type of plugin
+ * @return array name=>fulllocation pairs of plugins of given type
+ */
+function get_plugin_list($plugintype) {
+    global $CFG;
+
+    $ignored = array('CVS', '_vti_cnf', 'simpletest', 'db', 'yui', 'tests');
+    if ($plugintype == 'auth') {
+        // Historically we have had an auth plugin called 'db', so allow a special case.
+        $key = array_search('db', $ignored);
+        if ($key !== false) {
+            unset($ignored[$key]);
+        }
+    }
+
+    if ($plugintype === '') {
+        $plugintype = 'mod';
+    }
+
+    $fulldirs = array();
+
+    if ($plugintype === 'mod') {
+        // mod is an exception because we have to call this function from get_plugin_types()
+        $fulldirs[] = $CFG->dirroot.'/mod';
+// PATCH : Allow subplugins in blocks
+    } else if ($plugintype === 'block') {
+        // block is an exception because we have to call this function from get_plugin_types()
+        $fulldirs[] = $CFG->dirroot . '/blocks';
+// /PATCH
+    } else if ($plugintype === 'editor') {
+
+
+Since moodle 2.6
+----------------
+
+Subplugin handling has been fluidified, with a very light change in a core library. 
+You'll just have to add the 'block' item in the subplugin capable plugins : lib/classes/component.php at line 48.
+
+    protected static $supportsubplugins = array('mod', 'editor', 'tool', 'local', 'block');
+
+
+0.2 Add possibility for blocks to handle xmlrpc the same way Moodle modules do:
+###############################################################################
+
+Moodle 2.2 supports now generic Mnet service declaration in all plugins.
+
+0.3 Patch for automated key rotations and consolidation in VMoodled networks:
+#############################################################################
+
+This patch allows a "well known trusted peer" to force asynchronous renewal of his
+own key. It is still needed in Moodle 2.x versions
+
+Location : mnet/lib.php
+Changes : start of mnet_get_public_key() (including signature)
+
+Patch content : 
+
+// PATCH : VMoodle Mnet automated key renewal -- adding force mode
+function mnet_get_public_key($uri, $application=null, $force=0) {
+    global $CFG, $DB;
+
+    $mnet = get_mnet_environment();
+    // The key may be cached in the mnet_set_public_key function...
+    // check this first
+    // cache location of key must be bypassed when we need an automated renew.
+    if (!$force){
+	    $key = mnet_set_public_key($uri);
+	    if ($key != false) {
+	        return $key;
+	    }
+    }
 // /PATCH
 
-Location is in function upgrade_blocks_plugins($continueto) at the quite end of the function : 
-
-                error('Block '. $block->name .' tables could NOT be set up successfully!');
-            }
-        }
-
-        $blocktitles[$block->name] = $blocktitle;
-        
-        <<<<<<< PATCH INSERTION POINT >>>>>>>>>
+    if (empty($application)) {
+        $application = $DB->get_record('mnet_application', array('name'=>'moodle'));
     }
 
-    if(!empty($notices)) {
-        upgrade_log_start();
-        foreach($notices as $notice) {
-            notify($notice);
-        }
-    }
-
-
-0.2 Add possibility for blocks to handle xmlrpc the same way Moodle modules do :
-################################################################################
-
-This is an important patch needed for the VMoodle bloc to invoke XML-RPC functions
-between Moodle instances. It fixes an inconsistancy of the MNET implementation was
-lacking blocks to exchange information using network communications.
-
-Patch point is : 
-
-file : /mnet/xmlrpc/server.php
-line : near 478
-location : before (or after, no case, but an additional case) the handling of modules.
-
-    // PATCH : Add RPC support to blocks 
-	////////////////////////////////////// STRICT BLOCKS/*
-    } elseif ($callstack[0] == 'blocks') {
-        list($base, $block, $filename, $functionname) = $callstack;
-        $includefile = '/blocks/'.$block.'/rpclib.php';
-        $response = mnet_server_invoke_method($includefile, $functionname, $method, $payload);
-        $response = mnet_server_prepare_response($response);
-        echo $response;
-	// /PATCH
-    ////////////////////////////////////// STRICT MOD/*
-    } elseif ($callstack[0] == 'mod' || 'dangerous' == $CFG->mnet_dispatcher_mode) {
-        list($base, $module, $filename, $functionname) = $callstack;
+//! PATCH : Mnet automated key renewal
+    $rq = xmlrpc_encode_request('system/keyswap', array($CFG->wwwroot, $mnet->public_key, $application->name, $force), array("encoding" => "utf-8"));
+// /PATCH
 
 
 1. Master configuration changes : Installing the config.php hook to vconfig.php
