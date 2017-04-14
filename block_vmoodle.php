@@ -51,7 +51,7 @@ class block_vmoodle extends block_base {
         global $CFG;
 
         // Checking content cached
-        if ($this->content !== null)
+        if ($this->content !== NULL)
             return $this->content;
         // Creating new content
         $this->content = new stdClass;
