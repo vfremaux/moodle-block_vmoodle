@@ -33,7 +33,7 @@ class block_vmoodle extends block_base {
      * @return                boolean        True if the block have a configuration file, false otherwise.
      */
     public function has_config() {
-        return true;
+        return false;
     }
     /**
      * Define the applicable formats to the block.

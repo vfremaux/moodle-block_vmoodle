@@ -12,8 +12,8 @@ php:
 
 env:
  matrix:
-  - DB=mysqli MOODLE_BRANCH=MOODLE_30_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_30_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
 
 
 before_install:
@@ -25,7 +25,6 @@ before_install:
 
 install:
   - moodle-plugin-ci add-plugin --branch $MOODLE_BRANCH vfremaux/moodle-local_vmoodle
-
   - moodle-plugin-ci install
 
 script:
