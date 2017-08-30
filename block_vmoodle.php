@@ -1,19 +1,4 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
  * Declare Vmoodle block.
  * 
@@ -24,11 +9,7 @@
  * @version Moodle 2.2
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot.'/local/vmoodle/lib.php');
-
+ 
 /**
  * Vmoodle block displays virtual platforms and link to the settings.
  */
@@ -67,27 +48,22 @@ class block_vmoodle extends block_base {
      * @return string The block content.
      */
     public function get_content() {
-        global $CFG, $PAGE;
+        global $CFG;
 
-        // Checking content cached.
-        if ($this->content !== null) {
+        // Checking content cached
+        if ($this->content !== NULL)
             return $this->content;
-        }
-
-        // Creating new content.
+        // Creating new content
         $this->content = new stdClass;
         $this->content->footer = '';
-
-        // Getting context.
+        // Getting context
         $context = context_block::instance($this->instance->id);
-        $renderer = $PAGE->get_renderer('block_vmoodle');
-
+           
         // Setting content depending on capabilities
         if (isloggedin()) {
             if (has_capability('local/vmoodle:managevmoodles', $context)) {
-                $viewurl = new moodle_url('/local/vmoodle/view.php');
-                $this->content->footer = '<a href="'.$viewurl.'">'.get_string('administrate', 'block_vmoodle').'</a><br/>';
-                $this->content->text = $renderer->status();
+                $this->content->footer = '<a href="'.$CFG->wwwroot.'/local/vmoodle/view.php">'.get_string('administrate', 'block_vmoodle').'</a><br/>';
+                $this->content->text = $this->_print_status();
             } else {
                 $this->content->text = get_string('notallowed', 'block_vmoodle');
             }
@@ -95,4 +71,26 @@ class block_vmoodle extends block_base {
         // Returning content
         return $this->content;
     }
+    /**
+     * Return status for all defined virtual moodles.
+     * @return string Status for all defined virtual moodles.
+     */
+    private function _print_status(){
+        global $DB;
+        // Initializing
+        $str = '';
+        // Getting virtual moodles
+        $vmoodles = $DB->get_records('local_vmoodle');
+        // Creating table
+        if ($vmoodles) {
+            $str = '<table>';
+            foreach($vmoodles as $vmoodle)
+                $str .= '<tr><td><a href="'.$vmoodle->vhostname.'" target="_blank">'.$vmoodle->shortname.' - '.$vmoodle->name.'</a></td><td>'.vmoodle_print_status($vmoodle, true).'</td></tr>';
+            $str .= '</table>';
+        }
+        // Returning table
+        return $str;
+    }
+
+
 }
