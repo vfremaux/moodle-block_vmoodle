@@ -189,10 +189,10 @@ function mnet_get_public_key($uri, $application=null, $force=0) {
     // check this first
     // cache location of key must be bypassed when we need an automated renew.
     if (!$force){
-        $key = mnet_set_public_key($uri);
-        if ($key != false) {
-            return $key;
-        }
+	    $key = mnet_set_public_key($uri);
+	    if ($key != false) {
+	        return $key;
+	    }
     }
 // /PATCH
 
@@ -216,14 +216,6 @@ vconfig.php file in blocks/vmoodle and then install the hook point in the standa
 config.php of Moodle.
 
 /// VMOODLE Hack
-$CFG->mainhostprefix = 'http://someprefixthatmatchs';
-$CFG->user_mnet_hosts_admin_override = true;
-// this fragment will trap the CLI scripts trying to work for a virtual node, and
-// needing booting a first elementary configuration based on main config 
-if (isset($CLI_VMOODLE_PRECHECK) && $CLI_VMOODLE_PRECHECK == true) {
-    $CLI_VMOODLE_PRECHECK = false;
-    return;
-}
 include $CFG->dirroot.'/blocks/vmoodle/vconfig.php';
 /// /VMOODLE Hack
 
@@ -241,12 +233,12 @@ this kind of generic binding.
     ServerAdmin webmaster@eisti.fr
     ServerName %mastermoodlehost%
     ServerAlias *.%mastermoodledomain%
-    VirtualDocumentRoot "D:/wwwroot/%moodledir%"
+	VirtualDocumentRoot "D:/wwwroot/%moodledir%"
     ErrorLog logs/vmoodle_common-error_log
     CustomLog logs/vmoodle_common-access_log common
 </VirtualHost>
 
-For example :
+For example : 
 
 the master moodle site could be : 
 
@@ -290,13 +282,3 @@ On large implementations running heavy moodle cron jobs or a lot
 of VMoodles, it can be a good idea to make cron run on a spare little 
 server that can run the codebase and has access to the database pool.
 
-Using admin scripts in a VMoodle Configuration
-##############################################
-
-As standard scripts do not know anything of virtualisation, and command line scripts
-cannot rely on SERVER_NAME or other HTTP environment variables, most of the admin/cli 
-scripts have been adapted for a VMoodle environment and reside in blocks/vmoodle/cli
-directory.
-
-Use them adding an additional --host options with the current wwwroot of the instance
-you want to address.

@@ -18,8 +18,9 @@
  * Version details
  *
  * @package    block_vmoodle
- * @category blocks
- * @copyright  2013 Valery Fremaux (valery.fremaux@gmail.com)
+ * @category   blocks
+ * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright  2013 onwards Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,5 +30,8 @@ $plugin->version   = 2016052400;        // The current plugin version (Date: YYY
 $plugin->requires  = 2016051900;        // Requires this Moodle version (2.4)
 $plugin->component = 'block_vmoodle'; // Full name of the plugin (used for diagnostics)
 $plugin->maturity = MATURITY_RC;
-$plugin->release = "3.1 (Build 2015052400)";
+$plugin->release = "3.1.0 (Build 2015052400)";
 $plugin->dependencies = array('local_vmoodle' => 2016052400);
+
+// Not moodle attributes.
+$plugin->codeincrement = '3.1.0000';
