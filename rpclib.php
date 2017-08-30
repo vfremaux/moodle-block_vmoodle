@@ -19,7 +19,6 @@
  * management tasks (bock/vmoodle:canexecuteremotecalls)
  */
 
-// Including libraries
 require_once($CFG->libdir.'/accesslib.php');
 require_once($CFG->libdir.'/dmllib.php');
 
@@ -32,7 +31,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE', 500);
     define('RPC_FAILURE_USER', 501);
     define('RPC_FAILURE_CONFIG', 502);
-    define('RPC_FAILURE_DATA', 503); 
+    define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
     define('MNET_FAILURE', 511);
     define('RPC_FAILURE_RECORD', 520);
@@ -48,11 +47,11 @@ if (!defined('RPC_SUCCESS')) {
 function invoke_local_user($user, $capability=false, $context=null) {
     global $CFG, $USER, $DB;
 
-    // Creating response
+    // Creating response.
     $response = new stdclass;
     $response->status = RPC_SUCCESS;
 
-    // Checking user
+    // Checking user.
     if (!array_key_exists('username', $user) || !array_key_exists('remoteuserhostroot', $user) || !array_key_exists('remotehostroot', $user)) {
         debug_trace("USER CHECK FAILED 1 bad user structure : ".json_encode($user));
         $response->status = RPC_FAILURE_USER;
@@ -68,9 +67,9 @@ function invoke_local_user($user, $capability=false, $context=null) {
         $response->error = 'Empty username.';
         return(json_encode($response));
     }
-    
-    // Get local identity
-    if (!$remotehost = $DB->get_record('mnet_host', array('wwwroot' => $user['remotehostroot']))){
+
+    // Get local identity.
+    if (!$remotehost = $DB->get_record('mnet_host', array('wwwroot' => $user['remotehostroot']))) {
         debug_trace("USER CHECK FAILED 3 (unregistered host) : ".json_encode($user));
         $response->status = RPC_FAILURE;
         $response->errors[] = 'Calling host is not registered. Check MNET configuration';
@@ -87,11 +86,11 @@ function invoke_local_user($user, $capability=false, $context=null) {
         $response->error = "Calling user has no local account. Register remote user first";
         return(json_encode($response));
     }
-    // Replacing current user by remote user
+    // Replacing current user by remote user.
 
     $USER = $localuser;
 
-    // Checking capabilities
+    // Checking capabilities.
     if ($capability) {
         if (is_null($context)) {
             $context = context_system::instance();
@@ -153,8 +152,7 @@ function mnetadmin_rpc_bind_peer($username, $userhost, $remotehost, $new_peer, $
         }
     }
 
-    debug_trace('RPC : Binding service strategy');
-    // bind the service strategy.
+    // Bind the service strategy.
     if (!empty($servicestrategy)){
         $DB->delete_records('mnet_host2service', array('hostid' => $peerobj->id)); // eventually deletes something on the way
         foreach($servicestrategy as $servicename => $servicestate){
@@ -169,7 +167,6 @@ function mnetadmin_rpc_bind_peer($username, $userhost, $remotehost, $new_peer, $
         }
     }
 
-    debug_trace('RPC Bind : Sending response');
     // Returns response (success or failure).
     return json_encode($response);
 }
@@ -203,9 +200,11 @@ function mnetadmin_rpc_unbind_peer($username, $userhost, $remotehost, $peer_wwwr
             $response->error     =     'Error when updating the host \''.$vmoodle_host->name.'\'.';
         }
     } else {
-        // If host cannot be find. LET IT SILENT, it is unbound !
-        // $response->status = RPC_FAILURE_RECORD;
-        // $response->errors[] = 'Host with \'wwwroot = '.$peer_wwwroot.'\' cannot be find.';
+        /* 
+         * If host cannot be find. LET IT SILENT, it is unbound !
+         * $response->status = RPC_FAILURE_RECORD;
+         * $response->errors[] = 'Host with \'wwwroot = '.$peer_wwwroot.'\' cannot be find.';
+         */
     }
 
     // Returns response (success or failure).
@@ -218,23 +217,22 @@ function mnetadmin_rpc_unbind_peer($username, $userhost, $remotehost, $peer_wwwr
  * @return string The error message.
  */
 function parse_wlerror() {
-    // Getting contents form PHP buffer
+    // Getting contents form PHP buffer.
     $contents = ob_get_contents();
     $contents = str_replace(array('<br/>', '<br />', '<br>'), ' ', $contents);
-    // Checking if is a notify message
+    // Checking if is a notify message.
     if (!substr_compare($contents, '<div class="notifytiny"', 0, 13)) {
-        // Checking if stacktrace is present
+        // Checking if stacktrace is present.
         if ($pos = strpos($contents, '<ul'))
         $contents = substr($contents, 0, $pos);
     }
-    // Removing all tags for XML RPC
+    // Removing all tags for XML RPC.
     return strip_tags($contents);
 }
 
 /**
  * NOT WORKING
  * reimplementation of system.keyswapcall with capability of forcing the local renew
- *
  */
 function mnetadmin_keyswap($function, $params){
     global $CFG, $MNET;
@@ -246,7 +244,7 @@ function mnetadmin_keyswap($function, $params){
     $application    = $params[2];
     $forcerenew     = $params[3];
     if ($forcerenew == 0){
-        // standard keyswap for first key recording 
+        // Standard keyswap for first key recording.
         if (!empty($CFG->mnet_register_allhosts)) {
             $mnet_peer = new mnet_peer();
             $keyok = $mnet_peer->bootstrap($wwwroot, $pubkey, $application);
@@ -256,7 +254,7 @@ function mnetadmin_keyswap($function, $params){
         }
     } else {
         $mnet_peer = new mnet_peer();
-        // we can only renew hosts that we know something about.
+        // We can only renew hosts that we know something about.
         if ($mnet_peer->set_wwwroot($wwwroot)){
             $mnet_peer->public_key = clean_param($pubkey, PARAM_PEM);
             $mnet_peer->public_key_expires = $mnet_peer->check_common_name($pubkey);
@@ -264,7 +262,7 @@ function mnetadmin_keyswap($function, $params){
             $mnet_peer->updateparams->public_key_expires = $mnet_peer->check_common_name($pubkey);
             $mnet_peer->commit();
         } else {
-            return false; // avoid giving our key to unkown hosts.
+            return false; // Avoid giving our key to unkown hosts.
         }
     }
     return $MNET->public_key;

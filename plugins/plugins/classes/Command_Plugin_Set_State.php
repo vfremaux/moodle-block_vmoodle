@@ -14,23 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace vmoodleadminset_plugins;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \block_vmoodle\commands\Command_Parameter;
-
-require_once($CFG->libdir.'/accesslib.php');
-require_once($CFG->dirroot.'/blocks/vmoodle/plugins/plugins/rpclib.php');
-require_once($CFG->dirroot.'/blocks/vmoodle/plugins/plugins/lib.php');
-
 /**
  * Describes a role comparison command.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_plugins;
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \block_vmoodle\commands\Command_Parameter;
+
+require_once($CFG->libdir.'/accesslib.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/plugins/plugins/rpclib.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/plugins/plugins/lib.php');
+
 class Command_Plugin_Set_State extends Command {
 
     /**
@@ -50,11 +51,11 @@ class Command_Plugin_Set_State extends Command {
 
     /**
      * Constructor.
-     * @throws            Command_Exception.
+     * @throws Command_Exception.
      */
     public function __construct() {
         global $DB, $STANDARD_PLUGIN_TYPES;
-        
+
         // Getting command description.
         $cmd_name = vmoodle_get_string('cmdpluginsetupname', 'vmoodleadminset_plugins');
         $cmd_desc = vmoodle_get_string('cmdpluginsetupdesc', 'vmoodleadminset_plugins');
@@ -87,8 +88,8 @@ class Command_Plugin_Set_State extends Command {
 
     /**
      * Execute the command.
-     * @param    $hosts        mixed            The host where run the command (may be wwwroot or an array).
-     * @throws                Command_Exception.
+     * @param mixed $hosts The host where run the command (may be wwwroot or an array).
+     * @throws Command_Exception.
      */
     public function run($hosts) {
         global $CFG, $USER;
@@ -168,17 +169,17 @@ class Command_Plugin_Set_State extends Command {
             }
         }
 
-        // Saving results
+        // Saving results.
         $this->results = $responses + $this->results;
 
     }
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @return                mixed            The result or null if result does not exist.
-     * @throws                Command_Exception.
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @return mixed The result or null if result does not exist.
+     * @throws Command_Exception.
      */
     public function getResult($host = null, $key = null) {
 

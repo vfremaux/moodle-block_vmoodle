@@ -14,18 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace vmoodleadminset_generic;
-Use \block_vmoodle\commands\Command;
-Use \StdClass;
-
 /**
  * Describes meta-administration plugin's command for Maintenance setup.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_generic;
+
+defined('MOODLE_INTERNAL') || die();
+
+use \block_vmoodle\commands\Command;
+use \StdClass;
+
 class Command_Maintenance extends Command {
 
     /**
@@ -150,7 +153,7 @@ class Command_Maintenance extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;

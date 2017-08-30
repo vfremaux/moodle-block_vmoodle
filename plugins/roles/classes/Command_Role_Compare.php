@@ -1,23 +1,38 @@
 <?php
-
-namespace vmoodleadminset_roles;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \block_vmoodle\commands\Command_Parameter;
-Use \context_system;
-Use \StdClass;
-Use \moodle_url;
-
-require_once($CFG->libdir.'/accesslib.php');
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Describes a role comparison command.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_roles;
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \block_vmoodle\commands\Command_Parameter;
+use \context_system;
+use \StdClass;
+use \moodle_url;
+
+require_once($CFG->libdir.'/accesslib.php');
+
 class Command_Role_Compare extends Command {
 
     /**
@@ -36,12 +51,12 @@ class Command_Role_Compare extends Command {
      */
     public function __construct() {
         global $DB;
-        
-        // Getting command description
+
+        // Getting command description.
         $cmd_name = vmoodle_get_string('cmdcomparename', 'vmoodleadminset_roles');
         $cmd_desc = vmoodle_get_string('cmdcomparedesc', 'vmoodleadminset_roles');
 
-        // Getting role parameter
+        // Getting role parameter.
         $roles = role_fix_names(get_all_roles(), \context_system::instance(), ROLENAME_ORIGINAL);
         $rolemenu = array();
         foreach($roles as $r){
@@ -96,24 +111,20 @@ class Command_Role_Compare extends Command {
 
         // Sending requests.
         foreach ($mnet_hosts as $mnet_host) {
-            // Sending request
+            // Sending request.
             if (!$rpc_client->send($mnet_host)) {
                 $response = new \StdClass();
                 $response->status = RPC_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
-                if (debugging()) {
-                    echo '<pre>';
-                    var_dump($rpc_client);
-                    echo '</pre>';
-                }
             } else {
                 $response = json_decode($rpc_client->response);
             }
-            // Recording response
+            // Recording response.
             $responses[$mnet_host->wwwroot] = $response;
-            // Recording capabilities
-            if ($response->status == RPC_SUCCESS)
+            // Recording capabilities.
+            if ($response->status == RPC_SUCCESS) {
                 $this->capabilities[$mnet_host->wwwroot] = $response->value;
+            }
         }
         // Saving results.
         $this->results = $responses + $this->results;
@@ -162,7 +173,7 @@ class Command_Role_Compare extends Command {
      * @throws Commmand_Exception.
      */
     private function _process() {
-        global $CFG,$DB,$OUTPUT;
+        global $CFG, $DB, $OUTPUT;
 
         // Checking if command has been runned.
         if (!$this->isRunned()) {
@@ -181,7 +192,6 @@ class Command_Role_Compare extends Command {
             CONTEXT_BLOCK => array('count' => 0, 'label' => 'B', 'name' => 'block'),
             CONTEXT_COURSE => array('count' => 0, 'label' => 'C', 'name' => 'course'),
             CONTEXT_COURSECAT => array('count' => 0, 'label' => 'CC', 'name' => 'coursecat'),
-        /*    CONTEXT_GROUP => array('count' => 0, 'label' => 'G', 'name' => 'group'),*/
             CONTEXT_MODULE => array('count' => 0, 'label' => 'M', 'name' => 'module'),
             CONTEXT_SYSTEM => array('count' => 0, 'label' => 'S', 'name' => 'system'),
             CONTEXT_USER => array('count' => 0, 'label' => 'U', 'name' => 'user')
@@ -190,7 +200,7 @@ class Command_Role_Compare extends Command {
         // Getting role name.
         $role = $this->getParameter('role')->getValue();
         $role = $DB->get_record('role', array('shortname' => $role));
-          
+
         // Getting hosts.
         $hosts = array_keys($this->capabilities);
         $host_labels = get_available_platforms();
@@ -209,7 +219,7 @@ class Command_Role_Compare extends Command {
             $capability_names = array_merge($capability_names, $platform_capabilities);
         }
         $capability_names = array_unique($capability_names);
-        // Getting problematic component name
+        // Getting problematic component name.
         $problematic_component_name = get_string('problematiccomponent', 'vmoodleadminset_roles');
 
         // Creating normalized capabilities.
@@ -331,7 +341,7 @@ class Command_Role_Compare extends Command {
                         $cell = '<img src="'.$CFG->wwwroot.'/blocks/vmoodle/plugins/roles/pix/compare'.$cap_permissions[$platform_capability->permission]['label'].$cap_contexts[$platform_capability->contextlevel]['label'].'.png" alt="Permission: '.$cap_permissions[$platform_capability->permission]['name'].' | Context: '.$cap_contexts[$platform_capability->contextlevel]['name'].'" title="'.$title.'" onclick="setCapability('.$col.','.$row.',\''.$capability->name.'\',\''.$host.'\');"/>';
                         if ($platform_capability->permission != $capabilities[$platform_capability->capability]->major_permission) {
                             $extra_class = 'wrongvalue';
-                        } elseif ($platform_capability->contextlevel != $capabilities[$platform_capability->capability]->major_contextlevel) {
+                        } else if ($platform_capability->contextlevel != $capabilities[$platform_capability->capability]->major_contextlevel) {
                             $extra_class = 'wrongcontext';
                         }
                     }
@@ -375,9 +385,9 @@ class Command_Role_Compare extends Command {
     private function _orderCapability($cap1, $cap2) {
         if (!($cmp = strcmp($cap1->component, $cap2->component))) {
             return $cmp;
-        } elseif ($cap1->contextlevel < $cap2->contextlevel) {
+        } else if ($cap1->contextlevel < $cap2->contextlevel) {
             return -1;
-        } elseif ($cap1->contextlevel > $cap2->contextlevel) {
+        } else if ($cap1->contextlevel > $cap2->contextlevel) {
             return 1;
         } else {
             return strcmp($cap1->name, $cap2->name);

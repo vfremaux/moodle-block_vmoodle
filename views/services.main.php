@@ -22,6 +22,7 @@
  * @author Moheissen Fabien (fabien.moheissen@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 // Loading the library.
 require_once($CFG->dirroot.'/blocks/vmoodle/classes/ServicesStrategy_Form.php');

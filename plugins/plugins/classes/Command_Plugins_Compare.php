@@ -14,10 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Describes a role comparison command.
+ *
+ * @package block-vmoodle
+ * @category blocks
+ * @author Valery Fremaux (valery.fremaux@gmail.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
+ */
 namespace vmoodleadminset_plugins;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \block_vmoodle\commands\Command_Parameter;
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \block_vmoodle\commands\Command_Parameter;
 
 require_once($CFG->libdir.'/accesslib.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/plugins/plugins/rpclib.php');
@@ -26,17 +35,11 @@ global $PAGE;
 $PAGE->requires->js('/blocks/vmoodle/plugins/plugins/js/plugins_compare.js');
 $PAGE->requires->js('/blocks/vmoodle/plugins/plugins/js/strings.php');
 
-/**
- * Describes a role comparison command.
- * 
- * @package block-vmoodle
- * @category blocks
- * @author Valery Fremaux (valery.fremaux@gmail.com)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
- */
 class Command_Plugins_Compare extends Command {
+
     /** The plugintype plugins */
     private $plugins = array();
+
     /** The html report */
     private $report;
 
@@ -72,7 +75,7 @@ class Command_Plugins_Compare extends Command {
         // Adding constants.
         include_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
 
-        // Checking capability to run
+        // Checking capability to run.
         if (!has_capability('block/vmoodle:execute', \context_system::instance())) {
             throw new Command_Exception('insuffisantcapabilities');
         }
@@ -203,7 +206,7 @@ class Command_Plugins_Compare extends Command {
         $this->report = '<link href="'.$CFG->wwwroot.'/blocks/vmoodle/plugins/plugins/theme/styles.css" rel="stylesheet" type="text/css">';
         $this->report .= '<h3>'.vmoodle_get_string('compareplugins', 'vmoodleadminset_plugins', $STANDARD_PLUGIN_TYPES[$plugintype]).'</h3>';
 
-        // Adding link to plugin management
+        // Adding link to plugin management.
         /* $this->report.= '<center><p>'.$OUTPUT->single_button(new moodle_url($CFG->wwwroot.'/admin/roles/define.php', array('roleid' => $role->id, 'action' => 'edit')), get_string('editrole', 'vmoodleadminset_roles'), 'get').'</p></center>'; */
 
         // Creation form
@@ -268,7 +271,7 @@ class Command_Plugins_Compare extends Command {
             $row++;
         }
 
-        // Closing table
+        // Closing table.
         $this->report.= '</tboby></table><br/><center><input type="submit" value="'.get_string('synchronize', 'vmoodleadminset_plugins').'"/><div id="plugincompare_validation_message"></div></center></form><br/><br/>';
     }
 

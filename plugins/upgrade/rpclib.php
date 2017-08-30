@@ -1,17 +1,30 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /*
  * Created on 20 sept. 2013
  *
  */
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
-}
+defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
-require_once $CFG->dirroot.'/blocks/vmoodle/lib.php';
-require_once($CFG->libdir.'/adminlib.php');       // various admin-only functions
-require_once($CFG->libdir.'/upgradelib.php');     // general upgrade/install related functions
+require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
+require_once($CFG->libdir.'/adminlib.php');       // Various admin-only functions.
+require_once($CFG->libdir.'/upgradelib.php');     // General upgrade/install related functions.
 require_once($CFG->libdir.'/environmentlib.php');
 require_once($CFG->libdir.'/pluginlib.php');
 
@@ -21,7 +34,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE', 500);
     define('RPC_FAILURE_USER', 501);
     define('RPC_FAILURE_CONFIG', 502);
-    define('RPC_FAILURE_DATA', 503); 
+    define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
     define('MNET_FAILURE', 511);
     define('RPC_FAILURE_RECORD', 520);
@@ -31,7 +44,7 @@ if (!defined('RPC_SUCCESS')) {
 function mnetadmin_rpc_upgrade($user, $json_response = true) {
     global $CFG, $USER;
 
-    // Invoke local user and check his rights
+    // Invoke local user and check his rights.
     if ($auth_response = invoke_local_user((array)$user)) {
         if ($json_response) {
             return $auth_response;
@@ -44,8 +57,8 @@ function mnetadmin_rpc_upgrade($user, $json_response = true) {
     $response = new stdclass();
     $response->status = RPC_SUCCESS;
 
-    require("$CFG->dirroot/version.php");       // defines $version, $release, $branch and $maturity
-    $CFG->target_release = $release;            // used during installation and upgrades
+    require("$CFG->dirroot/version.php");       // Defines $version, $release, $branch and $maturity.
+    $CFG->target_release = $release;            // Used during installation and upgrades.
 
     if ($version < $CFG->version) {
         $response->status = RPC_FAILURE_RUN;
@@ -57,7 +70,7 @@ function mnetadmin_rpc_upgrade($user, $json_response = true) {
             return $response;
         }
     }
-    
+
     $oldversion = "$CFG->release ($CFG->version)";
     $newversion = "$release ($version)";
 
@@ -70,7 +83,6 @@ function mnetadmin_rpc_upgrade($user, $json_response = true) {
         }
     }
 
-    // debug_trace('Remote Upgrade : Environment check');
     list($envstatus, $environment_results) = check_moodle_environment(normalize_version($release), ENV_SELECT_NEWER);
     if (!$envstatus) {
         $response->status = RPC_FAILURE_RUN;
@@ -85,7 +97,6 @@ function mnetadmin_rpc_upgrade($user, $json_response = true) {
     }
 
     // Test plugin dependencies.
-    // debug_trace('Remote Upgrade : Plugins check');
     $failed = array();
     if (!plugin_manager::instance()->all_plugins_ok($version, $failed)) {
         $response->status = RPC_FAILURE_RUN;
@@ -99,29 +110,29 @@ function mnetadmin_rpc_upgrade($user, $json_response = true) {
     }
 
     ob_start();
-    // debug_trace('Remote Upgrade : Upgrade core');
+
     if ($version > $CFG->version) {
         upgrade_core($version, false);
     }
     set_config('release', $release);
     set_config('branch', $branch);
-    
-    // unconditionally upgrade
-    // debug_trace('Remote Upgrade : Upgrade other');
+
+    // Unconditionally upgrade.
+
     upgrade_noncore(false);
-    
-    // log in as admin - we need doanything permission when applying defaults
-    // debug_trace('Remote Upgrade : Turning ADMIN ');
+
+    // Log in as admin - we need doanything permission when applying defaults.
+
     session_set_user(get_admin());
-    
-    // apply all default settings, just in case do it twice to fill all defaults
-    // debug_trace('Remote Upgrade : Applying settings ');
-    admin_apply_default_settings(NULL, false);
-    admin_apply_default_settings(NULL, false);
+
+    // Apply all default settings, just in case do it twice to fill all defaults.
+
+    admin_apply_default_settings(null, false);
+    admin_apply_default_settings(null, false);
     ob_end_clean();
 
     $response->message = vmoodle_get_string('upgradecomplete', 'vmoodleadminset_upgrade', $newversion);
-        
+
     if ($json_response){
         return json_encode($response);
     } else {

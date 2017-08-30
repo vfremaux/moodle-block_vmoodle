@@ -3,14 +3,6 @@ VMoodle block
 
 Implements a packaged virtualization control feature for large "Moodle Arrays" 
 
-Version 2015062000
-=============================
-
-This is a major architecture change. All main processes for VMoodling are
-deferered to the local_vmoodle plugin.
-
-
-
 Important requirements for VMoodling :
 
 Version 2014071301 summary
@@ -189,10 +181,10 @@ function mnet_get_public_key($uri, $application=null, $force=0) {
     // check this first
     // cache location of key must be bypassed when we need an automated renew.
     if (!$force){
-        $key = mnet_set_public_key($uri);
-        if ($key != false) {
-            return $key;
-        }
+	    $key = mnet_set_public_key($uri);
+	    if ($key != false) {
+	        return $key;
+	    }
     }
 // /PATCH
 
@@ -241,12 +233,12 @@ this kind of generic binding.
     ServerAdmin webmaster@eisti.fr
     ServerName %mastermoodlehost%
     ServerAlias *.%mastermoodledomain%
-    VirtualDocumentRoot "D:/wwwroot/%moodledir%"
+	VirtualDocumentRoot "D:/wwwroot/%moodledir%"
     ErrorLog logs/vmoodle_common-error_log
     CustomLog logs/vmoodle_common-access_log common
 </VirtualHost>
 
-For example :
+For example : 
 
 the master moodle site could be : 
 
@@ -290,13 +282,3 @@ On large implementations running heavy moodle cron jobs or a lot
 of VMoodles, it can be a good idea to make cron run on a spare little 
 server that can run the codebase and has access to the database pool.
 
-Using admin scripts in a VMoodle Configuration
-##############################################
-
-As standard scripts do not know anything of virtualisation, and command line scripts
-cannot rely on SERVER_NAME or other HTTP environment variables, most of the admin/cli 
-scripts have been adapted for a VMoodle environment and reside in blocks/vmoodle/cli
-directory.
-
-Use them adding an additional --host options with the current wwwroot of the instance
-you want to address.

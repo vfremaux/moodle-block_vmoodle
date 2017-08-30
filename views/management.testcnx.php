@@ -17,7 +17,7 @@
 /**
  * Tests database connection.
  *
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  * @author Moheissen Fabien (fabien.moheissen@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL

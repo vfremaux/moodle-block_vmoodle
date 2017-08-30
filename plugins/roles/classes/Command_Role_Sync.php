@@ -1,26 +1,41 @@
 <?php
-
-namespace vmoodleadminset_roles;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \block_vmoodle\commands\Command_Parameter;
-Use \StdClass;
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Describes a role syncrhonisation command.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_roles;
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \block_vmoodle\commands\Command_Parameter;
+use \StdClass;
+
 class Command_Role_Sync extends Command {
 
     /**
      * Constructor.
-     * @throws                Command_Exception.
+     * @throws Command_Exception.
      */
-    function __construct() {
+    public function __construct() {
         global $DB;
 
         // Getting command description.
@@ -44,10 +59,10 @@ class Command_Role_Sync extends Command {
 
     /**
      * Execute the command.
-     * @param    $hosts        mixed            The host where run the command (may be wwwroot or an array).
-     * @throws                Command_Exception
+     * @param mixed $hosts The host where run the command (may be wwwroot or an array).
+     * @throws Command_Exception
      */
-    function run($hosts) {
+    public function run($hosts) {
         global $CFG, $USER;
 
         // Adding constants.
@@ -85,7 +100,8 @@ class Command_Role_Sync extends Command {
         $rpc_client = new \block_vmoodle\XmlRpc_Client();
         $rpc_client->set_method('blocks/vmoodle/plugins/roles/rpclib.php/mnetadmin_rpc_get_role_capabilities');
         $rpc_client->add_param($role, 'string');
-        // Checking result
+
+        // Checking result.
         if (!($rpc_client->send($mnet_host) && ($response = json_decode($rpc_client->response)) && $response->status == RPC_SUCCESS)) {
 
             // Creating response.
@@ -101,14 +117,14 @@ class Command_Role_Sync extends Command {
                 ob_flush();
                 echo '</pre>';
             }
-            // Saving results
+            // Saving results.
             foreach ($hosts as $host => $name) {
                 $this->results[$host] = $response;
             }
             return;
         }
         // Getting role configuration.
-        $role_capabilities = (array)$response->value;        // Beware ! xmlrpc fails to return associativ array. Should be casted !
+        $role_capabilities = (array)$response->value; // Beware ! xmlrpc fails to return associativ array. Should be casted !
         unset($response);
 
         // Removing not set capabilities for the role.
@@ -144,7 +160,7 @@ class Command_Role_Sync extends Command {
 
         // Sending requests.
         foreach ($mnet_hosts as $mnet_host) {
-            // Sending request
+            // Sending request.
             if (!$rpc_client->send($mnet_host)) {
                 $response = new stdclass;
                 $response->status = MNET_FAILURE;
@@ -175,7 +191,7 @@ class Command_Role_Sync extends Command {
      * @return mixed The result or null if result does not exist.
      * @throws Command_Exception.
      */
-    function getResult($host = null, $key = null) {
+    public function getResult($host = null, $key = null) {
 
         // Checking if command has been runned.
         if (!$this->isRunned()) {
@@ -191,7 +207,7 @@ class Command_Role_Sync extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;

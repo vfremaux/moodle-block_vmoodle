@@ -16,12 +16,12 @@
 
 /**
  * Manages the wizard of pool administration.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  */
- 
+
 Use \block_vmoodle\commands\Command;
 Use \block_vmoodle\commands\Command_Exception;
 Use \block_vmoodle\commands\Command_Category;
@@ -132,9 +132,19 @@ switch ($action) {
         // Checking uploaded file.
         $advancedcommand_form = new AdvancedCommand_Form();
         $advancedcommand_upload_form = new AdvancedCommand_Upload_Form();
-        if ($file_content = $advancedcommand_upload_form->get_file_content('script')){
-            $advancedcommand_form->set_data(array('sqlcommand' => $file_content));
+
+        $usercontext = context_user::instance($USER->id);
+        if ($data = $advancedcommand_upload_form->get_data()) {
+            $filepickerid = $data['script'];
+            $fs = get_file_storage();
+            $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $filepickerid, 'itemid, filepath, filename', false);
+            if (!empty($files)) {
+                $sqlscriptfile = array_pop($files);
+            }
+
+            $advancedcommand_form->set_data(array('sqlcommand' => $sqlscriptfile->get_content()));
         }
+
         break;
 
     // Getting available platforms by their original value.
@@ -281,11 +291,11 @@ switch ($action) {
         $command = unserialize($SESSION->vmoodle_sa['command']);
 
         // Getting platform.
-        $platform = required_param('platform', PARAM_URL);
+        $platform = urldecode(required_param('platform', PARAM_RAW));
         $available_platforms = get_available_platforms();
 
         if (!array_key_exists($platform, $available_platforms)) {
-            return -1;
+            throw(new Exception(get_string('errorplatformnotavailable', 'block_vmoodle', $platform)));
         }
 
         // Running command again on single host.

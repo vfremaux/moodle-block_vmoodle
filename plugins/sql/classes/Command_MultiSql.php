@@ -1,18 +1,33 @@
 <?php
-
-namespace vmoodleadminset_sql;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \StdClass;
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Describes meta-administration multiple SQL (script) command.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.Fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_sql;
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \StdClass;
+
 class Command_MultiSql extends Command {
 
     /**
@@ -26,36 +41,36 @@ class Command_MultiSql extends Command {
     private $returned;
 
     /**
-     * if commands has place holders, they are converted into Moodle SQL named variables 
+     * if commands has place holders, they are converted into Moodle SQL named variables
      */
     private $values;
 
     /**
      * Constructor.
-     * @param    $name                string                Command's name.
-     * @param    $description        string                Command's description.
-     * @param    $sql                string                SQL command.
-     * @param    $parameters            mixed                Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
-     * @param    $rpcommand            Command            Retrieve platforms command (optional / could be null or Command object).
-     * @throws    Command_Exception
+     * @param string $name Command's name.
+     * @param string $description Command's description.
+     * @param string $sql SQL command.
+     * @param mixed $parameters Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
+     * @param Command $rpcommand Retrieve platforms command (optional / could be null or Command object).
+     * @throws Command_Exception
      */
     public function __construct($name, $description, $sqls, $parameters = null, $rpcommand = null) {
         global $vmcommands_constants;
 
         // Creating Command.
         parent::__construct($name, $description, $parameters, $rpcommand);
-        // Checking SQL command
+        // Checking SQL command.
         if (empty($sqls)) {
             throw new Command_Sql_Exception('sqlemtpycommand', $this->name);
         } else {
-            // Looking for parameters
+            // Looking for parameters.
             preg_match_all(Command::placeholder, $sqls, $sql_vars);
-            // Checking parameters to show
+            // Checking parameters to show.
             foreach($sql_vars[2] as $key => $sql_var) {
                 $is_param = !(empty($sql_vars[1][$key]));
                 if (!$is_param && !array_key_exists($sql_var, $vmcommands_constants)) {
                     throw new Command_Sql_Exception('sqlconstantnotgiven', (object)array('constant_name' => $sql_var, 'command_name' => $this->name));
-                } elseif ($is_param && !array_key_exists($sql_var, $this->parameters)) {
+                } else if ($is_param && !array_key_exists($sql_var, $this->parameters)) {
                     throw new Command_Sql_Exception('sqlparameternotgiven', (object)array('parameter_name' => $sql_var, 'command_name' => $this->name));
                 }
             }
@@ -67,8 +82,8 @@ class Command_MultiSql extends Command {
 
     /**
      * Execute the command.
-     * @param    $host        mixed            The hosts where run the command (may be wwwroot or an array).
-     * @throws                Command_Sql_Exception
+     * @param mixed $host The hosts where run the command (may be wwwroot or an array).
+     * @throws Command_Sql_Exception
      */
     public function run($hosts) {
         global $CFG, $USER;
@@ -106,7 +121,6 @@ class Command_MultiSql extends Command {
         }
 
         // Getting command.
-        // $command = $this->isReturned();
 
         // Creating XMLRPC client.
         $rpc_client = new \block_vmoodle\XmlRpc_Client();
@@ -114,10 +128,10 @@ class Command_MultiSql extends Command {
         $rpc_client->add_param($this->_getGeneratedCommand(), 'string');
         $rpc_client->add_param($this->values, 'array');
         $rpc_client->add_param(false, 'boolean');
-        $rpc_client->add_param(true, 'boolean'); // telling other side we are a multiple command
+        $rpc_client->add_param(true, 'boolean'); // Telling other side we are a multiple command.
 
         // Sending requests.
-        foreach($mnet_hosts as $mnet_host) {
+        foreach ($mnet_hosts as $mnet_host) {
             // Sending request.
             if (!$rpc_client->send($mnet_host)) {
                 $response = new StdClass();
@@ -160,7 +174,7 @@ class Command_MultiSql extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;

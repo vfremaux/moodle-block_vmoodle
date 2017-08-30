@@ -32,19 +32,20 @@ function vmoodle_upgrade_subplugins_modules($startcallback, $endcallback, $verbo
         foreach ($plugindirs as $dir) {
             $plug = basename($dir);
             $fullplug = $dir;
-            
-            if ($plug === 'CVS') {   // Someone has unzipped the template, ignore it.
+
+            if ($plug === 'CVS') {
+                // Someone has unzipped the template, ignore it.
                 continue;
             }
-    
+
             if ($plug === 'NEWMODULE') {   // Someone has unzipped the template, ignore it.
                 continue;
             }
 
             // Reset time so that it works when installing a large number of plugins.
             set_time_limit(600);
-            $component = clean_param($type.'_'.$plug, PARAM_COMPONENT); // standardised plugin name
-    
+            $component = clean_param($type.'_'.$plug, PARAM_COMPONENT); // Standardised plugin name.
+
             // Check plugin dir is valid name.
             if (empty($component)) {
                 throw new plugin_defective_exception($type.'_'.$plug, 'Invalid plugin directory name.');
@@ -211,7 +212,7 @@ function vmoodle_uninstall_plugins() {
             if ($plug === 'CVS') {   // Someone has unzipped the template, ignore it.
                 continue;
             }
-    
+
             if ($plug === 'NEWMODULE') {   // Someone has unzipped the template, ignore it.
                 continue;
             }
@@ -360,7 +361,7 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
             if (is_string($method)) {
                 $dataobject->functionname = $method;
 
-            } elseif (is_array($method)) { // Wants to override file or class.
+            } else if (is_array($method)) { // Wants to override file or class.
                 $dataobject->functionname = $method['method'];
                 $dataobject->classname     = $method['classname'];
                 $dataobject->filename      = $method['filename'];
@@ -379,7 +380,7 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
                 if (!array_key_exists($key, $cachedclasses)) { // Look to see if we've already got a reflection object.
                     try {
                         $cachedclasses[$key] = Zend_Server_Reflection::reflectClass($dataobject->classname);
-                    } catch (Zend_Server_Reflection_Exception $e) { // catch these and rethrow them to something more helpful
+                    } catch (Zend_Server_Reflection_Exception $e) { // Catch these and rethrow them to something more helpful.
                         throw new moodle_exception('installreflectionclasserror', 'mnet', '', (object)array('method' => $dataobject->functionname, 'class' => $dataobject->classname, 'error' => $e->getMessage()));
                     }
                 }
@@ -387,7 +388,7 @@ function vmoodle_upgrade_plugin_mnet_functions($component, $path) {
                 if (!$r->hasMethod($dataobject->functionname)) {
                     throw new moodle_exception('installnosuchmethod', 'mnet', '', (object)array('method' => $dataobject->functionname, 'class' => $dataobject->classname));
                 }
-                // stupid workaround for zend not having a getMethod($name) function
+                // Stupid workaround for zend not having a getMethod($name) function.
                 $ms = $r->getMethods();
                 foreach ($ms as $m) {
                     if ($m->getName() == $dataobject->functionname) {

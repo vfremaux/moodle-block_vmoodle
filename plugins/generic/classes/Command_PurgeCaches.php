@@ -14,35 +14,42 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace vmoodleadminset_generic;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \StdClass;
-
 /**
  * Describes meta-administration plugin's command for Maintenance setup.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_generic;
+
+defined('MOODLE_INTERNAL') || die();
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \StdClass;
+
 class Command_PurgeCaches extends Command {
 
-    /** maintenance message. Sets maintenance mode off if empty */
+    /**
+     * maintenance message. Sets maintenance mode off if empty
+     */
     private $message;
 
-    /** If command's result should be returned */
+    /**
+     * If command's result should be returned
+     */
     private $returned;
 
     /**
      * Constructor.
-     * @param    $name                string                Command's name.
-     * @param    $description        string                Command's description.
-     * @param    $sql                string                SQL command.
-     * @param    $parameters            mixed                Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
-     * @param    $rpcommand            Command            Retrieve platforms command (optional / could be null or Command object).
-     * @throws    Command_Exception
+     * @param string $name Command's name.
+     * @param string $description Command's description.
+     * @param string $sql SQL command.
+     * @param mixed $parameters Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
+     * @param Command $rpcommand Retrieve platforms command (optional / could be null or Command object).
+     * @throws Command_Exception
      */
     public function __construct($name, $description, $parameters = null, $rpcommand = null) {
         global $vmcommands_constants;
@@ -50,11 +57,11 @@ class Command_PurgeCaches extends Command {
         // Creating Command.
         parent::__construct($name, $description, $parameters, $rpcommand);
     }
-    
+
     /**
      * Execute the command.
-     * @param    $host        mixed            The hosts where run the command (may be wwwroot or an array).
-     * @throws                Command_Maintenance_Exception
+     * @param mixed $host The hosts where run the command (may be wwwroot or an array).
+     * @throws Command_Maintenance_Exception
      */
     public function run($hosts) {
         global $CFG, $USER;
@@ -94,7 +101,7 @@ class Command_PurgeCaches extends Command {
 
         // Sending requests.
         foreach ($mnet_hosts as $mnet_host) {
-            // Sending request
+            // Sending request.
             if (!$rpc_client->send($mnet_host)) {
                 $response = new StdClass();
                 $response->status = RPC_FAILURE;
@@ -107,7 +114,7 @@ class Command_PurgeCaches extends Command {
             } else {
                 $response = json_decode($rpc_client->response);
             }
-            // Recording response
+            // Recording response.
             $responses[$mnet_host->wwwroot] = $response;
         }
 
@@ -117,9 +124,9 @@ class Command_PurgeCaches extends Command {
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @throws                Command_Sql_Exception
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @throws Command_Sql_Exception
      */
     public function getResult($host = null, $key = null) {
         // Checking if command has been runned.
@@ -136,7 +143,7 @@ class Command_PurgeCaches extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;
@@ -153,7 +160,7 @@ class Command_PurgeCaches extends Command {
 
     /**
      * Set if the command's result is returned.
-     * @param    $returned            boolean                True if the command's result should be returned, false otherwise.
+     * @param boolean $returned True if the command's result should be returned, false otherwise.
      */
     public function setReturned($returned) {
         $this->returned = $returned;

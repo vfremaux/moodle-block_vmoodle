@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A fixture worker will play a script after 
+ * A fixture worker will play a script after
  */
 
 define('CLI_SCRIPT', true);

@@ -50,8 +50,8 @@ if ($options['help']) {
     $help =
 "Command line VMoodle Configuration Files Extractor.
 
-This script extracts physical config files for playing vmoodle as 
-main independant hosts. This is usefull for using CLI upgrades on 
+This script extracts physical config files for playing vmoodle as
+main independant hosts. This is usefull for using CLI upgrades on
 each VMoodle.
 
 Please note you must execute this script with the same uid as apache!

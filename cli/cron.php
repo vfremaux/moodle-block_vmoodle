@@ -44,7 +44,7 @@ list($options, $unrecognized) = cli_get_params(array('help' => false, 'host' => 
 
 if ($unrecognized) {
     $unrecognized = implode("\n  ", $unrecognized);
-    cli_error(get_string('cliunknowoption', 'admin', $unrecognized));
+    cli_error("Unkown CLI option : $unrecognized");
 }
 
 if ($options['help']) {
@@ -71,6 +71,6 @@ if (!empty($options['host'])) {
 
 // Replay full config whenever. If vmoodle switch is armed, will switch now config.
 require(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
-echo('Config check : playing for '.$CFG->wwwroot);
+mtrace('Config check : playing for '.$CFG->wwwroot);
 
 cron_run();

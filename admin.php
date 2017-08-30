@@ -15,11 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * admin.php
- * 
  * This file is the administration page of super-administration.
  *
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
@@ -29,7 +27,8 @@
 require_once('../../config.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 
-// Checking login.
+// Security.
+
 require_login();
 
 // Printing headers.

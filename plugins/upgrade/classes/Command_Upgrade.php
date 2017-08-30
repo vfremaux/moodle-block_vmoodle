@@ -1,12 +1,27 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace vmoodleadminset_upgrade;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \block_vmoodle\commands\Command_Parameter;
-Use \StdClass;
 
-require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \block_vmoodle\commands\Command_Parameter;
+use \StdClass;
+
+require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
 
 if (!defined('RPC_SUCCESS')) {
     define('RPC_TEST', 100);
@@ -14,7 +29,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE', 500);
     define('RPC_FAILURE_USER', 501);
     define('RPC_FAILURE_CONFIG', 502);
-    define('RPC_FAILURE_DATA', 503); 
+    define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
     define('RPC_FAILURE_RECORD', 520);
     define('RPC_FAILURE_RUN', 521);
@@ -29,7 +44,7 @@ if (!defined('MNET_FAILURE')) {
 
 /**
  * Describes a platform update command.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
@@ -44,7 +59,7 @@ class Command_Upgrade extends Command {
 
     /**
      * Constructor.
-     * @throws                Command_Exception.
+     * @throws Command_Exception.
      */
     public function __construct() {
 
@@ -90,43 +105,21 @@ class Command_Upgrade extends Command {
         $rpc_client = new \block_vmoodle\XmlRpc_Client();
         $rpc_client->set_method('blocks/vmoodle/plugins/upgrade/rpclib.php/mnetadmin_rpc_upgrade');
 
-        // Sending requests
+        // Sending requests.
         foreach ($mnet_hosts as $mnet_host) {
 
-            /**
-            * just for testing
-            if ($mnet_host->wwwroot == $CFG->wwwroot){
-                require_once $CFG->dirroot.'/blocks/vmoodle/plugins/upgrade/rpclib.php';
-                if (!($user_mnet_host = $DB->get_record('mnet_host', array('id' => $USER->mnethostid))))
-                    throw new Command_Exception('unknownuserhost');
-                $user = array(
-                            'username' => $USER->username,
-                            'remoteuserhostroot' => $user_mnet_host->wwwroot,
-                            'remotehostroot' => $CFG->wwwroot
-                        );
-                $response = mnetadmin_rpc_upgrade($user, true);
-                $responses[$mnet_host->wwwroot] = $response;
-                continue;
-            }
-            */
-            
-            // Sending request
+            // Sending request.
             if (!$rpc_client->send($mnet_host)) {
                 $response = new StdClass();
                 $response->status = RPC_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
-                if (debugging()) {
-                    // echo '<pre>';
-                    // var_dump($rpc_client);
-                    // echo '</pre>';
-                }
             } else {
                 $response = json_decode($rpc_client->response);
             }
             // Recording response.
             $responses[$mnet_host->wwwroot] = $response;
         }
-        
+
         // Saving results.
         $this->results = $responses + $this->results;
     }
@@ -154,7 +147,7 @@ class Command_Upgrade extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return '';

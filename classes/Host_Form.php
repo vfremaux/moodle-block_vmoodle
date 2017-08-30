@@ -26,6 +26,7 @@ namespace block_vmoodle;
 require_once($CFG->libdir.'/formslib.php');
 
 class Host_Form extends \moodleform {
+
     /**
      * Action to call from controller.
      */
@@ -90,14 +91,12 @@ class Host_Form extends \moodleform {
         $mform->addHelpButton('description', 'description', 'block_vmoodle');
         $mform->setType('description', PARAM_TEXT);
 
-        if ($this->isInAddMode()) {
-            // Host's name.
-            $elmname = get_string('vhostname', 'block_vmoodle');
-            $mform->addElement('text', 'vhostname', $elmname, ($this->mode == 'edit' ? 'disabled="disabled" ' : '').$size_input_text);
-            $mform->addHelpButton('vhostname', 'vhostname', 'block_vmoodle');
-            $mform->addElement('checkbox', 'forcedns', get_string('forcedns', 'block_vmoodle'));
-            $mform->setType('vhostname', PARAM_URL);
-        }
+        // Change : Let us change the URL if needed.
+        $elmname = get_string('vhostname', 'block_vmoodle');
+        $mform->addElement('text', 'vhostname', $elmname, $size_input_text);
+        $mform->addHelpButton('vhostname', 'vhostname', 'block_vmoodle');
+        $mform->addElement('checkbox', 'forcedns', get_string('forcedns', 'block_vmoodle'));
+        $mform->setType('vhostname', PARAM_URL);
 
         $mform->closeHeaderBefore('dbform');
 
@@ -189,7 +188,7 @@ class Host_Form extends \moodleform {
 
         // Services strategy.
         $services_strategies = array(
-            'default' => get_string('servicesstrategydefault', 'block_vmoodle'), 
+            'default' => get_string('servicesstrategydefault', 'block_vmoodle'),
             'subnetwork' => get_string('servicesstrategysubnetwork', 'block_vmoodle')
         );
         $mform->addElement('select', 'services', get_string('servicesstrategy', 'block_vmoodle'), $services_strategies);
@@ -218,7 +217,6 @@ class Host_Form extends \moodleform {
             $mform->addRule('vhostname', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
             $mform->addRule('vdbhost', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
             $mform->addRule('vdblogin', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
-            //$mform->addRule('vdbpass', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
             $mform->addRule('vdbname', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
             $mform->addRule('vdbprefix', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
             $mform->addRule('vdatapath', get_string('addforminputtexterror', 'block_vmoodle'), 'required', null, 'client');
@@ -268,8 +266,10 @@ class Host_Form extends \moodleform {
             }
         }
 
-        // ATTENTION Checks if user has entered a datapath with only one backslash between each folder
-        // and/or file.
+        /*
+         * ATTENTION Checks if user has entered a datapath with only one backslash between each folder
+         * and/or file.
+         */
         if (isset($CFG->ostype)
                 && ($CFG->ostype == 'WINDOWS')
                     && (preg_match('#\\\{3,}#', $data['vdatapath']) > 0)){
@@ -299,13 +299,13 @@ class Host_Form extends \moodleform {
                         b.vhostname = ?
                     AND
                         b.vhostname = m.wwwroot
-                " ; 
+                ";
                 $resultsqlrequest = $DB->get_record_sql($sql, array($data['vhostname']));
                 if (!empty($resultsqlrequest)) {
                     if($resultsqlrequest->deleted == 0) {
                         $errors['vhostname'] = get_string('badhostnamealreadyused', 'block_vmoodle');
                     } else {
-                        //Id the plateforme is deleted and the user want to reactivate the vhostname.
+                        // Id the plateforme is deleted and the user want to reactivate the vhostname.
                         if ($data['vtemplate'] == 0) {
                             $sql = "
                                 SELECT
@@ -382,7 +382,7 @@ class Host_Form extends \moodleform {
                 *
             FROM
                 {block_vmoodle}
-            WHERE 
+            WHERE
                 vhostname LIKE ?
         ";
         $block_vmoodles = $DB->get_records_sql($sql, array('%'.$vhostname));

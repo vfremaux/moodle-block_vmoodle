@@ -17,11 +17,12 @@
 /**
  * Form for editing a virtual host.
  *
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  * @author Moheissen Fabien (fabien.moheissen@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 // Print title (heading).
 echo $OUTPUT->heading(get_string('editvmoodle', 'block_vmoodle'));

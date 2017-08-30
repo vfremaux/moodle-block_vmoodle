@@ -76,7 +76,7 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none') {
     if ($force) {
         mtrace("forced mode");
     }
-    
+
     if ($havetorenew || $force) {
         mtrace("Local key will expire very soon. Renew MNET keys now !!...\n");
         // renew local key
@@ -107,18 +107,21 @@ if (!empty($CFG->mnet_key_autorenew) && $CFG->mnet_dispatcher_mode != 'none') {
                     $mnet_peer->updateparams->public_key_expires = $mnet_peer->check_common_name($currentkey);
                     $mnet_peer->commit();
                     mtrace('My key renewed at '.$peer->wwwroot.' till '.userdate($mnet_peer->public_key_expires));
-                    $trace .= userdate(time()).' KEY RENEW from '.$CFG->wwwroot.' to '.$peer->wwwroot." suceeded\n"; 
+                    if ($mnet_peer->public_key_expires < time()) {
+                        mtrace('Warning: detected that peer '.$peer->wwwroot.' was expired at '.userdate($mnet_peer->public_key_expires).' and needs renew');
+                    }
+                    $trace .= userdate(time()).' KEY RENEW from '.$CFG->wwwroot.' to '.$peer->wwwroot." suceeded\n";
                 } else {
                     mtrace('Failed renewing key with '.$peer->wwwroot."\n");
-                    $trace .= userdate(time()).' KEY RENEW from '.$CFG->wwwroot.' to '.$peer->wwwroot." failed\n"; 
+                    $trace .= userdate(time()).' KEY RENEW from '.$CFG->wwwroot.' to '.$peer->wwwroot." failed\n";
                 }
             }
-        }       
+        }
         set_config('mnet_autorenew_haveto', 0);
         $trace .= userdate(time()).' RESET KEY RENEW on '.$CFG->wwwroot."\n";
 
         /// record trace in trace file
-        if ($CFG->tracevmoodlekeyrenew) {
+        if (!empty($CFG->tracevmoodlekeyrenew)) {
             if ($TRACE = fopen($CFG->dataroot.'/vmoodle_renew.log', 'w+')) {
                 fputs($TRACE, $trace);
                 fclose($TRACE);

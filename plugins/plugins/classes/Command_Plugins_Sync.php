@@ -14,25 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace vmoodleadminset_plugins;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Parameter;
-Use \block_vmoodle\commands\Command_Exception;
-Use \StdClass;
-
 /**
  * Describes a command that allows synchronising plugin state.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_plugins;
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Parameter;
+use \block_vmoodle\commands\Command_Exception;
+use \StdClass;
+
 class Command_Plugins_Sync extends Command {
 
     /**
      * Constructor.
-     * @throws                Command_Exception.
+     * @throws Command_Exception.
      */
     function __construct() {
         global $DB;
@@ -44,7 +45,7 @@ class Command_Plugins_Sync extends Command {
         // Creating platform parameter. This is the source platform.
         $platform_param = new Command_Parameter('platform',    'enum', vmoodle_get_string('platformparamsyncdesc', 'vmoodleadminset_plugins'), null, get_available_platforms());
 
-        // Creating plugins type parameter. If this parameter has a value, 
+        // Creating plugins type parameter. If this parameter has a value,
         // then all plugins in this type will be synchronized
         $plugintypes = get_plugin_types();
         $plugintype_param = new Command_Parameter('plugintype', 'enum', vmoodle_get_string('plugintypeparamsyncdesc', 'vmoodleadminset_plugins'), null, $plugintypes);
@@ -55,8 +56,8 @@ class Command_Plugins_Sync extends Command {
 
     /**
      * Execute the command.
-     * @param    $hosts        mixed            The host where run the command (may be wwwroot or an array).
-     * @throws                Command_Exception
+     * @param mixed $hosts The host where run the command (may be wwwroot or an array).
+     * @throws Command_Exception
      */
     function run($hosts) {
         global $CFG, $USER;
@@ -125,7 +126,7 @@ class Command_Plugins_Sync extends Command {
         // Initializing responses.
         $responses = array();
 
-        // Creating peers
+        // Creating peers.
         $mnet_hosts = array();
         foreach ($hosts as $host => $name) {
             $mnet_host = new mnet_peer();
@@ -139,26 +140,20 @@ class Command_Plugins_Sync extends Command {
             }
         }
 
-        // Creating XMLRPC client
+        // Creating XMLRPC client.
         $rpc_client = new \block_vmoodle\XmlRpc_Client();
         $rpc_client->set_method('blocks/vmoodle/plugins/plugins/rpclib.php/mnetadmin_rpc_set_plugins_states');
-        $rpc_client->add_param($plugininfos, 'object'); // plugininfos structure
+        $rpc_client->add_param($plugininfos, 'object'); // Plugininfos structure.
 
         // Sending requests.
         foreach ($mnet_hosts as $mnet_host) {
 
-            // Sending request
+            // Sending request.
             if (!$rpc_client->send($mnet_host)) {
                 $response = new Stdclass();
                 $response->status = MNET_FAILURE;
                 $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
                 $response->error = 'Set plugin state failed : Remote call error';
-                if (debugging()) {
-                    echo '<pre>';
-                    var_dump($rpc_client);
-                    ob_flush();
-                    echo '</pre>';
-                }
             } else {
                 $response = json_decode($rpc_client->response);
             }
@@ -194,7 +189,7 @@ class Command_Plugins_Sync extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;

@@ -16,38 +16,33 @@
 
 /**
  * view.php
- * 
+ *
  * This file is the main page of vmoodle module which deals with
  * management et super-administration controlers.
  *
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  */
 // Adding requirements.
-require_once('../../config.php');
+require('../../config.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/debuglib.php');
 require_once($CFG->dirroot.'/mnet/lib.php');
 
-// Loading jQuery.
-global $JQUERYVERSION;
-if (empty($JQUERYVERSION)) {
-    $PAGE->requires->js('/blocks/vmoodle/js/lib/jquery-1.7.2.min.js');
-    $JQUERYVERSION = '1.7.2';
-}
- 
-// Loading javascript files.
+// Loading javascript files and jquery.
+$PAGE->requires->jquery();
 $PAGE->requires->js('/blocks/vmoodle/js/strings.php');
-$PAGE->requires->js ('/blocks/vmoodle/js/target_choice.js');
+$PAGE->requires->js('/blocks/vmoodle/js/target_choice.js');
 
-$PAGE->requires->css ('/blocks/vmoodle/theme/styles.php');
+$PAGE->requires->css('/blocks/vmoodle/theme/styles.php');
 
+// Declaring parameters.
 
-// Declaring parameters
 $view = optional_param('view', 'management', PARAM_TEXT);
 $action = optional_param('what', '', PARAM_TEXT);
 
-// Checking login
+// Security.
+
 $system_context = context_system::instance();
 require_login();
 
@@ -63,12 +58,12 @@ foreach ($plugins as $plugin) {
     }
 }
 
-// Printing headers
+// Printing headers.
 $strtitle = get_string('vmoodlemanager', 'block_vmoodle');
 
 $CFG->stylesheets[] = $CFG->wwwroot.'/blocks/vmoodle/theme/styles.php';
 
-// Generating header
+// Generating header.
 
 ob_start();
 $PAGE->set_context($system_context);
@@ -86,7 +81,7 @@ $PAGE->set_url($url,array('view' => $view,'what' => $action));
 
 echo $OUTPUT->header();
 
-// Checking rights
+// Checking rights.
 require_capability('block/vmoodle:managevmoodles', context_system::instance());
 
 // Adding heading.

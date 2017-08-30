@@ -1,13 +1,27 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// Capabilities
+// Capabilities.
 
 $string['vmoodle:execute'] = 'Execute meta-administration commands'; // @CORE
 $string['vmoodle:managevmoodles'] = 'Manage moodle satellites'; // @CORE
 $string['vmoodle:myaddinstance'] = 'Can add instance to my pages'; // @CORE
 $string['vmoodle:addinstance'] = 'Can add instance'; // @CORE
 
-// Block strings
+// Block strings.
 
 $string['addall'] = 'Add all';
 $string['addformdbgroup'] = 'Database ';
@@ -21,6 +35,7 @@ $string['addtoselection'] = 'Add to selection';
 $string['addvmoodle'] = 'Define a new virtual moodle';
 $string['administrate'] = 'Administrate';
 $string['administration'] = 'Administration';
+$string['allowmnetusersasadmin'] = 'Allow Mnet Users as being site admin';
 $string['advancedmode'] = 'Advanced mode';
 $string['assistedcommand'] = 'Assisted commands';
 $string['automateschema'] = 'Automate the scheme generation ';
@@ -83,7 +98,7 @@ $string['commandemptydescription'] = 'The command\'s description is empty.';
 $string['commandemptyname'] = 'The command\'s name is empty.';
 $string['commandformnotlinked'] = 'No command linked to the form.';
 $string['commandnotaparameter'] = 'One of parameters of the command {$a} is not a Vmoodle_Parameter object.';
-$string['commandnotexists'] = 'The command doesn\'t exist'; 
+$string['commandnotexists'] = 'The command doesn\'t exist';
 $string['commands'] = 'Commands';
 $string['commandsadministration'] = 'Commands administration:';
 $string['commandwrongparametertype'] = 'Parameters of the command {$a} aren\'t supported types.';
@@ -136,6 +151,8 @@ $string['errorbindingmnet'] = 'Error binding MNET services';
 $string['errorreactivetemplate'] = 'Check moodle data path et database name from the host';
 $string['errorsetupdb'] = 'Error when setting up the DB';
 $string['errorbaddirectorylocation'] = 'moodledata path should not contain blank spaces. Relocate dump template location by changing your moodledata location in the filesystem';
+$string['errorinvalidsessionorplatform'] = 'VMoodle session data were invalid or no platform was given.';
+$string['errorplatformnotavailable'] = 'Platform {$a} not available';
 $string['failedplatforms'] = 'Failed platforms:';
 $string['filter'] = 'Filter';
 $string['fixcommand'] = 'Fix command';
@@ -147,7 +164,7 @@ $string['hostexists'] = 'Host exists';
 $string['hostnameexists'] = 'Hostname exists';
 $string['hostsource'] = 'Hosts source';
 $string['insuffisantcapabilities'] = 'Insufficient capabilities';
-$string['key_autorenew_parms'] = 'Aumated MNET key renewal';
+$string['key_autorenew_parms'] = 'Automated MNET key renewal';
 $string['crons'] = 'Crons';
 $string['lastcron'] = 'Last cron';
 $string['lastcrongap'] = '&Delta;';
@@ -223,8 +240,10 @@ $string['removeall'] = 'Remove all';
 $string['removefromselection'] = 'Remove from selection';
 $string['renewallbindings'] = 'Renew all bindings';
 $string['retrieveplatforms'] = 'Retrieve platforms';
+$string['rpcstatus'] = 'Undefined status.';
 $string['rpcstatus100'] = 'Test command.';
 $string['rpcstatus200'] = 'Successfull command.';
+$string['rpcstatus404'] = 'RPC failure : target URL not found.';
 $string['rpcstatus500'] = 'RPC failure.';
 $string['rpcstatus501'] = 'No local account for calling user.';
 $string['rpcstatus502'] = 'Configuration failure.';
@@ -267,6 +286,9 @@ $string['tabpoolmanage'] = 'Pool management';
 $string['tabpoolsadmin'] = 'Pool administration';
 $string['tabpoolservices'] = 'Services strategy';
 $string['template'] = 'Template';
+$string['templatehead'] = 'Script Template';
+$string['templatetext'] = 'Script template text';
+$string['commentformat'] = 'Comment format';
 $string['testconnection'] = 'Database connection test';
 $string['testdatapath'] = 'Test MoodleData path';
 $string['tools'] = 'Tools';
@@ -322,9 +344,36 @@ $string['disableinstances'] = 'disable instances ';
 $string['enableinstances'] = 'enable instances ';
 $string['deleteinstances'] = 'destroy instances ';
 $string['deleteconfirm'] = 'Delete is NOT reversible. Data will be definitively destroyed. Continue?';
+$string['allowmnetusersasadmin'] = 'Allow mnet users to be site admins';
+$string['fromversion'] = 'Pattern match for origin version marker ';
+$string['toversion'] = 'Replace version pattern with';
+$string['clioperated'] = 'Operated by cli';
+$string['weboperated'] = 'Operated by web';
+$string['cronmode'] = 'Cron mode';
+$string['generatedscript'] = 'Script output';
+$string['generatecopyscripts'] = 'Generate scripts for copying';
+$string['generatecustomscripts'] = 'Generate custom scripts';
+$string['copyscripts'] = 'Scripts for mass copying moodle instances';
+$string['dbcopyscript'] = 'Scripts for copying databases';
+$string['backupdbcopyscript'] = 'Scripts for backuping databases';
+$string['datacopyscript'] = 'Scripts for copying user file volumes';
+$string['cronlines'] = 'Cron lines to add';
+$string['scriptgenerator'] = 'Script generator';
+$string['vdbs'] = 'Virtual dbs';
+$string['maindb'] = 'Main db';
+$string['vpaths'] = 'Virtual file paths';
+$string['mainpath'] = 'Main path';
+$string['generate'] = 'Generate';
+$string['adjustconfig'] = 'Adjust configuration file';
+$string['preupgrade'] = 'Pre Upgrade Transforms';
+$string['upgrade'] = 'Upgrade databases';
+$string['postupgrade'] = 'Post Upgrade Transforms';
+$string['makebackup'] = 'Make backup';
+$string['restorebackup'] = 'Restore backup';
+$string['dropbackup'] = 'Drop backup';
 
+// Help Strings.
 
-/*** Help Strings ***/
 $string['name'] = 'Name'; //@CORE
 $string['name_help'] = '  //@CORE
 <p><b>Public Name of the Instance</b></p>
@@ -350,7 +399,7 @@ $string['description_help'] = ' // @CORE
 <p>This text will be setup as base moodle description in the local
 instance datamodel. It may be updated after instance creation.</p>
 ';
- 
+
 
 $string['vhostname'] = 'Hostname'; // @CORE
 $string['vhostname_help'] = ' // @CORE
@@ -429,8 +478,8 @@ network settings will not be configurated.</p>
 <p>It can be possible to mix instances with and without the network.
 By default, all the instances activating the MNET network will be in the
 same MNET network.</p>
-';   
-   
+';
+
 $string['services_help'] = ' // @CORE
 <p><b>Services strategy</b></p>
 
@@ -446,7 +495,7 @@ without selecting a subnetwork, or when the virtual host disables MNET.</p>
 be synchronized with one actual member of the subnetwork. It is
 necessary to remember that all members of a subnetwork are synchronized
 in terms of services.</p>
-';   
+';
 
 $string['vtemplate_help'] = ' // @CORE
 <p><b>Vmoodle Template</b></p>
@@ -477,4 +526,16 @@ model, the template ask the presence of an additional "manifest" file,
 indicating web and system files roots of the host model. This indication
 allows the deployment algorithm to correct any absolute paths of the new
 instance.</p>
-';   
+';
+
+$string['templatetext_help'] = 'Write here the server script template with placeholders:
+
+<li>%WWWROOT% : Virtual site URL</li>
+<li>%DBHOST% : DB Host</li>
+<li>%DBUSER% : DB User</li>
+<li>%DBPASS% : DB Pass</li>
+<li>%DATAROOT% : Moodledata location</li>
+
+';
+
+

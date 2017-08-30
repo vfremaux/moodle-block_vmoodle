@@ -16,12 +16,13 @@
 
 /**
  * This library provides command for synchronize role capabilites.
- * 
- * @package block-vmoodle
+ *
+ * @package block_vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 global $STANDARD_PLUGIN_TYPES;
 

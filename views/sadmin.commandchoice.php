@@ -17,12 +17,13 @@
 /**
  * The first step of wizard.
  * Displays all assisted commands.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 // Loading the libraries.
 require_once $CFG->dirroot.'/blocks/vmoodle/classes/commands/Command_Form.php';

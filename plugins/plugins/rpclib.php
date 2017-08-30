@@ -16,12 +16,13 @@
 
 /**
  * Declare RPC functions for syncrolelib.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
@@ -33,7 +34,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE', 500);
     define('RPC_FAILURE_USER', 501);
     define('RPC_FAILURE_CONFIG', 502);
-    define('RPC_FAILURE_DATA', 503); 
+    define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
     define('RPC_FAILURE_RECORD', 520);
     define('RPC_FAILURE_RUN', 521);
@@ -55,7 +56,7 @@ define('VMOODLE_PLUGIN_DISABLE', 0);
 function mnetadmin_rpc_get_plugins_info($user, $plugintype, $json_response = true) {
     global $CFG, $USER, $DB;
 
-    // Invoke local user and check his rights
+    // Invoke local user and check his rights.
     if ($auth_response = invoke_local_user((array)$user, 'block/vmoodle:execute')) {
         if ($json_response) {
             return $auth_response;
@@ -121,8 +122,6 @@ function mnetadmin_rpc_get_plugins_info($user, $plugintype, $json_response = tru
 function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = true) {
     global $CFG, $USER, $DB;
 
-    // debug_trace("Plugin Set States: Entry point");
-
     // Creating response.
     $response = new Stdclass();
     $response->status = RPC_SUCCESS;
@@ -150,7 +149,7 @@ function mnetadmin_rpc_set_plugins_states($user, $plugininfos, $json_response = 
                 continue;
             }
 
-            $control = new $actionclass($infos['type'], $plugin);
+            $control = new $actionclass($plugin);
             $action = $infos['action'];
             $return = $control->action($action);
             if ($return !== 0) {

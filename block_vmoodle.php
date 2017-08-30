@@ -1,18 +1,31 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * Declare Vmoodle block.
- * 
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.fremaux@gmail.com)
  * @author Bruce Bujon (bruce.bujon@gmail.com)
- * @version Moodle 2.2
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-// Adding requirements
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
- 
-if (get_config('block_vmoodle_late_install')){
+
+if (get_config('block_vmoodle_late_install')) {
     set_config('block_vmoodle_late_install', 0);
     require_once $CFG->dirroot.'/blocks/vmoodle/db/install.php';
     xmldb_block_vmoodle_late_install();
@@ -36,6 +49,7 @@ class block_vmoodle extends block_base {
     public function preferred_width() {
         return 200;
     }
+
     /**
      * Check if the block have a configuration file.
      * @return boolean True if the block have a configuration file, false otherwise.
@@ -43,6 +57,7 @@ class block_vmoodle extends block_base {
     public function has_config() {
         return true;
     }
+
     /**
      * Define the applicable formats to the block.
      * @return array The aplicable formats to the block.
@@ -50,6 +65,7 @@ class block_vmoodle extends block_base {
     public function applicable_formats() {
         return array('site' => true, 'learning' => false, 'admin' => true);
     }
+
     /**
      * Return the block content.
      * @uses $CFG
@@ -57,17 +73,16 @@ class block_vmoodle extends block_base {
      */
     public function get_content() {
         global $CFG;
-        // Checking content cached
+        // Checking content cached.
         if ($this->content !== NULL)
             return $this->content;
-        // Creating new content
+        // Creating new content.
         $this->content = new stdClass;
         $this->content->footer = '';
-        // Getting context
-        //$context = context_block::instance(0); #WAFA #1.9                                           
+
         $context = context_block::instance($this->instance->id);
-           
-        // Setting content depending on capabilities
+
+        // Setting content depending on capabilities.
         if (isloggedin()) {
             if (has_capability('block/vmoodle:managevmoodles', $context)) {
                 $this->content->footer = '<a href="'.$CFG->wwwroot.'/blocks/vmoodle/view.php">'.get_string('administrate', 'block_vmoodle').'</a><br/>';
@@ -83,97 +98,46 @@ class block_vmoodle extends block_base {
      * Return status for all defined virtual moodles.
      * @return string Status for all defined virtual moodles.
      */
-    private function _print_status(){
+    private function _print_status() {
         global $DB;
-        // Initializing
+        // Initializing.
         $str = '';
-        // Getting virtual moodles
+        // Getting virtual moodles.
         $vmoodles = $DB->get_records('block_vmoodle');
-        // Creating table
+        // Creating table.
         if ($vmoodles) {
             $str = '<table>';
-            foreach($vmoodles as $vmoodle)
+            foreach ($vmoodles as $vmoodle) {
                 $str .= '<tr><td><a href="'.$vmoodle->vhostname.'" target="_blank">'.$vmoodle->shortname.' - '.$vmoodle->name.'</a></td><td>'.vmoodle_print_status($vmoodle, true).'</td></tr>';
+            }
             $str .= '</table>';
         }
-        // Returning table
+        // Returning table.
         return $str;
     }
 
-    function after_install() {
-   
-    }
-
-    /**
-     * Remove the XMLRPC service.
-     * @return boolean TRUE if the deletion is successfull, FALSE otherwise.
-     */
-    function before_delete() {
-        global $CFG, $DB, $OUTPUT;
-        // Adding requirements
-        include_once ($CFG->libdir.'/accesslib.php');
-        /**
-        * remove application record
-        */
-        $DB->delete_records('mnet_application', array('name' => 'vmoodle'));
-        /*
-         * Uninstalling plugin libraries
-         */
-        // Getting all plugins
-        $plugins = get_list_of_plugins('blocks/vmoodle/plugins');
-        foreach($plugins as $plugin) {
-            // Call custom uninstall plugin function
-            if (file_exists($CFG->dirroot.'/blocks/vmoodle/plugins/'.$plugin.'/lib.php')){
-                include_once($CFG->dirroot.'/blocks/vmoodle/plugins/'.$plugin.'/lib.php');
-                $uninstall_function = $plugin.'_uninstall';
-                if (function_exists($uninstall_function) && !$uninstall_function()) {
-                    echo $OUTPUT->notification('The plugin "'.$plugin.'" was not correctly uninstalled.');
-                }
-            }
-            // Remove installed version from config
-            unset_config('vmoodle_lib_'.$plugin.'_version');
-        }
-        // Removing module configuration
-        unset_config('block_vmoodle_automatedschema');
-        unset_config('block_vmoodle_host_source');
-        unset_config('block_vmoodle_organization');
-        unset_config('block_vmoodle_organization_email');
-        unset_config('block_vmoodle_organization_unit');
-        unset_config('block_vmoodle_services_strategy');
-        unset_config('block_vmoodle_vhostname');
-        unset_config('block_vmoodle_vdatapathbase');
-        unset_config('block_vmoodle_vdbbasename');
-        unset_config('block_vmoodle_vdbhost');
-        unset_config('block_vmoodle_vdblogin');
-        unset_config('block_vmoodle_vdbtype');
-        unset_config('block_vmoodle_vdbpass');
-        unset_config('block_vmoodle_vdbpersist');
-        unset_config('block_vmoodle_vdbprefix');
-        unset_config('block_vmoodle_vmoodleip');
-        // Returning result
-        return true;
-    }
     /**
      * Update subplugins.
-     * @param string $return The URL to prompt to the user to continue. 
+     * @param string $return The URL to prompt to the user to continue.
      */
     public function update_subplugins($verbose) {
         global $DB;
-        
+
         upgrade_plugins('vmoodlelib', '', '', $verbose);
 
-        // fix wrongly twicked rpc paths
-        if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset%' ", array())){
-            foreach($rpc_shifted_defines as $rpc){
+        // Fix wrongly twicked rpc paths.
+        if ($rpc_shifted_defines = $DB->get_records_select('mnet_rpc', " xmlrpcpath LIKE 'vmoodleadminset%' ", array())) {
+            foreach ($rpc_shifted_defines as $rpc) {
                 $rpc->xmlrpcpath = str_replace('vmoodleadminset', 'blocks/vmoodle/plugins');
                 $DB->update_record('mnet_rpc', $rpc);
             }
         }
     }
 
-    public function cron(){
-        global $CFG;
-        global $MNET;
-        include "mnetcron.php";
+    public function cron() {
+        global $CFG, $MNET;
+
+        include($CFG->dirroot.'/blocks/vmoodle/mnetcron.php');
+        return true;
     }
 }

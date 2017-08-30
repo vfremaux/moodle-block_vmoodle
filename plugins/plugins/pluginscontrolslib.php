@@ -42,10 +42,10 @@ abstract class plugin_remote_control {
     protected $plugin;
 
     /**
-     * @param string $fqplugin a fully qualified plugin with type
+     * @param string $plugin a fully qualified plugin with type
      *
      */
-    function __construct($type, $plugin) {
+    public function __construct($type, $plugin) {
         $this->type = $type;
         $this->plugin = $plugin;
     }
@@ -56,11 +56,15 @@ abstract class plugin_remote_control {
 
 class mod_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('mod', $plugin);
+    }
+
+    public function action($action) {
         global $DB;
 
         if (!$module = $DB->get_record('modules', array('name' => $this->plugin))) {
-            return get_string('moduledoesnotexist', 'error');
+            return get_string('moduledoesnotexist', 'error').': '.$this->plugin;
         }
 
         switch ($action) {
@@ -74,9 +78,9 @@ class mod_remote_control extends plugin_remote_control {
                     SELECT
                         DISTINCT course,
                         course
-                    FROM 
+                    FROM
                         {course_modules}
-                    WHERE 
+                    WHERE
                         visible = 1 AND
                         module = ?";
                 if ($courseids = $DB->get_records_sql($sql, array($module->id))) {
@@ -95,15 +99,17 @@ class mod_remote_control extends plugin_remote_control {
                          WHERE module=?";
                 $DB->execute($sql, array($module->id));
 
-                // clear the course modinfo cache for courses
-                // where we just deleted something
+                /*
+                 * clear the course modinfo cache for courses
+                 * where we just deleted something
+                 */
                 $sql = "
                     SELECT
                         DISTINCT course,
                         course
-                    FROM 
+                    FROM
                         {course_modules}
-                    WHERE 
+                    WHERE
                         visibleold = 1 AND
                         module = ?";
                 if ($courseids = $DB->get_records_sql($sql, array($module->id))) {
@@ -116,7 +122,7 @@ class mod_remote_control extends plugin_remote_control {
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         global $DB;
 
         if (!$module = $DB->get_record('modules', array('name' => $this->plugin))) {
@@ -129,7 +135,11 @@ class mod_remote_control extends plugin_remote_control {
 
 class block_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('block', $plugin);
+    }
+
+    public function action($action) {
         global $DB;
 
         if (!$block = $DB->get_record('block', array('name' => $this->plugin))) {
@@ -148,7 +158,7 @@ class block_remote_control extends plugin_remote_control {
         return 0;
     }
 
-    function is_enabled(){
+    public function is_enabled(){
         global $DB;
 
         if (!$block = $DB->get_record('block', array('name' => $this->plugin))) {
@@ -161,14 +171,18 @@ class block_remote_control extends plugin_remote_control {
 
 class message_remote_control extends plugin_remote_control{
 
-    function action($action){
+    public function __construct($plugin) {
+        parent::__construct('message', $plugin);
+    }
+
+    public function action($action) {
         global $DB;
 
         if (!$processor = $DB->get_record('message_processors', array('name' => $this->plugin))) {
             return get_string('outputdoesnotexist', 'message');
         }
 
-        switch($action){
+        switch ($action) {
             case 'enable':
                 $DB->set_field('message_processors', 'enabled', '1', array('id' => $processor->id));      // Enable output
                 break;
@@ -179,7 +193,7 @@ class message_remote_control extends plugin_remote_control{
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         global $DB;
 
         if (!$processor = $DB->get_record('message_processors', array('name' => $this->plugin))) {
@@ -192,37 +206,45 @@ class message_remote_control extends plugin_remote_control{
 
 class filter_remote_control extends plugin_remote_control{
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('filter', $plugin);
+    }
 
-        switch($action){
+    public function action($action) {
+
+        switch ($action) {
             case 'enable':
                 $newstate = TEXTFILTER_ON;
-                filter_set_global_state($this->fqplugin, $newstate);
+                filter_set_global_state($this->plugin, $newstate);
                 break;
             case 'disable':
                 $newstate = TEXTFILTER_OFF;
-                filter_set_global_state($this->fqplugin, $newstate);
+                filter_set_global_state($this->plugin, $newstate);
                 break;
         }
         return 0;
 
     }
 
-    function is_enabled(){
+    public function is_enabled() {
         return filter_is_enabled($this->plugin);
     }
 }
 
 class repository_remote_control extends plugin_remote_control{
 
-    function action($state){
+    public function __construct($plugin) {
+        parent::__construct('repository', $plugin);
+    }
+
+    public function action($state) {
 
         $repositorytype = repository::get_type_by_typename($this->plugin);
         if (empty($repositorytype)) {
             return get_string('invalidplugin', 'repository', $this->plugin);
         }
 
-        switch($action){
+        switch ($action) {
             case 'enable':
                 $repositorytype->update_visibility(true);
                 break;
@@ -233,7 +255,7 @@ class repository_remote_control extends plugin_remote_control{
         return 0;
     }
 
-    function is_enabled(){
+    public function is_enabled() {
         global $DB;
 
         $repositorytype = repository::get_type_by_typename($this->plugin);
@@ -245,16 +267,13 @@ class repository_remote_control extends plugin_remote_control{
     }
 }
 
-/*
-class plagiarism_remote_control extends plugin_remote_control{
-    function action($state){
-    }
-}
-*/
-
 class qbehaviour_remote_control extends plugin_remote_control{
 
-    function action($state){
+    public function __construct($plugin) {
+        parent::__construct('qbehaviour', $plugin);
+    }
+
+    public function action($state) {
 
         $behaviours = get_plugin_list('qbehaviour');
 
@@ -263,7 +282,7 @@ class qbehaviour_remote_control extends plugin_remote_control{
             SELECT
                 behaviour,
                 COUNT(1)
-            FROM 
+            FROM
                 {question_attempts}
             GROUP BY
                 behaviour
@@ -312,7 +331,7 @@ class qbehaviour_remote_control extends plugin_remote_control{
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
 
         $config = get_config('question');
         if (!empty($config->disabledbehaviours)) {
@@ -327,7 +346,11 @@ class qbehaviour_remote_control extends plugin_remote_control{
 
 class qtype_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('qtype', $plugin);
+    }
+
+    public function action($action) {
 
         $qtypes = question_bank::get_all_qtypes();
 
@@ -347,14 +370,18 @@ class qtype_remote_control extends plugin_remote_control {
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         return get_config($this->plugin . '_disabled', 'question');
     }
 }
 
 class portfolio_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('portfolio', $plugin);
+    }
+
+    public function action($action) {
 
         $instance = portfolio_instance($this->plugin);
         $current = $instance->get('visible');
@@ -362,7 +389,7 @@ class portfolio_remote_control extends plugin_remote_control {
             return get_error('cannotsetvisible', 'portfolio');
         }
 
-        switch($action){
+        switch ($action) {
             case 'enable':
                 $visible = 1;
                 break;
@@ -370,13 +397,13 @@ class portfolio_remote_control extends plugin_remote_control {
                 $visible = 0;
                 break;
         }
-    
+
         $instance->set('visible', $visible);
         $instance->save();
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         $instance = portfolio_instance($this->plugin);
         return $instance->get('visible');
     }
@@ -384,10 +411,14 @@ class portfolio_remote_control extends plugin_remote_control {
 
 class auth_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('auth', $plugin);
+    }
+
+    public function action($action) {
         global $CFG;
 
-        get_enabled_auth_plugins(true); // fix the list of enabled auths
+        get_enabled_auth_plugins(true); // Fix the list of enabled auths.
         if (empty($CFG->auth)) {
             $authsenabled = array();
         } else {
@@ -400,9 +431,9 @@ class auth_remote_control extends plugin_remote_control {
 
         switch ($action) {
             case 'enable':
-                // add to enabled list
+                // Add to enabled list.
                 if (!in_array($this->plugin, $authsenabled)) {
-                    $authsenabled[] = $auth;
+                    $authsenabled[] = $this->plugin;
                     $authsenabled = array_unique($authsenabled);
                     set_config('auth', implode(',', $authsenabled));
                 }
@@ -422,14 +453,14 @@ class auth_remote_control extends plugin_remote_control {
                 break;
         }
 
-        \core\session\manager::gc(); // remove stale sessions
+        \core\session\manager::gc(); // Remove stale sessions.
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         global $CFG;
 
-        get_enabled_auth_plugins(true); // fix the list of enabled auths
+        get_enabled_auth_plugins(true); // Fix the list of enabled auths.
         if (empty($CFG->auth)) {
             $authsenabled = array();
         } else {
@@ -442,7 +473,11 @@ class auth_remote_control extends plugin_remote_control {
 
 class courseformat_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('format', $plugin);
+    }
+
+    public function action($action) {
 
         $allplugins = plugin_manager::instance()->get_plugins();
         $formatplugins = $allplugins['format'];
@@ -477,7 +512,7 @@ class courseformat_remote_control extends plugin_remote_control {
 
 class editor_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function action($action) {
 
         // Get currently installed and enabled auth plugins.
         $available_editors = editors_get_available();
@@ -510,7 +545,7 @@ class editor_remote_control extends plugin_remote_control {
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         $active_editors = explode(',', $CFG->texteditors);
         return in_array($this->plugin, $active_editors);
     }
@@ -518,7 +553,11 @@ class editor_remote_control extends plugin_remote_control {
 
 class enrol_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('enrol', $plugin);
+    }
+
+    public function action($action) {
 
         $enabled = enrol_get_plugins(true);
         $all     = enrol_get_plugins(false);
@@ -538,14 +577,14 @@ class enrol_remote_control extends plugin_remote_control {
             case 'disable':
                 unset($enabled[$this->plugin]);
                 set_config('enrol_plugins_enabled', implode(',', array_keys($enabled)));
-                $syscontext->mark_dirty(); // resets all enrol caches
+                $syscontext->mark_dirty(); // Resets all enrol caches.
                 break;
         }
 
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         $active_enrols = explode(',', get_config('enrol_plugins_enabled'));
         return in_array($this->plugin, $active_enrols);
     }
@@ -553,7 +592,11 @@ class enrol_remote_control extends plugin_remote_control {
 
 class assignsubmission_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('assignsubmission', $plugin);
+    }
+
+    public function action($action) {
 
         $pluginmanager = new assign_plugin_manager('assignsubmission');
         switch ($action) {
@@ -568,7 +611,7 @@ class assignsubmission_remote_control extends plugin_remote_control {
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         return !get_config('submission_' . $this->plugin, 'disabled');
     }
 }
@@ -576,7 +619,11 @@ class assignsubmission_remote_control extends plugin_remote_control {
 
 class assignfeedback_remote_control extends plugin_remote_control {
 
-    function action($action) {
+    public function __construct($plugin) {
+        parent::__construct('assignfeedback', $plugin);
+    }
+
+    public function action($action) {
 
         $pluginmanager = new assign_plugin_manager('assignfeedback');
 
@@ -592,7 +639,7 @@ class assignfeedback_remote_control extends plugin_remote_control {
         return 0;
     }
 
-    function is_enabled() {
+    public function is_enabled() {
         return !get_config('feedback_' . $this->plugin, 'disabled');
     }
 }

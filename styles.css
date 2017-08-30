@@ -4,17 +4,21 @@
 }
 
 .vmoodle-hidden{
-	display:none;
-	visibility:hidden;
+    display:none;
+    visibility:hidden;
 }
 
 
 .vmoodle-block_hidden{
      display:none;
-    visibility:hidden;   
+    visibility:hidden;
 }
 
 .content.hidden
 {
     display:none;
+}
+
+.vmoodle-tools-row * {
+    display: inline;
 }

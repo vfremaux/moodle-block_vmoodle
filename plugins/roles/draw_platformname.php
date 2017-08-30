@@ -16,13 +16,14 @@
 
 /**
  * Draw a transparent image with platform name text.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-// Getting platform name
+
+// Getting platform name.
 if (isset($_GET['caption'])) {
     $caption = strip_tags(utf8_decode(urldecode($_GET['caption'])));
 } else {
@@ -46,7 +47,7 @@ function make_color($color) {
 }
 
 // Sending header.
-// header("Content-type: image/png");
+header("Content-type: image/png");
 
 /*
  * Creating image

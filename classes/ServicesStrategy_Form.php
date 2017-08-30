@@ -1,6 +1,18 @@
 <?php
-
-// Moodle form's library.
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once($CFG->libdir.'/formslib.php');
 
@@ -39,7 +51,7 @@ class ServicesStrategy_Form extends moodleform {
         // Master services.
         $defaultservices    =    $DB->get_records('mnet_service', array('offer' => 1), 'name');
 
-        // get version info to get real names
+        // Get version info to get real names.
         $self_mnet_peer = new mnet_peer();
         $self_mnet_peer->set_id($CFG->mnet_localhost_id);
         $myservices = mnet_get_service_info($self_mnet_peer);
@@ -75,7 +87,7 @@ class ServicesStrategy_Form extends moodleform {
                         . $version['pluginname']; // TODO there should be a moodle-wide way to do this
                     $description = get_string($defaultservice->name.'_name', $langmodule);
                 }
-                
+
                 $mform->setDefault('main_'.$defaultservice->name.'_description', $description);
                 $mform->setDefault('main_'.$defaultservice->name.'_id',    $defaultservice->id);
                 $mform->setType('main_'.$defaultservice->name.'_id', PARAM_INT);
@@ -111,7 +123,7 @@ class ServicesStrategy_Form extends moodleform {
                         . $version['pluginname']; // TODO there should be a moodle-wide way to do this
                     $description = get_string($defaultservice->name.'_name', $langmodule);
                 }
-                
+
                 $mform->setDefault('peer_'.$defaultservice->name.'_description', $description);
                 $mform->setDefault('peer_'.$defaultservice->name.'_id',    $defaultservice->id);
                 $mform->setType('peer_'.$defaultservice->name.'_id', PARAM_INT);

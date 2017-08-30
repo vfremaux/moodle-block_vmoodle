@@ -16,12 +16,13 @@
 
 /**
  * Declare RPC functions for syncrolelib.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
@@ -32,7 +33,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE', 500);
     define('RPC_FAILURE_USER', 501);
     define('RPC_FAILURE_CONFIG', 502);
-    define('RPC_FAILURE_DATA', 503); 
+    define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
     define('MNET_FAILURE', 511);
     define('RPC_FAILURE_RECORD', 520);
@@ -112,7 +113,7 @@ function mnetadmin_rpc_get_role_capabilities($user, $role, $capabilities = null,
     // Getting role capabilities.
     $records_role_capabilities = $DB->get_records_sql('select capability,contextid,permission from {role_capabilities} where roleid = '.$record_role->id.' AND contextid = 1'.($capabilities ? ' AND capability IN (?)' : ''),array($in_capabilities));
     @ob_clean();
-    ob_start();    // Used to prevent HTML output from dmllib methods and capture errors
+    ob_start();    // Used to prevent HTML output from dmllib methods and capture errors.
     if (!$records_role_capabilities) {
         $sql_error = parse_wlerror();
 
@@ -237,7 +238,7 @@ function mnetadmin_rpc_set_role_capabilities($user, $role, $role_capabilities, $
     }
 
     // Setting role capabilities.
-    @ob_clean(); ob_start();    // Used to prevent HTML output from dmllib methods and capture errors
+    @ob_clean(); ob_start();    // Used to prevent HTML output from dmllib methods and capture errors.
     foreach ($role_capabilities as $role_capability_name => $role_capability) {
         // Checking if capability exists.
         if (!array_key_exists($role_capability_name, $records_capabilities)) {
@@ -290,11 +291,9 @@ function mnetadmin_rpc_set_role_capabilities($user, $role, $role_capabilities, $
                 $response->errors[] = 'Set role capability : Unable to insert role capability "'.$record->capability.'"'.(empty($sql_error) ? '.' : ': '.$sql_error);
                 $response->error = 'Set role capability : Unable to insert role capability "'.$record->capability.'"'.(empty($sql_error) ? '.' : ': '.$sql_error);
             }
-        }
-
-        // Checking if role capability should be updated.
-        elseif (!$clear && array_key_exists($role_capability_name, $current_role_capabilities) &&
-        $current_role_capabilities[$role_capability_name]->permission != $role_capability->permission) {    
+        } else if (!$clear && array_key_exists($role_capability_name, $current_role_capabilities) &&
+            $current_role_capabilities[$role_capability_name]->permission != $role_capability->permission) {
+            // Checking if role capability should be updated.
             // Modifying record.
             $record = $current_role_capabilities[$role_capability->capability];
             $record->permission = $role_capability->permission;
@@ -460,10 +459,10 @@ function mnetadmin_rpc_set_role_allow($user, $table, $rolename, $targetrolenames
  * @param string $targetuser The username of the user to assign a role remotely.
  * @param mixed $rolename The role shortname to assign
  * @param string $contextidentityfield Tells the field to use to get context real object instance
- * @param integer $contextlevel The contextlevel concerned, defaults to SYSTEM 
+ * @param integer $contextlevel The contextlevel concerned, defaults to SYSTEM
  * @param string $contextidentity Some identifying value allowing to remotely point the context instance
  *
- * Identifying context from remote aplications : 
+ * Identifying context from remote aplications :
  * CONTEXT_SYSTEM : unused
  * CONTEXT_COURSECAT : not implemented
  * CONTEXT_COURSE : the course shortname is used
@@ -555,7 +554,7 @@ function mnetadmin_rpc_has_role($callinguser, $targetuser, $userhostroot, $rolen
         $response->message = "Has role";
     } else {
         // Make remote call.
-        $userhostroot = $DB->get_field_select('mnet_host', 'wwwroot', " id = ? AND deleted = 0 ", array($USER->mnethostid)); 
+        $userhostroot = $DB->get_field_select('mnet_host', 'wwwroot', " id = ? AND deleted = 0 ", array($USER->mnethostid));
         if (!$userhostroot) {
             $extresponse->error = 'Unkown userroot (or deleted).';
             if ($json_response) {
@@ -589,9 +588,9 @@ function mnetadmin_rpc_has_role($callinguser, $targetuser, $userhostroot, $rolen
         $mnet_host->set_wwwroot($whereroot);
         if (!$rpcclient->send($mnet_host)) {
             $extresponse->status = RPC_FAILURE;
-            $extresponse->errors[] = 'REMOTE : '.implode("<br/>\n", $rpcclient->errors);        
+            $extresponse->errors[] = 'REMOTE : '.implode("<br/>\n", $rpcclient->errors);
             $extresponse->errors[] = json_encode($rpcclient);
-            $extresponse->error = 'REMOTE : '.implode("<br/>\n", $rpcclient->errors);        
+            $extresponse->error = 'REMOTE : '.implode("<br/>\n", $rpcclient->errors);
             if ($json_response) {
                 return json_encode($extresponse);
             } else {
@@ -620,7 +619,7 @@ function mnetadmin_rpc_has_role($callinguser, $targetuser, $userhostroot, $rolen
 }
 
 function mnetadmin_rpc_has_role_wrapped($wrap) {
-    // debug_trace("WRAP mnetadmin_rpc_has_role : ".json_encode($wrap));    
+    // debug_trace("WRAP mnetadmin_rpc_has_role : ".json_encode($wrap));
     return mnetadmin_rpc_has_role(@$wrap['callinguser'], @$wrap['targetuser'], @$wrap['userhostroot'], @$wrap['rolename'], @$wrap['contextidentityfield'], @$wrap['contextlevel'], @$wrap['contextidentity'], @$wrap['whereroot'], @$wrap['json_response']);
 }
 
@@ -630,10 +629,10 @@ function mnetadmin_rpc_has_role_wrapped($wrap) {
  * @param string $targetuser The username of the user to assign a role remotely.
  * @param string $rolename The role shortname to assign
  * @param string $contextidentityfield Tells the field to use to get context real object instance
- * @param integer $contextlevel The contextlevel concerned, defaults to SYSTEM 
+ * @param integer $contextlevel The contextlevel concerned, defaults to SYSTEM
  * @param string $contextidentity Some identifying value allowing to remotely point the context instance
  *
- * Identifying context from remote aplications : 
+ * Identifying context from remote aplications :
  * CONTEXT_SYSTEM : unused
  * CONTEXT_COURSECAT : not implemented
  * CONTEXT_COURSE : the course shortname is used
@@ -678,7 +677,9 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
     }
 
     if ($siteadmin) {
-        if (function_exists('debug_trace')) debug_trace("Setting $targetuser->username as site admin");
+        if (function_exists('debug_trace')) {
+            debug_trace("Setting $targetuser->username as site admin");
+        }
         $response->message .= '<br/>'.fullname($targetuser).' is now site administrator ';
         $admins = array();
         foreach (explode(',', $CFG->siteadmins) as $admin) {
@@ -711,7 +712,7 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
         }
     }
 
-    // we admit null role operations for site admin only changes
+    // We admit null role operations for site admin only changes.
     if (empty($rolename)) {
         if ($json_response) {
             return json_encode($response);
@@ -899,7 +900,7 @@ function mnetadmin_rpc_assign_role($callinguser, $targetuser, $rolename, $contex
 }
 
 function mnetadmin_rpc_assign_role_wrapped($wrap) {
-    if (function_exists('debug_trace')) debug_trace("WRAP mnetadmin_rpc_assign_role : ".json_encode($wrap));    
+    if (function_exists('debug_trace')) debug_trace("WRAP mnetadmin_rpc_assign_role : ".json_encode($wrap));
     return mnetadmin_rpc_assign_role(@$wrap['callinguser'], @$wrap['targetuser'], @$wrap['rolename'], @$wrap['contextidentityfield'], @$wrap['contextlevel'], @$wrap['contextidentity'], @$wrap['starttime'], @$wrap['endtime'], @$wrap['json_response']);
 }
 
@@ -910,7 +911,6 @@ function mnetadmin_rpc_assign_role_wrapped($wrap) {
  * @param string $userhostname the user's supposed origin .
  *
  * if userhostname is empty, the user is checked locally and his known userhost is mentionned.
- *
  */
 function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $json_response = true) {
     global $CFG, $USER, $DB;
@@ -962,8 +962,8 @@ function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $
         if (function_exists('debug_trace')) {
             debug_trace("mnetadmin_rpc_user_exists : remote resolution in $whereroot");
         }
-        // Make remote call
-        $userhostroot = $DB->get_field_select('mnet_host', 'wwwroot', " id = $USER->mnethostid AND deleted = 0 "); 
+        // Make remote call.
+        $userhostroot = $DB->get_field_select('mnet_host', 'wwwroot', " id = $USER->mnethostid AND deleted = 0 ");
 
         if (!$userhostroot) {
             $extresponse->status = RPC_FAILURE_DATA;
@@ -980,8 +980,8 @@ function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $
         if (!$DB->record_exists('mnet_host', array('wwwroot' => $whereroot, 'deleted' => 0))) {
             $extresponse->status = RPC_FAILURE_DATA;
             $extresponse->location = 'remote';
-            $extresponse->error = "Unknown host $whereroot (or deleted).";        
-            $extresponse->errors[] = "Unknown host $whereroot (or deleted).";        
+            $extresponse->error = "Unknown host $whereroot (or deleted).";
+            $extresponse->errors[] = "Unknown host $whereroot (or deleted).";
             if ($json_response) {
                 return json_encode($extresponse);
             } else {
@@ -1032,7 +1032,7 @@ function mnetadmin_rpc_user_exists($callinguser, $targetuser, $whereroot = '', $
 }
 
 function mnetadmin_rpc_user_exists_wrapped($wrap) {
-    if (function_exists('debug_trace')) debug_trace("WRAP mnetadmin_rpc_user_exists : ".json_encode($wrap));    
+    if (function_exists('debug_trace')) debug_trace("WRAP mnetadmin_rpc_user_exists : ".json_encode($wrap));
     return mnetadmin_rpc_user_exists(@$wrap['callinguser'], @$wrap['targetuser'], @$wrap['whereroot'], @$wrap['json_response']);
 }
 
@@ -1078,7 +1078,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
         }
     }
 
-    // be sure of our structure type.
+    // Be sure of our structure type.
     $callinguser = (object)$callinguser;
 
     if (!$onlybounce) {
@@ -1161,7 +1161,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
             }
             $response->userid = $userid;
 
-            // add profilefields
+            // Add profilefields.
             if (function_exists('debug_trace')) {
                 debug_trace("REMOTE CALL : Adding profile fields");
             }
@@ -1203,19 +1203,8 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
                 $response->userid = $userid;
             } else {
                 if (function_exists('debug_trace')) {
-                    debug_trace("Create user REMOTE CALL : User exists");    
+                    debug_trace("Create user REMOTE CALL : User exists");
                 }
-                /*
-                // usually create user matching user should be happy with that
-                $response->status = RPC_SUCCESS;
-                $response->errors[] = "User already exists.";
-                $response->error = "User already exists.";
-                if ($json_response) {
-                    return json_encode($response);
-                } else {
-                    return $response;
-                }
-                */
             }
         }
     } else {
@@ -1245,7 +1234,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
             $sql = "
                 SELECT
                     COUNT(*)
-                FROM 
+                FROM
                     {mnet_host} as mh,
                     {mnet_service} as ms,
                     {mnet_host2service} as h2s
@@ -1268,7 +1257,7 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
                 $caller->username = $USER->username;
                 $caller->remoteuserhostroot = $userhostroot;
                 $caller->remotehostroot = $CFG->wwwroot;
-                $rpc_client->add_param($caller, 'struct'); // username
+                $rpc_client->add_param($caller, 'struct'); // Username.
                 $rpc_client->add_param($targetuser, 'string');
                 $rpc_client->add_param($userparams, 'struct');
                 if ($userhostname == '') {
@@ -1283,12 +1272,11 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
                 if ($mnet_host->set_wwwroot($bouncehost)) {
                     $result = $rpc_client->send($mnet_host);
                     if (empty($result)) {
-                        // if (preg_match('/dev/', $CFG->wwwroot)) print_object($rpc_client);
                         $response->errors[] = 'Create user : bounce failed rpc transaction to '.$bouncehost;
                         $response->errors[] = $rpc_client->getErrors();
                         $response->error = 'Create user : bounce failed rpc transaction to '.$bouncehost;
                     } else {
-                        // whatever we have, aggregate eventual remote errors to error stack.
+                        // Whatever we have, aggregate eventual remote errors to error stack.
                         $res = json_decode($rpc_client->response);
                         if (!empty($res->errors)) {
                             foreach ($res->errors as $remoteerror) {
@@ -1298,9 +1286,9 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
                         }
                     }
                 } else {
-                    // silently ignore unless debugging
+                    // Silently ignore unless debugging.
                     if (function_exists('debug_trace')) {
-                        debug_trace("Bounce ignored  : No service capability for $bouncehost ");    
+                        debug_trace("Bounce ignored  : No service capability for $bouncehost ");
                     }
                     $response->errors[] = 'Create user : ignoring bounce to '.$bouncehost.' because host communication failed.';
                     $response->error = 'Create user : (last error) ignoring bounce to '.$bouncehost.' because host communication failed.';
@@ -1319,7 +1307,9 @@ function mnetadmin_rpc_create_user($callinguser, $targetuser, $userparams, $user
 }
 
 function mnetadmin_rpc_create_user_wrapped($wrap) {
-    if (function_exists('debug_trace')) debug_trace("WRAP mnetadmin_rpc_create_user : ".json_encode($wrap));    
+    if (function_exists('debug_trace')) {
+        debug_trace("WRAP mnetadmin_rpc_create_user : ".json_encode($wrap));
+    }
     return mnetadmin_rpc_create_user(@$wrap['callinguser'], @$wrap['targetuser'], @$wrap['userparams'], @$wrap['userhostname'], @$wrap['bounceto'], @$wrap['onlybounce'], @$wrap['json_response']);
 }
 
@@ -1331,8 +1321,8 @@ function mnetadmin_rpc_create_user_wrapped($wrap) {
  * @param string $callinguser The calling user.
  * @param string $targetuser The username or user identifier of the user to assign a role remotely.
  * @param string $useridfield The field used for identifying the user (id, idnumber or username).
- * @param string $courseidfield The identifying value of the remote course 
- * @param string $courseidentifier The identifying value of the remote course 
+ * @param string $courseidfield The identifying value of the remote course
+ * @param string $courseidentifier The identifying value of the remote course
  * @param string $rolename The remote role name to be assigned as
  * @param string $starttime The starting date
  * @param string $endtime The enrollement ending date
@@ -1412,9 +1402,9 @@ function mnetadmin_rpc_remote_enrol($callinguser, $targetuser, $rolename, $where
         }
 
         // Make remote call.
-        $userhostroot = $DB->get_field_select('mnet_host', 'wwwroot', " id = $USER->mnethostid AND deleted = 0 "); 
+        $userhostroot = $DB->get_field_select('mnet_host', 'wwwroot', " id = $USER->mnethostid AND deleted = 0 ");
         if (!$userhostroot) {
-            $extresponse->error = 'Unkown user host root (or deleted).';        
+            $extresponse->error = 'Unkown user host root (or deleted).';
             if ($json_response) {
                 return json_encode($extresponse);
             } else {
@@ -1448,8 +1438,8 @@ function mnetadmin_rpc_remote_enrol($callinguser, $targetuser, $rolename, $where
         $mnet_host->set_wwwroot($whereroot);
         if (!$rpcclient->send($mnet_host)) {
             $extresponse->status = RPC_FAILURE;
-            $extresponse->errors[] = 'REMOTE : '.implode("<br/>\n", @$rpcclient->errors);        
-            $extresponse->error = 'REMOTE : '.implode("<br/>\n", @$rpcclient->errors);        
+            $extresponse->errors[] = 'REMOTE : '.implode("<br/>\n", @$rpcclient->errors);
+            $extresponse->error = 'REMOTE : '.implode("<br/>\n", @$rpcclient->errors);
             if ($json_response) {
                 return json_encode($extresponse);
             } else {
@@ -1486,7 +1476,7 @@ function mnetadmin_rpc_remote_enrol_wrapped($wrap) {
     return mnetadmin_rpc_remote_enrol(@$wrap['callinguser'], @$wrap['targetuser'], @$wrap['rolename'], @$wrap['whereroot'], @$wrap['courseidfield'], @$wrap['courseidentifier'], @$wrap['starttime'], @$wrap['endtime'], @$wrap['json_response']);
 }
 
-//*********** Utilities *****************//
+// Utilities ******************************************************.
 
 function rpc_check_context_target($contextlevel, $contextidentityfield, $contextidentity, &$response, $json_response) {
     global $DB;

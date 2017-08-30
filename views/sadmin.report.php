@@ -17,12 +17,13 @@
 /**
  * The final step of wizard.
  * Displays report of command command.
- * 
- * @package block-vmoodle
+ *
+ * @package block_vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 // Adding requirements.
 require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
@@ -86,12 +87,16 @@ if (!empty($failed_platforms)) {
         } else {
             echo '&nbsp;';
         }
-        echo     '</td>' .
-            '</tr>' .
-            '<tr class="r'.$i.'" valign="top">' .
-                '<td>'.get_string('details', 'block_vmoodle').'</td>' .
-                '<td colspan="2">'.implode('<br/>', $command->getResult($host, 'errors')).'</td>' .
-            '</tr>';
+        echo '</td>';
+        echo '</tr>';
+
+        echo '<tr class="r'.$i.'" valign="top">';
+        echo '<td>'.get_string('details', 'block_vmoodle').'</td>';
+        echo '<td colspan="2">';
+        echo implode('<br/>', $command->getResult($host, 'errors'));
+        echo '</td>';
+        echo '</tr>';
+
         $i = ($i+1)%2;
     }
     echo '</tbody>' .

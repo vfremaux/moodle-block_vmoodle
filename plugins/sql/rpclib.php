@@ -1,7 +1,22 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Declare RPC functions for sqllib.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
@@ -14,7 +29,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE', 500);
     define('RPC_FAILURE_USER', 501);
     define('RPC_FAILURE_CONFIG', 502);
-    define('RPC_FAILURE_DATA', 503); 
+    define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
     define('MNET_FAILURE', 511);
     define('RPC_FAILURE_RECORD', 520);
@@ -39,7 +54,8 @@ function mnetadmin_rpc_get_fields($user, $table, $fields, $select) {
     $response->status = RPC_SUCCESS;
 
     // Getting record.
-    ob_clean(); ob_start();    // Used to prevent HTML output from dmllib methods and capture errors.
+    ob_clean();
+    ob_start();    // Used to prevent HTML output from dmllib methods and capture errors.
     $field = array_keys($select);
     $record = $DB->get_record($table, array($field[0] => $select[$field[0]], isset($select[1]) ? $field[1] : '' => isset($select[1]) ? $select[1] : '', isset($select[2]) ? $field[2] : '' => isset($select[2]) ? $select[2] : ''), implode(',', $fields));
 

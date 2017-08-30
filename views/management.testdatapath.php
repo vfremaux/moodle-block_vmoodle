@@ -17,7 +17,7 @@
 /**
  * Tests database connection.
  *
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  * @author Moheissen Fabien (fabien.moheissen@gmail.com)
  * @copyright valeisti (http://www.valeisti.fr)
@@ -26,7 +26,7 @@
 
 // Loading $CFG configuration.
 include('../../../config.php');
-require_once('../filesystemlib.php');
+require_once($CFG->dirroot.'/blocks/vmoodle/filesystemlib.php');
 
 $context = context_system::instance();
 
@@ -34,7 +34,7 @@ require_login();
 
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('popup');
-$PAGE->set_url($CFG->wwwroot.'/blocks/vmoodle/views/management.testdatapath.php');
+$PAGE->set_url(new moodle_url('/blocks/vmoodle/views/management.testdatapath.php'));
 
 echo $OUTPUT->header();
 echo "<p>";
@@ -43,7 +43,7 @@ echo "<p>";
 $dataroot = required_param('dataroot', PARAM_TEXT);
 
 if (is_dir($dataroot)) {
-    $DIR = opendir($dataroot); 
+    $DIR = opendir($dataroot);
     $cpt = 0;
     $hasfiles = false;
     while (($file = readdir($DIR)) && !$hasfiles) {
@@ -70,8 +70,8 @@ if (is_dir($dataroot)) {
 echo "</p>";
 
 $closestr = get_string('closewindow', 'block_vmoodle');
-echo "<center>";
-echo "<input type=\"button\" name=\"close\" value=\"$closestr\" onclick=\"self.close();\" />";
-echo "</center>";
+echo '<center>';
+echo '<input type="button" name="close" value="'.$closestr.'" onclick="self.close();" />';
+echo '</center>';
 
 echo $OUTPUT->footer();

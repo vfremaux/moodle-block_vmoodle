@@ -14,32 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-if (!defined('MOODLE_INTERNAL')) {
-    die ("You cannot use this script this way");
-}
+defined('MOODLE_INTERNAL') || die ();
 
 if (!$DB->get_records('block', array('name' => 'vmoodle'))) {
     return;
 }
 
-global $CFG;
-
 $systemcontext = context_system::instance();
 $hasadmin = false;
 if (is_dir($CFG->dirroot.'/local/adminsettings')) {
-    // This is AdminSettings Edunao driven administration 
+    // This is AdminSettings Edunao driven administration.
     if (has_capability('local/adminsettings:nobody', $systemcontext)) {
         $hasadmin = true;
     }
 } else {
-    // this is Moodle Standard
-    if ($ADIN->fulltree) {
+    // This is Moodle Standard.
+    if (has_capability('moodle/site:config', $systemcontext)) {
         $hasadmin = true;
     }
 }
 
 if ($hasadmin) {
-    if (@$CFG->mainwwwroot == $CFG->wwwroot) {
+    if ((@$CFG->mainwwwroot == $CFG->wwwroot) || preg_match('#'.@$CFG->mainhostprefix.'#', $CFG->wwwroot)) {
         // Only master moodle can have this menu.
         $ADMIN->add('server', new admin_externalpage('vmoodle', get_string('vmoodleadministration', 'block_vmoodle'), $CFG->wwwroot . '/blocks/vmoodle/view.php', 'block/vmoodle:managevmoodles'));
     }
@@ -83,12 +79,12 @@ if ($hasadmin) {
 
     // Services strategy.
     $services_strategies = array(
-        'default' => get_string('servicesstrategydefault', 'block_vmoodle'), 
+        'default' => get_string('servicesstrategydefault', 'block_vmoodle'),
         'subnetwork' => get_string('servicesstrategysubnetwork', 'block_vmoodle')
     );
     $settings->add(new admin_setting_configselect('block_vmoodle_services', get_string('servicesstrategy', 'block_vmoodle'), get_string('servicesstrategy_desc', 'block_vmoodle'), 0, $services_strategies));
 
-    $settings->add(new admin_setting_heading('key_autorenew_parms', get_string('tools', 'block_vmoodle'), ''));
+    $settings->add(new admin_setting_heading('key_autorenew_parms', get_string('key_autorenew_parms', 'block_vmoodle'), ''));
 
     $onoffopts[0] = get_string('off', 'block_vmoodle');
     $onoffopts[1] = get_string('on', 'block_vmoodle');
@@ -111,5 +107,5 @@ if ($hasadmin) {
     $settings->add(new admin_setting_heading('tools', get_string('tools', 'block_vmoodle'), ''));
     $yesno = array(0 => get_string('no'), 1 => get_string('yes'));
     $settings->add(new admin_setting_configselect('vmoodle_force_https_proto', get_string('forcehttpsproto', 'block_vmoodle'), get_string('multimnet_desc', 'block_vmoodle'), 0, $yesno));
-    $settings->add(new admin_setting_configselect('allow_mnet_user_system_admin', get_string('allowmentusersasadmin', 'block_vmoodle'), get_string('multimnet_desc', 'block_vmoodle'), 0, $yesno));
+    $settings->add(new admin_setting_configselect('allow_mnet_user_system_admin', get_string('allowmnetusersasadmin', 'block_vmoodle'), get_string('multimnet_desc', 'block_vmoodle'), 0, $yesno));
 }

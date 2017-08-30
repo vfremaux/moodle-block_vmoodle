@@ -17,17 +17,19 @@
 /**
  * The second step of wizard.
  * Displays available platforms.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 // Loading librairies.
 require($CFG->dirroot.'/blocks/vmoodle/classes/commands/Command_Form.php');
-Use \block_vmoodle\Target_Filter_Form;
-Use \block_vmoodle\Target_Form;
+
+use \block_vmoodle\Target_Filter_Form;
+use \block_vmoodle\Target_Form;
 
 // Getting retrieve platform command.
 if (!isset($rpcommand) && isset($SESSION->vmoodle_sa['command'])) {

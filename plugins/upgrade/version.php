@@ -16,11 +16,13 @@
 
 /**
  * Description of Update plugin library.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  */
+defined('MOODLE_INTERNAL') || die();
+
 $plugin = new Stdclass();
 $plugin->version = 2014071300;
 $plugin->component = 'vmoodleadminset_upgrade';

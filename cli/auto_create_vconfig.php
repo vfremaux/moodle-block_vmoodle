@@ -1,6 +1,6 @@
 <?php
 
-// We need block Web use of theis script
+// We need block Web use of these scripts.
 define('CLI_SCRIPT', true);
 
 // We need block evaluation of vconfig because possible not yet created !

@@ -14,18 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace vmoodleadminset_generic;
-Use \block_vmoodle\commands\Command;
-Use \StdClass;
-
 /**
  * Describes meta-administration plugin's command for Maintenance setup.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_generic;
+
+use \block_vmoodle\commands\Command;
+use \StdClass;
+
 class Command_SetPluginConfig extends Command {
 
     /**
@@ -49,12 +50,12 @@ class Command_SetPluginConfig extends Command {
         parent::__construct($name, $description, $parameters, $rpcommand);
 
         if (is_null($parameters) || !is_array($parameters)) {
-            throw new Command_SetConfig_Exception('arrayexpected');
+            throw new \coding_exception('Parameter expected should be an array or a null');
         }
 
         foreach ($parameters as $param) {
             if (!in_array($param->getName(), array('key', 'value'))) {
-                throw new Command_SetConfig_Exception('unexpectedparam');
+                throw new \coding_exception('Parameter name is not in expected namelist. Check plugin configuration file.');
             }
         }
     }
@@ -103,8 +104,8 @@ class Command_SetPluginConfig extends Command {
 
         $pluginkey = $this->getParameter('key')->getValue();
         $parts = explode('/', $pluginkey);
-        $key = array_pop($parts); // take last as key
-        $plugin = implode('/', $parts); // take the rest as plugin (minds those plugins as auth/cas or auth/ldap)
+        $key = array_pop($parts); // Take last as key.
+        $plugin = implode('/', $parts); // Take the rest as plugin (minds those plugins as auth/cas or auth/ldap).
 
         $rpc_client->add_param($key, 'string');
         $rpc_client->add_param($this->getParameter('value')->getValue(), 'string');
@@ -155,7 +156,7 @@ class Command_SetPluginConfig extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;

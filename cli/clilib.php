@@ -16,7 +16,7 @@
 
 /**
  * Opens and parses/checks a VMoodle instance definition file
- * @param string $location 
+ * @param string $location
  *
  */
 function vmoodle_parse_csv_nodelist($nodelistlocation = '') {
@@ -74,8 +74,8 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = '') {
             'mnet' => 1);
 
     $optionalDefaults = array(
-            'mnet' => 1, 
-            'vdbtype' => 'mysqli', 
+            'mnet' => 1,
+            'vdbtype' => 'mysqli',
             'vdbhost' => $CFG->dbhost,
             'vdbpersist' => $CFG->dboptions['dbpersist'],
             'vdbprefix' => 'mdl_',
@@ -128,7 +128,7 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = '') {
 
     // Check for required fields.
     foreach ($required as $key => $value) {
-        if ($value) { 
+        if ($value) {
             // Required field missing.
             cli_error(get_string('fieldrequired', 'error', $key));
             return;
@@ -159,7 +159,7 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = '') {
             // Decode encoded commas.
             $key = $headers[$f];
 
-            // Do we have a global config ? 
+            // Do we have a global config ?
             if (preg_match('/^config_/', $key)) {
                 $smartkey = str_replace('config_', '', $key);
                 $vnode->config->$smartkey = trim($value);
@@ -167,7 +167,7 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = '') {
                 continue;
             }
 
-            // Do we have a plugin config ? 
+            // Do we have a plugin config ?
             /*
              * plugin configs will come as f.e. "auth_cas|server" key
              *
@@ -191,24 +191,24 @@ function vmoodle_parse_csv_nodelist($nodelistlocation = '') {
         }
         $vnodes[] = $vnode;
     }
-    
+
     return $vnodes;
 }
 
 /**
  * Opens and parses/checks a VMoodle nodelist for snapshotting. Basically
  * compatible with nodelist format.
- * @param string $nodelistlocation 
+ * @param string $nodelistlocation
  */
 function vmoodle_parse_csv_snaplist($nodelistlocation = '') {
     global $CFG;
-    
+
     $vnodes = array();
 
     if (empty($nodelistlocation)) {
         $nodelistlocation = $CFG->dataroot.'/vmoodle/snaplist.csv';
     }
-    
+
     // Decode file.
     $csv_encode = '/\&\#44/';
     if (isset($CFG->block_vmoodle_csvseparator)) {
@@ -310,7 +310,7 @@ function vmoodle_parse_csv_snaplist($nodelistlocation = '') {
 
     // Check for required fields.
     foreach ($required as $key => $value) {
-        if ($value) { 
+        if ($value) {
             // Required field missing.
             cli_error(get_string('fieldrequired', 'error', $key));
             return;
@@ -346,7 +346,7 @@ function vmoodle_parse_csv_snaplist($nodelistlocation = '') {
         }
         $vnodes[] = $vnode;
     }
-    
+
     return $vnodes;
 }
 
@@ -356,14 +356,14 @@ function vmoodle_parse_csv_snaplist($nodelistlocation = '') {
  */
 function vmoodle_is_empty_line_or_format(&$text, $resetfirst = false){
     global $CFG;
-    
+
     static $textlib;
     static $first = true;
-        
+
     // We may have a risk the BOM is present on first line.
     if ($resetfirst) {
         $first = true;
-    }    
+    }
     if (!isset($textlib)) {
         $textlib = new textlib(); // Singleton.
     }
@@ -371,7 +371,7 @@ function vmoodle_is_empty_line_or_format(&$text, $resetfirst = false){
         $text = $textlib->trim_utf8_bom($text);
         $first = false;
     }
-    
+
     $text = preg_replace("/\n?\r?/", '', $text);
 
     if ($CFG->block_vmoodle_encoding != 'UTF-8') {
@@ -382,7 +382,7 @@ function vmoodle_is_empty_line_or_format(&$text, $resetfirst = false){
     if ('ASCII' == mb_detect_encoding($text)) {
         $text = utf8_encode($text);
     }
-    
+
     // Check the text is empty or comment line and answer true if it is
     return preg_match('/^$/', $text) || preg_match('/^(\(|\[|-|#|\/| )/', $text);
 }

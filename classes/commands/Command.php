@@ -1,9 +1,23 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Describes meta-administration plugin's command.
  * It should be extended for command plugin.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
@@ -15,10 +29,10 @@ namespace block_vmoodle\commands;
 abstract class Command {
 
     /**
-     * Define placeholder 
+     * Define placeholder
      */
     const placeholder = '#\[\[(\??)(\w+)(?::(\w+))?\]\]#';
-    
+
     /**
      * Command's name
      */
@@ -28,7 +42,7 @@ abstract class Command {
      * Command's description
      */
     protected $description;
-    
+
     /**
      * Command's parameters (optional)
      */
@@ -40,7 +54,7 @@ abstract class Command {
     protected $results = array();
 
     /**
-     * Retrieve platforms command 
+     * Retrieve platforms command
      */
     protected $rpcommand = null;
 
@@ -52,25 +66,27 @@ abstract class Command {
     /**
      * Constructor.
      * Build parameters array whatever is received in parameters input.
-     * @param    $name                string                    Command's name.
-     * @param    $description        string                    Command's description.
-     * @param    $parameters            mixed                    Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
-     * @throws                        Command_Exception
+     * @param string $name Command's name.
+     * @param string $description Command's description.
+     * @param mixed $parameters Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
+     * @throws Command_Exception
      */
-    protected function __construct($name, $description, $parameters=null) {
-        // Checking command's name
-        if (empty($name))
+    protected function __construct($name, $description, $parameters = null) {
+        // Checking command's name.
+        if (empty($name)) {
             throw new Command_Exception('commandemptyname');
-        else
+        } else {
             $this->name = $name;
-            
-        // Checking command's description
-        if (empty($description))
+        }
+
+        // Checking command's description.
+        if (empty($description)) {
             throw new Command_Exception('commandemptydescription', $this->name);
-        else
+        } else {
             $this->description = $description;
-        
-        // Checking parameters' format
+        }
+
+        // Checking parameters' format.
         if (is_null($parameters)) {
             $this->parameters = array();
         } else {
@@ -94,7 +110,7 @@ abstract class Command {
             $this->parameters = $i_parameters;
         }
     }
-    
+
     /**
      * Populate parameters with their values.
      * @param object $data The data from Command_From.
@@ -102,29 +118,30 @@ abstract class Command {
      */
     public function populate($data) {
         $parameters = $this->getParameters();
-        // Setting parameters' values
+        // Setting parameters' values.
         foreach ($parameters as $parameter) {
             if (!($parameter instanceof Command_Parameter_Internal)) {
-                if ($parameter->getType() == 'boolean' && !property_exists($data, $parameter->getName()))
+                if ($parameter->getType() == 'boolean' && !property_exists($data, $parameter->getName())) {
                     $parameter->setValue('0');
-                else
+                } else {
                     $parameter->setValue($data->{$parameter->getName()});
+                }
             }
         }
-         
-         // Retrieving internal parameters' value
+
+         // Retrieving internal parameters' value.
         foreach ($parameters as $parameter) {
             if ($parameter instanceof Command_Parameter_Internal)
                 $parameter->retrieveValue($parameters);
         }
     }
-    
+
     /**
      * Execute the command.
      * @param mixed $hosts The host where run the command (may be wwwroot or an array).
      */
     public abstract function run($hosts);
-    
+
     /**
      * Return if the command were runned.
      * @return boolean TRUE if the command were runned, FALSE otherwise.
@@ -132,21 +149,21 @@ abstract class Command {
     public function isRunned() {
         return !empty($this->results);
     }
-    
+
     /**
      * Get the result of command execution for one host.
      * @param string $host The host to retrieve result (optional, if null, returns general result).
      * @param string $key The information to retrieve (ie status, error / optional).
      */
     public abstract function getResult($host=null, $key=null);
-    
+
     /**
      * Clear result of command execution.
      */
     public function clearResult() {
         $this->results = array();
     }
-    
+
     /**
      * Get the command's name.
      * @return string Command's name.
@@ -154,7 +171,7 @@ abstract class Command {
     public function getName() {
         return $this->name;
     }
-    
+
     /**
      * Get the command's description.
      * @return string Command's description.
@@ -162,7 +179,7 @@ abstract class Command {
     public function getDescription() {
         return $this->description;
     }
-    
+
     /**
      * Get the command's parameter from name.
      * @param string $name A command parameter name.
@@ -174,7 +191,7 @@ abstract class Command {
         else
             return $this->parameters[$name];
     }
-     
+
     /**
      * Get the command's parameters.
      * @return mixed Command's parameters.
@@ -182,7 +199,7 @@ abstract class Command {
     public function getParameters() {
         return $this->parameters;
     }
-    
+
     /**
      * Get the retrieve platforms command.
      * @return Command Retrieve platforms command.
@@ -190,7 +207,7 @@ abstract class Command {
     public function getRPCommand() {
         return $this->rpcommand;
     }
-    
+
     /**
      * Attach a retrieve platform command to the command.
      * @param Command $rpcommand Retrieve platforms command (optional / could be null or Command object).
@@ -203,7 +220,7 @@ abstract class Command {
         else
             $this->rpcommand = $rpcommand;
     }
-    
+
     /**
      * Get the command's category.
      * @return Command_Category Command's category.
@@ -211,7 +228,7 @@ abstract class Command {
     public function getCategory() {
         return $this->category;
     }
-    
+
     /**
      * Define the command's category.
      * @param Command_Category $category Command's category.
@@ -219,9 +236,9 @@ abstract class Command {
     public function setCategory(Command_Category $category) {
         $this->category = $category;
     }
-    
+
     /**
-     * Get command's index on this category. 
+     * Get command's index on this category.
      * @returm mixed The index of the command if is in a category or null otherwise.
      */
     public function getIndex() {
@@ -235,7 +252,7 @@ abstract class Command {
      * Safe comparator.
      * @param Command $command The commande to compare to.
      * @return boolean True if the compared command is the same of command parameter, false otherwise.
-     */    
+     */
     public function equals($command) {
         return ($command->getName() == $this->name);
     }

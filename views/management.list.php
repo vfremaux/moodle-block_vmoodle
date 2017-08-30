@@ -17,21 +17,26 @@
 /**
  * Redirection to a certain page of Vmoodle management.
  *
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  * @author Moheissen Fabien (fabien.moheissen@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 // Check status of previous action
 if (isset($SESSION->vmoodle_ma['confirm_message'])) {
-    echo $OUTPUT->notification($SESSION->vmoodle_ma['confirm_message']->message, $SESSION->vmoodle_ma['confirm_message']->style);
+    if (is_object($SESSION->vmoodle_ma['confirm_message'])) {
+        echo $OUTPUT->notification($SESSION->vmoodle_ma['confirm_message']->message, $SESSION->vmoodle_ma['confirm_message']->style);
+    } else {
+        echo $OUTPUT->notification($SESSION->vmoodle_ma['confirm_message']);
+    }
     echo '<br/>';
     unset($SESSION->vmoodle_ma['confirm_message']);
 }
 
 // if controller results, print them
-if (!empty($controllerresult)){
+if (!empty($controllerresult)) {
     echo '<pre>';
     echo $controllerresult;
     echo '</pre>';
@@ -67,35 +72,52 @@ if ($vmoodles) {
         $vmoodlecheck = '<input type="checkbox" name="vmoodleids[]" value="'.$vmoodle->id.'" />';
 
         $vmoodlecmd = '';
-        $vmoodlecmd .= "<a href=\"view.php?view=management&amp;what=edit&amp;id={$vmoodle->id}\"><img src=\"{$OUTPUT->pix_url('t/edit','core')}\" title=\"".get_string('edithost', 'block_vmoodle')."\" /></a>";
-        if ($vmoodle->enabled == 1) {
+        $editurl = new moodle_url('/blocks/vmoodle/view.php', array('view' => 'management', 'what' => 'edit', 'id' => $vmoodle->id));
+        $pix = $OUTPUT->pix_url('t/edit','core');
+        $label = get_string('edithost', 'block_vmoodle');
+        $vmoodlecmd .= '<a href="'.$editurl.'"><img src="'.$pix.'" title="'.$label.'" /></a>';
 
-            $vmoodlecmd .= " <a href=\"view.php?view=management&amp;what=delete&amp;id={$vmoodle->id}\" onclick=\"return confirm('".get_string('confirmdelete', 'block_vmoodle')."');\"><img src=\"{$OUTPUT->pix_url('t/delete')}\" title=\"".get_string('deletehost', 'block_vmoodle')."\" /></a>";
+        if ($vmoodle->enabled == 1) {
+            $deleteurl = new moodle_url('/blocks/vmoodle/view.php', array('view' => 'management', 'what' => 'delete', 'id' => $vmoodle->id));
+            $pix = $OUTPUT->pix_url('t/delete');
+            $label = get_string('deletehost', 'block_vmoodle');
+            $vmoodlecmd .= '&nbsp;<a href="'.$deleteurl.'" onclick="return confirm(\''.get_string('confirmdelete', 'block_vmoodle').'\');"><img src="'.$pix.'" title="'.$label.'" /></a>';
         } else {
-            $vmoodlecmd .= " <a href=\"view.php?view=management&amp;what=fulldelete&amp;id={$vmoodle->id}\" onclick=\"return confirm('".get_string('confirmfulldelete', 'block_vmoodle')."');\"><img src=\"{$OUTPUT->pix_url('t/delete')}\" title=\"".get_string('fulldeletehost', 'block_vmoodle')."\" /></a>";
+            $fulldeleteurl = new moodle_url('/blocks/vmoodle/view.php', array('view' => 'management', 'what' => 'fulldelete', 'id' => $vmoodle->id));
+            $pix = $OUTPUT->pix_url('t/delete');
+            $label = get_string('fulldeletehost', 'block_vmoodle');
+            $vmoodlecmd .= '&nbsp;<a href="'.$fulldeleteurl.'" onclick="return confirm(\''.get_string('confirmfulldelete', 'block_vmoodle').'\');"><img src="'.$pix.'" title="'.$label.'" /></a>';
         }
-        $vmoodlecmd .= " <a href=\"view.php?view=management&amp;what=snapshot&amp;wwwroot={$vmoodle->vhostname}\"><img src=\"{$CFG->wwwroot}/blocks/vmoodle/pix/snapshot.gif\" title=\"".get_string('snapshothost', 'block_vmoodle')."\" /></a>";
+
+        $snapurl = new moodle_url('/blocks/vmoodle/view.php', array('view' => 'management', 'what' => 'snapshot', 'wwwroot' => $vmoodle->vhostname));
+        $pix = $OUTPUT->pix_url('snapshot', 'block_vmoodle');
+        $label = get_string('snapshothost', 'block_vmoodle');
+        $vmoodlecmd .= '&nbsp;<a href="'.$snapurl.'"><img src="'.$pix.'" title="'.$label.'" /></a>';
         $vmoodlestatus = vmoodle_print_status($vmoodle, true);
         $strmnet = $vmoodle->mnet;
         if ($strmnet < 0) {
             $strmnet = get_string('mnetdisabled', 'block_vmoodle');
-        } elseif ($strmnet == 0) {
+        } else if ($strmnet == 0) {
             $strmnet = get_string('mnetfree', 'block_vmoodle');
         }
-        $vmoodlelnk = "<a href=\"{$CFG->wwwroot}/auth/mnet/jump.php?hostwwwroot=".urlencode($vmoodle->vhostname)."\" target=\"_blank\" >$vmoodle->name</a>";
+
+        $auth = is_enabled_auth('multimnet') ? 'multimnet' : 'mnet';
+        $jumpurl = new moodle_url('/auth/'.$auth.'/jump.php', array('hostwwwroot' => $vmoodle->vhostname));
+        $vmoodlelnk = '<a href="'.$jumpurl.'" target="_blank" >'.$vmoodle->name.'</a>';
+
         $hostlnk = "<a href=\"{$vmoodle->vhostname}\" target=\"_blank\">{$vmoodle->vhostname}</a>";
         $crongap = ($vmoodle->lastcrongap > DAYSECS) ? "<span style=\"color:red\">$vmoodle->lastcrongap s.</span>" : $vmoodle->lastcrongap ." s.";
 
         $table->data[] = array($vmoodlecheck, $vmoodlelnk, $hostlnk, $vmoodlestatus, $strmnet, $vmoodle->croncount, userdate($vmoodle->lastcron), $crongap, $vmoodlecmd);
     }
 
-    $returnurl = new moodle_url('/blocks/vmoodle/view.php', array('view' => $view,'what' => $action));
+    $returnurl = new moodle_url('/blocks/vmoodle/view.php', array('view' => $view, 'what' => $action));
 
     echo '<center>';
     echo '<p>'.$OUTPUT->paging_bar($totalcount, $page, $perpage, $returnurl, 'vpage').'</p>';
     echo '<form name="vmoodlesform" action="'.$returnurl.'" method="POST" >';
     echo html_writer::table($table);
-    
+
     echo '<div class="vmoodle-group-cmd">';
     print_string('withselection', 'block_vmoodle');
     $cmdoptions = array(
@@ -111,23 +133,39 @@ if ($vmoodles) {
     echo $OUTPUT->box(get_string('novmoodles', 'block_vmoodle'));
 }
 
-echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'snapshot', 'wwwroot' => $CFG->wwwroot)), get_string('snapshotmaster', 'block_vmoodle'), 'get');
+$params = array('view' => 'management', 'what' => 'snapshot', 'wwwroot' => $CFG->wwwroot);
+echo $OUTPUT->single_button(new moodle_url('/blocks/vmoodle/view.php', $params), get_string('snapshotmaster', 'block_vmoodle'), 'get');
 
 // Displays buttons for adding a new virtual host and renewing all keys.
 
 echo '<br/>';
 
 $templates = vmoodle_get_available_templates();
+$params = array('view' => 'management', 'what' => 'add');
 if (empty($templates)) {
-    echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'add')), get_string('notemplates', 'block_vmoodle'), 'get', array('tooltip' => null, 'disabled' => true));
+    echo $OUTPUT->single_button(new moodle_url('/blocks/vmoodle/view.php', $params), get_string('notemplates', 'block_vmoodle'), 'get', array('tooltip' => null, 'disabled' => true));
 } else {
-    echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'add')), get_string('addvmoodle', 'block_vmoodle'), 'get');
+    echo $OUTPUT->single_button(new moodle_url('/blocks/vmoodle/view.php', $params), get_string('addvmoodle', 'block_vmoodle'), 'get');
 }
 
 echo '<br/>';
-echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'generateconfigs')), get_string('generateconfigs', 'block_vmoodle'), 'get');
-echo '<br/>';
-echo $OUTPUT->single_button(new moodle_url('view.php', array('view' => 'management', 'what' => 'renewall')), get_string('renewallbindings', 'block_vmoodle'), 'get');
-echo '<br/>';
-echo $OUTPUT->single_button(new moodle_url($CFG->wwwroot.'/blocks/vmoodle/vcron.php'), get_string('runvcron', 'block_vmoodle'), 'get');
+echo '<div class="vmoodle-tools-row">';
+echo '<div class="vmoodle-tool">';
+$params = array('view' => 'management', 'what' => 'generateconfigs');
+echo $OUTPUT->single_button(new moodle_url('/blocks/vmoodle/view.php', $params), get_string('generateconfigs', 'block_vmoodle'), 'get');
+echo '</div>';
+echo '<div class="vmoodle-tool">';
+echo $OUTPUT->single_button(new moodle_url('/blocks/vmoodle/tools/generatecopyscripts.php', $params), get_string('generatecopyscripts', 'block_vmoodle'), 'get');
+echo '</div>';
+echo '<div class="vmoodle-tool">';
+echo $OUTPUT->single_button(new moodle_url('/blocks/vmoodle/tools/generatecustomscripts.php', $params), get_string('generatecustomscripts', 'block_vmoodle'), 'get');
+echo '</div>';
+echo '<div class="vmoodle-tool">';
+$params = array('view' => 'management', 'what' => 'renewall');
+echo $OUTPUT->single_button(new moodle_url('/blocks/vmoodle/view.php', $params), get_string('renewallbindings', 'block_vmoodle'), 'get');
+echo '</div>';
+echo '<div class="vmoodle-tool">';
+echo $OUTPUT->single_button(new moodle_url('/blocks/vmoodle/vcron.php'), get_string('runvcron', 'block_vmoodle'), 'get');
+echo '</div>';
+echo '</div>';
 echo '</center>';

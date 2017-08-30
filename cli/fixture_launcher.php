@@ -17,11 +17,11 @@
 /**
  * This script speads as many fixture executions as required on any amount
  * of VMoodle that need complex fix to be processed.
- * 
- * the launcher will launch several parallel workers that each take care of 
+ *
+ * the launcher will launch several parallel workers that each take care of
  * a little amount of hosts. Distributed mode allow on Linux to have parallelisation
  * of the processing to increase speed.
- * 
+ *
  * Each worker will launch one time the fixture script that must reside in the current blocks/vmoodle/cli
  * lib as a CLI, VMoodle enabled script. Vmoodle enabled scripts start <with a special piece of code
  * that allows host switching before processing the real CLI algorithm.
@@ -99,7 +99,7 @@ if ($options['workers'] === false) {
 
 if (!empty($options['include'])) {
     $allhosts = $DB->get_records_select('block_vmoodle', ' vhostname LIKE "'.$options['include'].'" ', array());
-} elseif(!empty($options['exclude'])) {
+} else if(!empty($options['exclude'])) {
     $allhosts = $DB->get_records_select('block_vmoodle', ' vhostname NOT LIKE "'.$options['include'].'" ', array());
 } else {
     $allhosts = $DB->get_records('block_vmoodle', array('enabled' => 1));
@@ -145,7 +145,7 @@ $i = 1;
 foreach ($joblist as $jl) {
     $jobids = array();
     if (!empty($jl)) {
-        
+
         $logattr = (!empty($options['logroot'])) ? "--logfile={$options['logroot']}/fixture_log_{$i}.log" : '' ;
         $hids = implode(',', $jl);
         $workercmd = "$phpcmd \"{$CFG->dirroot}/blocks/vmoodle/cli/fixture_worker.php\" --nodes=\"$hids\" $logattr --fixture={$options['fixture']} $verboseattr";

@@ -16,14 +16,14 @@
 
 /**
  * Chains commands of pluginlib plugin library.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
- 
-Use \vmoodleadminset_roles\Command_Role_Capability_Sync;
+
+use \vmoodleadminset_roles\Command_Role_Capability_Sync;
 
 // Adding requirements.
 require('../../../../config.php');
@@ -74,7 +74,7 @@ switch ($action) {
             redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
         }
 
-        // Retrieving previous command
+        // Retrieving previous command.
         $command = unserialize($SESSION->vmoodle_sa['command']);
         if ($SESSION->vmoodle_sa['wizardnow'] != 'report' || !($command instanceof \vmoodleadminset_roles\Command_Plugins_Compare)) {
             redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
@@ -106,19 +106,19 @@ switch ($action) {
     // Going back to role comparison.
     case 'backtocomparison':
         // Getting old command.
-        if (!isset($SESSION->vmoodle_sa['rolelib']['command']) 
-                || !isset($SESSION->vmoodle_sa['rolelib']['platforms']) 
+        if (!isset($SESSION->vmoodle_sa['rolelib']['command'])
+                || !isset($SESSION->vmoodle_sa['rolelib']['platforms'])
                         || !($SESSION->vmoodle_sa['rolelib']['command'] instanceof \vmoodleadminset_roles\Command_Role_Compare)) {
             redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
         }
         $command = unserialize($SESSION->vmoodle_sa['rolelib']['command']);
         $platforms = $SESSION->vmoodle_sa['rolelib']['platforms'];
-        // Running command to actualize
+        // Running command to actualize.
         $command->run($platforms);
-        // Saving new context
+        // Saving new context.
         $SESSION->vmoodle_sa['command'] = serialize($command);
         $SESSION->vmoodle_sa['platforms'] = $platforms;
-        // Moving to the report
+        // Moving to the report.
         redirect(new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin')));
         break;
 

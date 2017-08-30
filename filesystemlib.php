@@ -36,15 +36,15 @@ define('FS_CLEAR_CONTENT', false);
 * @param boolean $recursive if true, creates recursively all path elements
 * @param string $pathbase the base path
 */
-function filesystem_create_dir($path, $recursive = 0, $pathbase=null) {
+function filesystem_create_dir($path, $recursive = 0, $pathbase = null) {
     global $CFG;
-   
-    if (is_null($pathbase)){
+
+    if (is_null($pathbase)) {
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     $result = true;
@@ -67,44 +67,44 @@ function filesystem_create_dir($path, $recursive = 0, $pathbase=null) {
 }
 
 /**
-* tests if path is a dir. A simple wrapper to is_dir 
+* tests if path is a dir. A simple wrapper to is_dir
 * @param string $relativepath the path from dataroot
 * @param string $pathbase the base path
 */
-function filesystem_is_dir($relativepath, $pathbase=null){
+function filesystem_is_dir($relativepath, $pathbase = null) {
     global $CFG;
 
-    if (is_null($pathbase)){
+    if (is_null($pathbase)) {
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("is dir <i>$pathbase$relativepath</i><br/>");
     return is_dir($pathbase . $relativepath);
-} 
+}
 
 /**
 * checks if file (or dir) exists. A simple wrapper to file_exists
 * @param string $relativepath the path from dataroot
 * @param string $pathbase the base path
 */
-function filesystem_file_exists($relativepath, $pathbase=null){
+function filesystem_file_exists($relativepath, $pathbase = null) {
     global $CFG;
 
-    if (is_null($pathbase)){
+    if (is_null($pathbase)) {
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("file exists <i>$pathbase$relativepath</i><br/>");
     return file_exists($pathbase . $relativepath);
-} 
+}
 
 /**
 * scans for entries within a directory
@@ -114,15 +114,15 @@ function filesystem_file_exists($relativepath, $pathbase=null){
 * @param string $pathbase the base path
 * @return an array of entries wich are local names in path
 */
-function filesystem_scan_dir($relativepath, $hiddens = 0, $what = 0, $pathbase=null){
+function filesystem_scan_dir($relativepath, $hiddens = 0, $what = 0, $pathbase = null) {
     global $CFG;
 
     if (is_null($pathbase)){
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("scanning <i>$pathbase$relativepath</i><br/>");
@@ -147,7 +147,7 @@ function filesystem_scan_dir($relativepath, $hiddens = 0, $what = 0, $pathbase=n
     }
     closedir($dir);
     return $entries;
-} 
+}
 
 /**
 * clears and removes an entire dir
@@ -156,21 +156,21 @@ function filesystem_scan_dir($relativepath, $hiddens = 0, $what = 0, $pathbase=n
 * @param string $pathbase the base path
 * @return an array of entries wich are local names in path
 */
-function filesystem_clear_dir($relativepath, $fullDelete = false, $pathbase=null) {
+function filesystem_clear_dir($relativepath, $fullDelete = false, $pathbase = null) {
     global $CFG;
 
-    if (is_null($pathbase)){
+    if (is_null($pathbase)) {
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("clearing dir <i>$pathbase$relativepath</i><br/>");
     $exists = filesystem_is_dir($relativepath, $pathbase);
     if (!$exists && !$fullDelete) {
-        return filesystem_create_dir($relativepath, $pathbase);   
+        return filesystem_create_dir($relativepath, $pathbase);
     }
     if (!$exists && $fullDelete) {
         return true;
@@ -198,13 +198,13 @@ function filesystem_clear_dir($relativepath, $fullDelete = false, $pathbase=null
 */
 function filesystem_copy_tree($source, $dest, $pathbase=null, $excludepatterns = null) {
     global $CFG;
-   
-    if (is_null($pathbase)){
+
+    if (is_null($pathbase)) {
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
    if (@$CFG->filedebug) mtrace("copying tree <i>$pathbase$source</i> to <i>$pathbase$dest</i><br/>");
@@ -245,15 +245,15 @@ function filesystem_copy_tree($source, $dest, $pathbase=null, $excludepatterns =
 * @param string $data the data to store in
 * @param string $pathbase the base path
 */
-function filesystem_store_file($relativepath, $data, $pathbase=null) {
+function filesystem_store_file($relativepath, $data, $pathbase = null) {
     global $CFG;
 
-    if (is_null($pathbase)){
+    if (is_null($pathbase)) {
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("storing <i>$pathbase$relativepath</i><br/>");
@@ -272,15 +272,15 @@ function filesystem_store_file($relativepath, $data, $pathbase=null) {
 * @param string $pathbase the base path
 * @return the data as a string
 */
-function filesystem_read_a_file($relativepath, $pathbase=null) {
+function filesystem_read_a_file($relativepath, $pathbase = null) {
     global $CFG;
 
     if (is_null($pathbase)){
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("reading <i>$pathbase$relativepath</i><br/>");
@@ -298,15 +298,15 @@ function filesystem_read_a_file($relativepath, $pathbase=null) {
 * @param string $pathbase the base path
 * @return the data as a string
 */
-function filesystem_delete_file($relativepath, $pathbase=null){
+function filesystem_delete_file($relativepath, $pathbase = null) {
     global $CFG;
 
     if (is_null($pathbase)){
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("deleting file <i>$relativepath</i><br/>");
@@ -320,15 +320,15 @@ function filesystem_delete_file($relativepath, $pathbase=null){
 * @param string $relativepath the path from dataroot
 * @param string $pathbase the base path
 */
-function filesystem_remove_dir($relativepath, $pathbase=null){
+function filesystem_remove_dir($relativepath, $pathbase = null) {
     global $CFG;
 
     if (is_null($pathbase)){
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("deleting dir <i>$relativepath</i><br/>");
@@ -341,15 +341,15 @@ function filesystem_remove_dir($relativepath, $pathbase=null){
 * @param string $relativepath the path from dataroot
 * @param string $pathbase the base path
 */
-function filesystem_move_file($source, $dest, $pathbase=null){
+function filesystem_move_file($source, $dest, $pathbase = null) {
     global $CFG;
 
     if (is_null($pathbase)){
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (filesystem_file_exists($source, $pathbase)){
@@ -365,15 +365,15 @@ function filesystem_move_file($source, $dest, $pathbase=null){
 * @param string $dest the dest path from dataroot
 * @param string $pathbase the base path
 */
-function filesystem_copy_file($source, $dest, $pathbase=null) {
+function filesystem_copy_file($source, $dest, $pathbase = null) {
     global $CFG;
 
     if (is_null($pathbase)){
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
 
     if (@$CFG->filedebug) mtrace("copying file <i>$pathbase$source</i> to <i>$pathbase$dest</i><br/>");
@@ -389,17 +389,17 @@ function filesystem_copy_file($source, $dest, $pathbase=null) {
 * @param string $filemask the filemask for filtering
 * @param string $pathbase the base path
 */
-function filesystem_get_file_list($path, $filemask = "*.*", $pathbase=null) {
+function filesystem_get_file_list($path, $filemask = "*.*", $pathbase = null) {
     global $CFG;
 
     if (is_null($pathbase)){
         $pathbase = $CFG->dataroot . '/';
-    } elseif ($pathbase === '') {
+    } else if ($pathbase === '') {
         $pathbase = '';
     } else {
-        $pathbase = $pathbase . '/'; 
+        $pathbase = $pathbase . '/';
     }
-   
+
     if (preg_match("/(.*)\/$/", $path, $matches)) $path = $matches[1];
     $files = glob($pathbase . "{$path}/{$filemask}");
     return $files;

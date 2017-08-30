@@ -14,23 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace vmoodleadminset_generic;
-Use \Exception;
-
 /**
  * Exception about Command_SetConfig.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_generic;
+
+defined('MOODLE_INTERNAL') || die();
+
+use \Exception;
+
 class Command_SetConfig_Exception extends Exception {
     /**
      * Constructor with localized message.
      * @param string $identifier The key identifier for the localized string.
      * @param mixed $a An object, string or number that can be used (optional).
-    */
+     */
     public function __construct($identifier, $a=null) {
         parent::__construct(vmoodle_get_string($identifier, 'vmoodleadminset_generic', $a));
     }

@@ -17,11 +17,13 @@
 /**
  * Manage the command wizard.
  *
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
+
 $PAGE->requires->js('/blocks/vmoodle/js/sadmin.js');
 
 // Declaring parameters.
@@ -34,19 +36,19 @@ if (isset($SESSION->vmoodle_sa['wizardnow'])) {
 // Include the step wizard.
 switch ($wizardnow) {
     case 'commandchoice':
-        $result = include 'sadmin.commandchoice.php';
+        $result = include('sadmin.commandchoice.php');
         break;
 
     case 'advancedcommand':
-        $result = include 'sadmin.advancedcommand.php';
+        $result = include('sadmin.advancedcommand.php');
         break;
 
     case 'targetchoice':
-        $result = include 'sadmin.targetchoice.php';
+        $result = include('sadmin.targetchoice.php');
         break;
 
-	case 'report':
-        $result = include 'sadmin.report.php';
+    case 'report':
+        $result = include('sadmin.report.php');
         break;
 
     default:

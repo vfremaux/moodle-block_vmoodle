@@ -14,18 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace vmoodleadminset_generic;
-Use \block_vmoodle\commands\Command;
-Use \StdClass;
-
 /**
  * Describes meta-administration plugin's command for Maintenance setup.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Valery Fremaux (valery.fremaux@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_generic;
+
+defined('MOODLE_INTERNAL') || die();
+
+use \block_vmoodle\commands\Command;
+use \StdClass;
+
 class Command_SetConfig extends Command {
 
     /**
@@ -49,12 +52,13 @@ class Command_SetConfig extends Command {
         parent::__construct($name, $description, $parameters, $rpcommand);
 
         if (is_null($parameters) || !is_array($parameters)) {
-            throw new Command_SetConfig_Exception('arrayexpected');
+            throw new \coding_exception('Parameter expected should be an array or a null');
         }
 
         foreach ($parameters as $param) {
-            if (!in_array($param->getName(), array('key', 'value'))) {
-                throw new Command_SetConfig_Exception('unexpectedparam');
+            $pname = $param->getName();
+            if (!in_array($pname, array('key', 'value'))) {
+                throw new \coding_exception('SetConfig : Parameter name ('.$pname.') is not in expected namelist. Check plugin configuration file.');
             }
         }
     }
@@ -108,20 +112,27 @@ class Command_SetConfig extends Command {
         // Sending requests.
         foreach($mnet_hosts as $mnet_host) {
             // Sending request.
-            if (!$rpc_client->send($mnet_host)) {
-                $response = new StdClass();
-                $response->status = MNET_FAILURE;
-                $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
-                if (debugging()) {
-                    echo '<pre>';
-                    var_dump($rpc_client);
-                    echo '</pre>';
+            if ($mnet_host->wwwroot == $CFG->wwwroot) {
+                if (has_capability('block/vmoodle:execute', context_system::instance())) {
+                    $responses[$mnet_host->wwwroot] = 'Local : '.mnetadmin_rpc_set_config(null, $this->getParameter('key')->getValue(), $this->getParameter('value')->getValue());
                 }
             } else {
-                $response = json_decode($rpc_client->response);
+
+                if (!$rpc_client->send($mnet_host)) {
+                    $response = new StdClass();
+                    $response->status = MNET_FAILURE;
+                    $response->errors[] = implode('<br/>', $rpc_client->getErrors($mnet_host));
+                    if (debugging()) {
+                        echo '<pre>';
+                        var_dump($rpc_client);
+                        echo '</pre>';
+                    }
+                } else {
+                    $response = json_decode($rpc_client->response);
+                }
+                // Recording response.
+                $responses[$mnet_host->wwwroot] = $response;
             }
-            // Recording response.
-            $responses[$mnet_host->wwwroot] = $response;
         }
 
         // Saving results.
@@ -149,7 +160,7 @@ class Command_SetConfig extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;

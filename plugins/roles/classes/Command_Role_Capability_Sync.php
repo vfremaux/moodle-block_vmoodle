@@ -1,22 +1,37 @@
 <?php
-
-namespace vmoodleadminset_roles;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \block_vmoodle\commands\Command_Parameter;
-Use \StdClass;
-Use \moodle_url;
-
-require_once($CFG->libdir.'/accesslib.php');
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Describes a role syncrhonisation command.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_roles;
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \block_vmoodle\commands\Command_Parameter;
+use \StdClass;
+use \moodle_url;
+
+require_once($CFG->libdir.'/accesslib.php');
+
 class Command_Role_Capability_Sync extends Command {
 
     /**
@@ -25,7 +40,7 @@ class Command_Role_Capability_Sync extends Command {
      */
     public function __construct() {
         global $DB;
-        
+
         // Getting command description.
         $cmd_name = vmoodle_get_string('cmdsynccapabilityname', 'vmoodleadminset_roles');
         $cmd_desc = vmoodle_get_string('cmdsynccapabilitydesc', 'vmoodleadminset_roles');
@@ -111,7 +126,7 @@ class Command_Role_Capability_Sync extends Command {
         if (!($rpc_client->send($mnet_host) && ($response = json_decode($rpc_client->response)) && (
                 $response->status == RPC_SUCCESS ||
                 ($response->status == RPC_FAILURE_RECORD && (
-                    in_array($response->errors, 'No capabilites for this role.') || 
+                    in_array($response->errors, 'No capabilites for this role.') ||
                     in_array($response->error, 'No role capability found.'))
                 )
             ))) {
@@ -186,19 +201,19 @@ class Command_Role_Capability_Sync extends Command {
                 $response = json_decode($rpc_client->response);
                 $response->errors[] = implode('<br/>', $response->errors);
             }
-            // Recording response
+            // Recording response.
             $responses[$mnet_host->wwwroot] = $response;
         }
-        // Saving results
+        // Saving results.
         $this->results = $responses + $this->results;
     }
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @return                mixed            The result or null if result does not exist.
-     * @throws                Command_Exception.
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @return mixed The result or null if result does not exist.
+     * @throws Command_Exception.
      */
     public function getResult($host = null, $key = null) {
         global $CFG, $SESSION,$DB,$OUTPUT;
@@ -215,7 +230,7 @@ class Command_Role_Capability_Sync extends Command {
             } else {
                 return null;
             }
-        } elseif (!array_key_exists($host, $this->results)) {
+        } else if (!array_key_exists($host, $this->results)) {
             return null;
         }
         $result = $this->results[$host];
@@ -223,7 +238,7 @@ class Command_Role_Capability_Sync extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;

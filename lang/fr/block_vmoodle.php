@@ -1,13 +1,27 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// Capabilities
+// Capabilities.
 
 $string['vmoodle:execute'] = 'Exécuter des méta-commandes';
 $string['vmoodle:managevmoodles'] = 'Gérer les satellites moodle';
 $string['vmoodle:myaddinstance'] = 'Peut ajouter une instance aux pages My';
 $string['vmoodle:addinstance'] = 'Peut ajouter une instance';
 
-// Block Strings
+// Block Strings.
 
 $string['addall'] = 'Tout ajouter';
 $string['addformdbgroup'] = 'Base de données ';
@@ -19,17 +33,20 @@ $string['addformnfgroup'] = 'Réseau et fichiers ';
 $string['addformshortname'] = 'Nom raccourci ';
 $string['addtoselection'] = 'Ajouter à la selection';
 $string['addvmoodle'] = 'Définir une nouvelle plate-forme virtuelle moodle';
+$string['adjustconfig'] = 'Ajuster les fichiers de configuration';
 $string['administrate'] = 'Administrer';
 $string['administration'] = 'Administration';
 $string['advancedmode'] = 'Mode avancé';
+$string['allowmnetusersasadmin'] = 'Autoriser les utilisateurs réseau à être administrateur de site';
 $string['assistedcommand'] = 'Commandes assistées';
 $string['automatedschema'] = 'Automatiser le schéma ';
 $string['automatedschema_comment'] = '';
 $string['available'] = 'Disponible(s)';
-$string['badblockinsert'] = 'Impossible d\'insérer le nouveau block dans la table \'block_vmoodle\'.';
-$string['badblockupdate'] = 'Impossible de mettre à jour le block dans la table \'block_vmoodle\'.';
-$string['badbootstraphost'] = 'Une erreur est survenue lors du bootstrap de la plate-forme {$a} (clés ou autres).';
-$string['badbootstrapnewhost'] = 'Une erreur est survenue lors du bootstrap de la nouvelle plate-forme (clés ou autres).';
+$string['backupdbcopyscript'] = 'Scripts pour backuper les bases de données';
+$string['badblockinsert'] = 'Impossible d\'insérer le nouveau bloc dans la table \'block_vmoodle\'.';
+$string['badblockupdate'] = 'Impossible de mettre à jour le bloc dans la table \'block_vmoodle\'.';
+$string['badbootstraphost'] = 'Une erreur est survenue lors de l\'amorçage réseau de la plate-forme {$a} (clés ou autres).';
+$string['badbootstrapnewhost'] = 'Une erreur est survenue lors de l\'amorçage réseau de la nouvelle plate-forme (clés ou autres).';
 $string['badbothblockhost'] = 'Aucun block possède le même \'vhostname\' que le \'wwwroot\' de la plate-forme sélectionnée.';
 $string['badclientuser'] = 'Utilisateur du client incorrect';
 $string['badconnection'] = 'Erreur de connexion à la base de données.';
@@ -44,13 +61,13 @@ $string['badmoodledatapath'] = 'Le chemin spécifié n\'est pas correct. Veuille
 $string['badmoodledatapathalreadyused'] = 'Le chemin spécifié est déjà utilisé par une autre plate-forme.';
 $string['badmoodledatapathbackslash'] = 'Un seul backslash \'\\\' est nécessaire pour séparer les chaînes.';
 $string['badmoodleid'] = 'Cette plate-forme n\'existe plus.';
+$string['badnohyphensindbname'] = 'Pas de caractère tiret (moins) dans les noms de base de données !';
 $string['badregexp'] = 'Format attendu : /regexp/modifiers';
 $string['badservicesnumber'] = 'Il n\'existe plus aucun service sur cette plate-forme.';
 $string['badshortname'] = 'Le nom raccourci ne doit pas comporter d\'espaces...';
 $string['badtemplatation'] = 'Erreur dans le chargement de la base de données depuis le template choisi (lecture écriture ou suppression de fichiers).';
 $string['badthishostdata'] = 'Impossible de récupérer les données de la plate-forme courante, depuis la table \'mnet_host\'.';
 $string['badvhostname'] = 'Forme de l\'hôte incorrecte...';
-$string['badnohyphensindbname'] = 'Pas de caractère tiret (moins) dans les noms de base de données !';
 $string['blockname'] = 'Ferme de Moodles';
 $string['blocknameplural'] = 'Fermes de Moodles';
 $string['cancelcommand'] = 'Annuler la commande';
@@ -59,18 +76,19 @@ $string['categoryignored'] = 'La catégorie {$a} a été ignorée :';
 $string['categorywrongname'] = 'Le nom de la catégorie est incorrect.';
 $string['categorywrongpluginname'] = 'Le nom du plugin associé à la catégorie {$a} est incorrect.';
 $string['certificate'] = 'Certificat';
-$string['closewindow'] = 'Fermer cette fenêtre';
-$string['climakestep'] = 'Phase de construction {$a}';
-$string['clisnapstep'] = 'Phase de capture {$a}';
-$string['cliusingtemplate'] = 'Construction sur le modèle {$a}';
-$string['climissingtemplateskip'] = 'Les fichiers du modèle {$a} n\'ont pas été trouvés';
-$string['clistart'] = 'Démarrage de la production';
-$string['cliprocesserror'] = 'Une erreur irrécupérable est survenue. Aborting.';
-$string['climakenode'] = 'Construction du noeud {$a}';
 $string['clidestroynode'] = 'Destruction du noeud {$a}';
-$string['clisnapnode'] = 'Capture du noeud {$a}';
+$string['climakenode'] = 'Construction du noeud {$a}';
+$string['climakestep'] = 'Phase de construction {$a}';
+$string['climissingtemplateskip'] = 'Les fichiers du modèle {$a} n\'ont pas été trouvés';
 $string['clinodeexistsskip'] = 'Le noeud {$a} existe déjà. Noeud ignoré.';
 $string['clinodemissingskip'] = 'Le noeud {$a} n\'existe pas. Ligne ignorée.';
+$string['clioperated'] = 'Opéré par la console';
+$string['cliprocesserror'] = 'Une erreur irrécupérable est survenue. Abandon.';
+$string['clisnapnode'] = 'Capture du noeud {$a}';
+$string['clisnapstep'] = 'Phase de capture {$a}';
+$string['clistart'] = 'Démarrage de la production';
+$string['cliusingtemplate'] = 'Construction sur le modèle {$a}';
+$string['closewindow'] = 'Fermer cette fenêtre';
 $string['commanddescription'] = 'Description';
 $string['commandemptydescription'] = 'La description de la commande est vide.';
 $string['commandemptyname'] = 'Le nom de la commande est vide.';
@@ -82,10 +100,11 @@ $string['commands'] = 'Commandes';
 $string['commandsadministration'] = 'Administration des commandes :';
 $string['commandwrongparametertype'] = 'Les paramètres de la commande {$a} sont de types non supportées.';
 $string['confirmdelete'] = 'Voulez-vous vraiment supprimer (désactiver) cette plate-forme ?';
-$string['confirmfulldelete'] = 'Voulez-vous vraiment détruire (definitif) cette plate-forme ?';
 $string['confirmedit'] = 'Les changements effectués sont sous la responsabilité de l\'administrateur, en particulier en cas de modification du nom de la base de données, du préfixe des tables et du chemin "moodledata". Etes-vous sûr(e) de vouloir continuer ?';
+$string['confirmfulldelete'] = 'Voulez-vous vraiment détruire (definitif) cette plate-forme ?';
 $string['connectionok'] = 'Connexion OK';
 $string['contains'] = 'contient';
+$string['copyscripts'] = 'Scripts pour la copie des instances VMoodle';
 $string['couldnotconnecttodb'] = 'Impossible de se connecter à la base de données';
 $string['couldnotcreateclient'] = 'Impossible de créer un client MNET sur "{$a}".';
 $string['couldnotcreatedataroot'] = 'Impossible de créer la racine des fichiers';
@@ -94,12 +113,19 @@ $string['couldnotdropdb'] = 'Impossible de supprimer le base de données';
 $string['couldnotfixdatabase'] = 'ERREUR: Impossible d\'utiliser la base de données.';
 $string['couldnotkeyboot'] = 'Impossible de booter la clef distante : {$a}';
 $string['cron'] = 'Tâches cron';
+$string['cronlines'] = 'Lignes de cron à ajouter';
+$string['cronmode'] = 'Mode cron';
+$string['crons'] = 'Crons';
 $string['crontab'] = 'Table de tâches CRON ';
+$string['csvencoding'] = 'Encodage CSV';
+$string['csvencoding_desc'] = 'Choisissez l\'encodage pour le fichier nodelist.csv';
 $string['databasecreated'] = 'Base de données créée';
 $string['databaseloaded'] = 'Base de données initialisée ';
 $string['databasesetup'] = 'Base de données configurée ';
-$string['dataexchange_name'] = 'Echange de données';
+$string['datacopyscript'] = 'Scripts pour la copie des fichiers utilisateurs';
+$string['dataexchange_description'] = 'Les hôtes abonnés à ce service peuvent evoyer des demandes de données à d\'autres Moodle<br/>Les hôtes publiant ce service peuvent fournir des données à d\'autres Moodle<br/>';
 $string['dataexchange_description'] = 'Ouvre des finctions permettant l\'échange de données texte de configuration simple entre systèmes ';
+$string['dataexchange_name'] = 'Echange de données';
 $string['datapath'] = 'Chemin des fichiers';
 $string['datapathavailable'] = 'Le référentiel de fichiers est disponible. Le répertoire existe et est vide.';
 $string['datapathbase'] = 'Base du chemin "moodledata" ';
@@ -109,6 +135,7 @@ $string['datatpathunbound'] = 'Erreur dans la mise en place du chemin de fichier
 $string['db'] = 'Base de données';
 $string['dbbasename'] = 'Nom de la base';
 $string['dbcommanddoesnotmatchanexecutablefile'] = 'La cible de la commande de base de données n\'est pas exécutable depuis le serveur : {$a}';
+$string['dbcopyscript'] = 'Scripts pour la copie des bases de données';
 $string['dbhost'] = 'Hôte de la base';
 $string['dblogin'] = 'Login de base';
 $string['dbname'] = 'Nom de la base';
@@ -117,44 +144,55 @@ $string['dbpersist'] = 'Connexion persistante';
 $string['dbprefix'] = 'Préfixe des tables';
 $string['dbtype'] = 'Type de base';
 $string['delete'] = 'Supprimer';
+$string['deleteconfirm'] = 'Cette opération n\\\'est pas réversible. Continuer ?';
 $string['deletehost'] = 'Supprimer (désactiver) la configuration';
+$string['deleteinstances'] = 'détruire les instances ';
+$string['description'] = 'Description';
 $string['details'] = 'Détails :';
+$string['disableinstances'] = 'désactiver les instances ';
 $string['donotopenservices'] = 'Ne pas ouvrir les services réseau MNET';
 $string['edithost'] = 'Modifier la configuration';
 $string['editvmoodle'] = 'Modifier une définition de plate-forme virtuelle';
 $string['elements'] = 'élément(s)';
+$string['enableinstances'] = 'activer les instances ';
 $string['errorbindingmnet'] = 'Erreur de raccordement réseau MNET';
+$string['errorinvalidsessionorplatform'] = 'Les données de session VMoodle sont invalides ou aucune platforme n\'a été indiquée.';
+$string['errorplatformnotavailable'] = 'La plate-forme {$a} n\'est pas disponible.';
 $string['errorreactivetemplate'] = 'Le nom du chemin du moodle data et le nom de la base de données est introuvable pour réactiver la plateforme désirée.';
 $string['errorsetupdb'] = 'Erreur de mise en place de la base de données';
 $string['failedplatforms'] = 'Echec des plates-formes :';
 $string['filter'] = 'Filtrer';
 $string['fixcommand'] = 'Corriger la commande';
 $string['forcedns'] = 'Forcer le déployement même si le nom de domaine n\'est pas résolu';
+$string['forcehttpsproto'] = 'Forcer le Proto HTTPS (Cas)';
+$string['fromversion'] = 'Motif de version d\'origine';
 $string['fulldeletehost'] = 'Détruire totalement';
+$string['generate'] = 'Générer';
 $string['generateconfigs'] = 'Génerer les fichiers de configuration';
+$string['generatecopyscripts'] = 'Génerer les scripts de copie';
+$string['generatecustomscripts'] = 'Génerer des scripts';
+$string['generatedscript'] = 'Script généré';
 $string['generatedconfigs'] = 'Fichiers générés: {$a}';
 $string['hostexists'] = 'Cet hôte existe';
 $string['hostnameexists'] = 'Ce nom d\'hôte existe déjà';
 $string['hostsource'] = 'Source des hôtes';
 $string['insuffisantcapabilities'] = 'Capacités insuffisantes';
 $string['key_autorenew_parms'] = 'Réactualisation automatique des clefs réseau';
-$string['crons'] = 'Crons';
 $string['lastcron'] = 'Dernier Cron';
 $string['lastcrongap'] = '&Delta;';
+$string['maindb'] = 'Base de données principale';
+$string['mainpath'] = 'fichiers utilisateur principaux';
+$string['mainservicesformselection'] = 'Patron vis à vis du Moodle maître<br/>Ce patron est appliqué au nouveau noeud. Le patron "miroir" est appliqué au Moodle maître (ce moodle) ';
 $string['manualcommand'] = 'Commande manuelle';
+$string['massdeployment'] = 'Déploiment massif';
 $string['mastermnetnotice'] = 'Le réseau de l\'hôte maître n\'est pas activé. L\'installation de l\'instance virtuelle continue cependant mais sans l\'activation du réseau. Vous devrez activer les fonctions du réseau Moolde à posteriori';
 $string['mnet'] = 'MNET';
-$string['mnetadmin_description'] = 'En publiant ce service, vous autorisez la plate-forme à être administrée par la méta-administration du site maître.<br/><br/>En vous abonnant à ce service, vous pouvez administrer les autres plates-formes du réseau à partir de cette plate-forme.<br/><br/>';
-$string['mnetadmin_name'] = 'Service de méta-administration';
-$string['dataexchange_description'] = 'Les hôtes abonnés à ce service peuvent evoyer des demandes de données à d\'autres Moodle<br/>Les hôtes publiant ce service peuvent fournir des données à d\'autres Moodle<br/>';
-$string['dataexchange_name'] = 'Echange de données';
-$string['massdeployment'] = 'Déploiment massif';
-$string['csvencoding'] = 'Encodage CSV';
-$string['csvencoding_desc'] = 'Choisissez l\'encodage pour le fichier nodelist.csv';
 $string['mnet_key_autorenew'] = 'Activation';
 $string['mnet_key_autorenew_gap'] = 'Délai d\'anticipation';
 $string['mnet_key_autorenew_time'] = 'Heure programmée de renouvellement des clefs';
 $string['mnetactivationrequired'] = 'Activation de MNET requise';
+$string['mnetadmin_description'] = 'En publiant ce service, vous autorisez la plate-forme à être administrée par la méta-administration du site maître.<br/><br/>En vous abonnant à ce service, vous pouvez administrer les autres plates-formes du réseau à partir de cette plate-forme.<br/><br/>';
+$string['mnetadmin_name'] = 'Service de méta-administration';
 $string['mnetbound'] = 'Connecté par MNET';
 $string['mnetdisabled'] = 'MNET désactivé';
 $string['mnetenabled'] = 'MNET activé';
@@ -165,6 +203,7 @@ $string['multimnet'] = 'Sous-réseau MNET ';
 $string['musthaveshortname'] = 'Le nom court est obligatoire';
 $string['mysqlcmd'] = 'Emplacement de la commande mysql';
 $string['mysqldumpcmd'] = 'Emplacement de la commande mysqldump';
+$string['name'] = 'Nom';
 $string['newvmoodle'] = 'Nouvelle plate-forme virtuelle';
 $string['nextstep'] = 'Continuer';
 $string['nomnet'] = 'Pas de réseau Moodle';
@@ -173,7 +212,7 @@ $string['noplatformchosen'] = 'Aucune plate-forme choisie.';
 $string['notallowed'] = 'Non autorisé';
 $string['notcontains'] = 'ne contient pas';
 $string['notemplates'] = 'Aucun template (snapshot) existant pour définir une nouvelle plate-forme virtuelle moodle';
-$string['novmoodle'] = 'La plateforme et/ou son block correspondant n\'existe plus.';    
+$string['novmoodle'] = 'La plateforme et/ou son bloc correspondant n\'existe plus.';
 $string['novmoodles'] = 'Aucune plate-forme virtuelle définie';
 $string['off'] = 'Désactivé';
 $string['on'] = 'Activé';
@@ -192,19 +231,22 @@ $string['parameterinternalfunctionnotexists'] = 'La fonction "{$a->function_name
 $string['parameterinternalparameternotgiven'] = 'Le paramètre "{$a->parameter_need}" du paramètre "{$a->parameter_name}" n\'est pas fourni.';
 $string['parametervaluenotdefined'] = 'La valeur du paramètre "{$a}" n\'est pas définie.';
 $string['parameterwrongdefaultvalue'] = 'La valeur par défaut du paramètre "{$a}" est incorrecte.';
+$string['peerservicesformselection'] = 'Patron vis à vis des pairs du sous-réseau<br/>Ce patron est appliqué au nouveau noeud. Le patron "miroir" est appliqué à tous les pairs du même sous réseau)';
 $string['pgsqlcmd'] = 'Emplacement de la commande Postgres';
 $string['pgsqldumpcmd'] = 'Emplacement de la commande sqldump de Postgres';
 $string['plateformreactivate'] = 'Plateforme réactivée';
 $string['platformname'] = 'Nom de plateforme';
 $string['plugin'] = 'Plugin';
-$string['pluginname'] = 'VMoodle';
 $string['plugindisabled'] = 'Le plugin a été désactivé.';
 $string['pluginenabled'] = 'Le plugin a été activé.';
+$string['pluginname'] = 'VMoodle';
 $string['pluginnotdisabled'] = 'Le plugin n\'a pas été désactivé.';
 $string['pluginnotenabled'] = 'Le plugin n\'a pas été activé.';
 $string['pluginnotuninstalled'] = 'Le plugin n\'a pas été désintallé.';
 $string['pluginsadministration'] = 'Administration des plugins :';
 $string['pluginuninstalled'] = 'Le plugin {$a} a été correctement désinstallé.';
+$string['postupgrade'] = 'Tâches post-mise à jour';
+$string['preupgrade'] = 'Tâches pré-mise à jour';
 $string['publish'] = 'Publication';
 $string['reactivetemplate'] = 'Réactiver la plateforme';
 $string['regexp'] = 'exp reg';
@@ -214,6 +256,7 @@ $string['renewallbindings'] = 'Renouveller toutes les paires';
 $string['retrieveplatforms'] = 'Récupérer les plates-formes';
 $string['rpcstatus100'] = 'Commande en mode test.';
 $string['rpcstatus200'] = 'Commande exécutée avec succès.';
+$string['rpcstatus404'] = 'Echec RPC. Url cible non trouvée';
 $string['rpcstatus500'] = 'Echec RPC.';
 $string['rpcstatus501'] = 'Pas de compte local pour l\'utilisateur appellant.';
 $string['rpcstatus502'] = 'Echec de configuration.';
@@ -226,14 +269,14 @@ $string['runnewcommand'] = 'Exécuter une nouvelle commande';
 $string['runothercommand'] = 'Exécuter une autre commande sur ces plates-formes';
 $string['runotherplatforms'] = 'Ré-exécuter la commande sur d\'autres plates-formes';
 $string['runvcron'] = 'Exécuter VCron manuellement';
+$string['scriptgenerator'] = 'Générateur de scripts';
 $string['selected'] = 'Sélectionnée(s)';
 $string['services'] = 'Services';
 $string['servicesformselection'] = 'Patron des services par défaut pour les nouvelles instances';
-$string['mainservicesformselection'] = 'Patron vis à vis du Moodle maître<br/>Ce patron est appliqué au nouveau noeud. Le patron "miroir" est appliqué au Moodle maître (ce moodle) ';
-$string['peerservicesformselection'] = 'Patron vis à vis des pairs du sous-réseau<br/>Ce patron est appliqué au nouveau noeud. Le patron "miroir" est appliqué à tous les pairs du même sous réseau)';
 $string['servicesstrategy'] = 'Stratégie de services';
 $string['servicesstrategydefault']    = 'Stratégie de services par défaut';
 $string['servicesstrategysubnetwork'] = 'Stratégie de services du sous-réseau';
+$string['shortname'] = 'Nom canonique';
 $string['shortnameexists'] = 'Le nom court existe';
 $string['skip'] = 'Sauter';
 $string['snapshothost'] = 'Capturer la configuration';
@@ -254,15 +297,20 @@ $string['tabpoolmanage'] = 'Gestion des instances';
 $string['tabpoolsadmin'] = 'Super administration';
 $string['tabpoolservices'] = 'Stratégie de services';
 $string['template'] = 'Modèle de plateforme';
+$string['templatehead'] = 'Modèle de script';
+$string['templatetext'] = 'Texte du script';
+$string['commentformat'] = 'Format de commentaire';
 $string['testconnection'] = 'Test de connexion à la base';
 $string['testdatapath'] = 'Test du dossier Moodledata';
 $string['tools'] = 'Outils';
+$string['toversion'] = 'Version de remplacement';
 $string['unablepopulatecommand'] = 'Impossible de compléter la commande.';
 $string['uninstall'] = 'Désinstaller';
 $string['unknownhost'] = 'L\'hôte que vous tentez de mettre en place n\'est pas connu sur le réseau. Cela va poser des problèmes pour la configuration réseau.';
 $string['unknownhost'] = 'Le nom de domaine de la plate-forme ne peut être résolu. Vous pouvez forcer le passage en reexécutant la procédure, mais les fonctions réseau ne pourront probablement pas être activées correctement.';
 $string['unknownhostforced'] = 'L\'hôte que vous tentez de mettre en place n\'est pas connu sur le réseau. Vous avez demandé un déploiment en mode forcé. Les fonctions du réseau Moodle seront désactivées après déploiement et devront être configurées manuellement.';
 $string['unknownuserhost'] = 'Plate-forme hôte de l\'utilisateur inconnu';
+$string['upgrade'] = 'Mettre à jour les données';
 $string['uploadscript'] = 'Uploader un script';
 $string['vdatapath'] = 'Chemin "moodledata" ';
 $string['vdbbasename'] = 'Préfixe de base ';
@@ -272,8 +320,10 @@ $string['vdbname'] = 'Nom de la base ';
 $string['vdbpass'] = 'Mot de passe ';
 $string['vdbpersist'] = 'Persistance des connexions ';
 $string['vdbprefix'] = 'Préfixe des tables ';
+$string['vdbs'] = 'Bases de données virtuelles';
 $string['vdbtype'] = 'Type de la base de données ';
 $string['vhostname'] = 'Hôte du site';
+$string['vhostname'] = 'Nom d\'hôte';
 $string['virtualplatforms'] = 'Plates-formes virtuelles';
 $string['vmoodleadministration'] = 'Administration des plates-formes virtuelles ';
 $string['vmoodleappname'] = 'Virtualisation Moodle';
@@ -287,22 +337,17 @@ $string['vmoodlemanager'] = 'Gestionnaire de plates-formes virtuelles';
 $string['vmoodlesnapshot1'] = 'ETAPE 1 de 3 : Préparation du snapshot effectuée. La prochaine étape capture la base de données. Elle peut être plus ou moins longue suivant sa taille.';
 $string['vmoodlesnapshot2'] = 'ETAPE 2 de 3 : Base de données capturée. La prochaîne étape capture les fichiers du Moodledata. Elle peut être très longue si de nombreux fichiers ont été ajoutés à la plate-forme.';
 $string['vmoodlesnapshot3'] = 'ETAPE 3 de 3 : Fichiers capturés. La capture de la plate-forme est terminée.';
+$string['vpaths'] = 'Fichiers utilisateurs virtuels';
 $string['vtemplate'] = 'Template de Vmoodle';
-$string['forcehttpsproto'] = 'Forcer le Proto HTTPS (Cas)';
-$string['allowmentusersasadmin'] = 'Autoriser des utilisateurs a être administrateur de site (non standard)';
+$string['weboperated'] = 'Opéré en ligne';
 $string['withmessage'] = 'avec le message "{$a}"';
 $string['withoutmessage'] = 'sans message';
-$string['wrongplugin'] = 'Plugin incorrect.';
-$string['name'] = 'Nom';
-$string['shortname'] = 'Nom canonique';
-$string['description'] = 'Description';
-$string['vhostname'] = 'Nom d\'hôte';
-$string['wwwrootexceedscsrlimits'] = 'Le nom d\'hôte choisi dépasse 64 caractères. Ceci n\'est pas compatible avec les règles de construction des certificats SSL (MNET).';
 $string['withselection'] = 'Avec la sélection: ';
-$string['disableinstances'] = 'désactiver les instances ';
-$string['enableinstances'] = 'activer les instances ';
-$string['deleteinstances'] = 'détruire les instances ';
-$string['deleteconfirm'] = 'Cette opération n\\\'est pas réversible. Continuer ?';
+$string['wrongplugin'] = 'Plugin incorrect.';
+$string['wwwrootexceedscsrlimits'] = 'Le nom d\'hôte choisi dépasse 64 caractères. Ceci n\'est pas compatible avec les règles de construction des certificats SSL (MNET).';
+$string['makebackup'] = 'Faire des bases de sauvegarde';
+$string['restorebackup'] = 'Restaurer des bases de sauvegarde';
+$string['dropbackup'] = 'Supprimer la sauvegarde';
 
 /*** Help Strings ***/
 $string['name_help'] = '
@@ -330,7 +375,7 @@ $string['description_help'] = '
 <p>Ce texte est recopié comme descriptif du nouveau site créé. Il
 peut être modifié par la suite.</p>
 ';
- 
+
 
 $string['vhostname_help']= '
 <p><b>Hôte apparent de l\'instance</b></p>
@@ -399,7 +444,7 @@ $string['vdatapath_help']='
 fichiers unique appelé "moodledata". Ce champ permet de définir
 l\'emplacement de ce volume de fichiers. Il est en principe autogénéré
 par rapport à une racine par défaut configurée dans les paramètres
-généraux de configuration du block "vmoodle", et à partir du nom court
+généraux de configuration du bloc "vmoodle", et à partir du nom court
 de l\'instance.</p>
 <p>Le répertoire créé est pré-alimenté par les fichiers prédéfinis
 dans le "template de chargement".
@@ -411,12 +456,12 @@ répertoires soit insciptible par votre serveur.</p>
 $string['mnet_help']='
 <p><b>Activation du réseau Moodle</b></p>
 
-<p>Il est possible de choisir diverses stratégies d\'intégration réseau de la nouvelle plate-forme créée.</p> 
+<p>Il est possible de choisir diverses stratégies d\'intégration réseau de la nouvelle plate-forme créée.</p>
 <p>Dans tous les cas, les stratégies réseau des plates-formes pourront toujours être modifiées par l\'administrateur local de chaque Moodle virtuel</p>
 
 <h4>Premier cas : Pas de réseau Moodle</h4>
 
-<p>La plate-forme créée est désactivée au niveau réseau. Elle ne peut communiquer avec aucune autre plate-forme, ni même avec la plate-forme 
+<p>La plate-forme créée est désactivée au niveau réseau. Elle ne peut communiquer avec aucune autre plate-forme, ni même avec la plate-forme
 maître de réseau. Elle ne pourra donc pas être administrée par celle-ci.</p>
 
 <h4>Deuxième cas : Plate-forme autonome</h4>
@@ -432,8 +477,8 @@ maître de réseau. Elle ne pourra donc pas être administrée par celle-ci.</p>
 <p>En choisissant cette option, la plate-forme créée initie un nouveau sous-réseau qui sera publié comme choix possible pour les prochaines
 matérialisations. Elle est initiée réseau avec le maître et active les services de SSO et de meta-administration avec celle-ci</p>
 
-';   
-   
+';
+
 $string['services_help']='
 <p><b>Stratégie de services</b></p>
 
@@ -447,7 +492,7 @@ la nouvelle plate-forme et tous les autres hôtes du sous-réseau.</p>
 dans l\'onglet "Stratégie de services". Elle permet un réglage grossier des
 services entre pairs, mais devra probablement être affinée par l\'administrateur
 pour répondre aux besoins de l\'architecture.</p>
-';   
+';
 
 $string['vtemplate_help']='
 <p><b>Template de chargement</b></p>
@@ -482,5 +527,15 @@ la présence d\'un fichier "manifest" supplémentaire, indiquant les
 racines Web et Système de fichiers de la plate-forme modèle. Cette
 indication permet à l\'algorithme de déploiement de corriger les
 éventuels chemins absolus de la nouvelle instance.</p>
-';   
+';
+
+$string['templatetext_help'] = 'Ecrivez ici le texte du script avec des marque places :
+
+<li>%WWWROOT% : url du site virtuel</li>
+<li>%DBHOST% : Hôte de la base de données</li>
+<li>%DBUSER% : Utilisateur de la base de données</li>
+<li>%DBPASS% : Mot de passe de la base de données</li>
+<li>%DATAROOT% : Position du moodledata</li>
+
+';
 

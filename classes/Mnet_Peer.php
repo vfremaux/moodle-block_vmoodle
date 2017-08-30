@@ -65,7 +65,7 @@ class Mnet_Peer {
      */
     function bootstrap($wwwroot, $pubkey = null, $application, $force = false, $localname = '') {
         global $DB;
-        
+
         if (substr($wwwroot, -1, 1) == '/') {
             $wwwroot = substr($wwwroot, 0, -1);
         }
@@ -73,8 +73,10 @@ class Mnet_Peer {
         if ( ! $this->set_wwwroot($wwwroot) ) {
             $hostname = mnet_get_hostname_from_uri($wwwroot);
 
-            // Get the IP address for that host - if this fails, it will
-            // return the hostname string
+            /*
+             * Get the IP address for that host - if this fails, it will
+             * return the hostname string
+             */
             $ip_address = gethostbyname($hostname);
 
             // Couldn't find the IP address?
@@ -91,8 +93,10 @@ class Mnet_Peer {
                 $this->updateparams->name = $localname;
             }
 
-            // TODO: In reality, this will be prohibitively slow... need another
-            // default - maybe blank string
+            /*
+             * TODO: In reality, this will be prohibitively slow... need another
+             * default - maybe blank string
+             */
             $homepage = file_get_contents($wwwroot);
             if (!empty($homepage)) {
                 $count = preg_match("@<title>(.*)</title>@siU", $homepage, $matches);
@@ -100,10 +104,7 @@ class Mnet_Peer {
                     $this->name = $matches[1];
                     $this->updateparams->name = str_replace("'", "''", $matches[1]);
                 }
-            } else {
-                // debug_trace("Missing remote real name guessing, no other side response");
             }
-            // debug_trace("final name : ".$this->name);
 
             $this->wwwroot = stripslashes($wwwroot);
             $this->updateparams->wwwroot = $wwwroot;
@@ -120,7 +121,7 @@ class Mnet_Peer {
             $this->applicationid = $this->application->id;
             $this->updateparams->applicationid = $this->application->id;
 
-            // start bootstraping as usual through the system command
+            // Start bootstraping as usual through the system command.
             $pubkeytemp = clean_param(mnet_get_public_key($this->wwwroot, $this->application), PARAM_PEM);
             if (empty($pubkey)) {
                 // This is the key difference : force the exchange using vmoodle RPC keyswap !!
@@ -183,7 +184,7 @@ class Mnet_Peer {
 
     function delete_all_sessions() {
         global $CFG, $DB;
-        // TODO: Expires each PHP session individually
+        // TODO: Expires each PHP session individually.
         $sessions = $DB->get_records('mnet_session', array('mnethostid' => $this->id));
 
         if (count($sessions) > 0 && file_exists($CFG->dirroot.'/auth/mnet/auth.php')) {
@@ -206,16 +207,16 @@ class Mnet_Peer {
         if ($credentials == false) {
             $this->error[] = array('code' => 3, 'text' => get_string("nonmatchingcert", 'mnet', array('subject' => '','host' => '')));
             return false;
-        } elseif (array_key_exists('subjectAltName', $credentials['subject']) && $credentials['subject']['subjectAltName'] != $this->wwwroot) {
+        } else if (array_key_exists('subjectAltName', $credentials['subject']) && $credentials['subject']['subjectAltName'] != $this->wwwroot) {
             $a['subject'] = $credentials['subject']['subjectAltName'];
             $a['host'] = $this->wwwroot;
             $this->error[] = array('code' => 5, 'text' => get_string("nonmatchingcert", 'mnet', $a));
             return false;
-        // PATCH : Accept partial certificates
-        // } elseif ($credentials['subject']['CN'] != $this->wwwroot) {
+        // PATCH+ : Accept partial certificates.
+        // } else if ($credentials['subject']['CN'] != $this->wwwroot) {
         // this change accept certificates that having only the common first chars
-        } elseif ($credentials['subject']['CN'] != substr($this->wwwroot, 0, 64)) {
-        // /PATCH
+        } else if ($credentials['subject']['CN'] != substr($this->wwwroot, 0, 64)) {
+        // PATCH-.
             $a['subject'] = $credentials['subject']['CN'];
             $a['host'] = $this->wwwroot;
             $this->error[] = array('code' => 4, 'text' => get_string("nonmatchingcert", 'mnet', $a));

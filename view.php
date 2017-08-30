@@ -16,15 +16,13 @@
 
 /**
  * view.php
- * 
+ *
  * This file is the main page of vmoodle module which deals with
  * management et super-administration controlers.
  *
  * @package block-vmoodle
  * @category blocks
  */
-
-// Adding requirements.
 
 require_once('../../config.php');
 require_once($CFG->dirroot.'/blocks/vmoodle/lib.php');
@@ -129,8 +127,10 @@ if ($action != '') {
         }
     }
     catch (Exception $e) {
-        echo $OUTPUT->header(); 
+        echo $OUTPUT->header();
         echo $OUTPUT->notification($e->getMessage());
+        $vmoodleadminurl = new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin'));
+        echo $OUTPUT->continue_button($vmoodleadminurl);
         echo $OUTPUT->footer();
         exit();
     }
@@ -159,19 +159,18 @@ ob_end_flush();
 
 // Including contents.
 
-switch($view) {
-    case 'management': {
+switch ($view) {
+    case 'management':
         include $CFG->dirroot.'/blocks/vmoodle/views/management.main.php';
-    }
-    break;
-    case 'sadmin': {
+        break;
+
+    case 'sadmin':
         include $CFG->dirroot.'/blocks/vmoodle/views/sadmin.main.php';
-    }
-    break;
-    case 'services': {
+        break;
+
+    case 'services':
         include $CFG->dirroot.'/blocks/vmoodle/views/services.main.php';
-    }
-    break;
+        break;
 }
 
 echo $OUTPUT->footer();

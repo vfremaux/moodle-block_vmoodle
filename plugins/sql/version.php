@@ -16,7 +16,7 @@
 
 /**
  * Description of Sql plugin library.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)

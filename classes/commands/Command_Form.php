@@ -14,20 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-Use \block_vmoodle\commands\Command_Exception;
-Use \block_vmoodle\commands\Command;
-
-require_once($CFG->libdir.'/formslib.php');
-
-
 /**
  * Defines forms to set Command.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+use \block_vmoodle\commands\Command_Exception;
+use \block_vmoodle\commands\Command;
+
+require_once($CFG->libdir.'/formslib.php');
+
 class Command_Form extends moodleform {
 
     /**
@@ -38,7 +37,7 @@ class Command_Form extends moodleform {
     const MODE_DISPLAY_COMMAND = 3;
 
     /**
-     * Command linked to the form 
+     * Command linked to the form
      */
     public $command;
 
@@ -67,13 +66,13 @@ class Command_Form extends moodleform {
         // Setting form action.
         switch($mode) {
             case self::MODE_COMMAND_CHOICE:
-                $url = 'view.php?view=sadmin&what=validateassistedcommand';
+                $url = new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin', 'what' => 'validateassistedcommand'));
                 break;
             case self::MODE_RETRIEVE_PLATFORM:
-                $url = 'view.php?view=sadmin&what=gettargetbyvalue';
+                $url = new moodle_url('/blocks/vmoodle/view.php', array('view' => 'sadmin', 'what' => 'gettargetbyvalue'));
                 break;
             case self::MODE_DISPLAY_COMMAND:
-                $url = 'view.php?view=targetchoice';
+                $url = new moodle_url('/blocks/vmoodle/view.php', array('view' => 'targetchoice'));
                 break;
             default:
                 throw new Command_Exception('badformmode');
@@ -82,7 +81,7 @@ class Command_Form extends moodleform {
         // Calling parent's constructor.
         parent::__construct($url);
     }
-    
+
     /**
      * Describes form depending on command.
      * @throws Command_Exception.
@@ -126,19 +125,13 @@ class Command_Form extends moodleform {
                     }
                     break;
                     case 'text': {
-                        $mform->addElement('text', $parameter->getName(), $parameter->getDescription());
+                        $mform->addElement('text', $parameter->getName(), $parameter->getDescription(), $parameter->getAttributes());
                         $mform->setType($parameter->getName(), PARAM_TEXT);
-                        if ($this->mode != self::MODE_DISPLAY_COMMAND) {
-                            // $mform->addRule($parameter->getName(), null, 'required', null, 'client');
-                        }
                     }
                     break;
                     case 'ltext': {
                         $mform->addElement('textarea', $parameter->getName(), $parameter->getDescription(), 'wrap="virtual" rows="20" cols="50"');
                         $mform->setType($parameter->getName(), PARAM_TEXT);
-                        if ($this->mode != self::MODE_DISPLAY_COMMAND) {
-                            // $mform->addRule($parameter->getName(), null, 'required', null, 'client');
-                        }
                     }
                     break;
                     case 'internal': {
@@ -156,7 +149,7 @@ class Command_Form extends moodleform {
         }
 
         // Adding submit button.
-        switch($this->mode) {
+        switch ($this->mode) {
             case self::MODE_COMMAND_CHOICE:
                 $mform->addElement('submit', 'submitbutton', get_string('nextstep', 'block_vmoodle'));
                 break;

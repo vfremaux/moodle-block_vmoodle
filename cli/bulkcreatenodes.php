@@ -161,7 +161,7 @@ foreach ($nodes as $n) {
             $input = readline("Continue (y/n|r) ?\n");
             if ($input == 'r' || $input == 'R'){
                 $vmoodlestep--;
-            } elseif ($input == 'n' || $input == 'N') {
+            } else if ($input == 'n' || $input == 'N') {
                 echo "finishing\n";
                 exit;
             }
@@ -172,12 +172,13 @@ foreach ($nodes as $n) {
 
     $VDB = vmoodle_setup_DB($n);
 
-    // special fix for deployed networks : 
+    // special fix for deployed networks :
     // Fix the master node name in mnet_host
     // We need overseed the issue of loosing the name of the master node in the deploied instance
     // TODO : this is a turnaround quick fix.
     if ($remote_vhost = $VDB->get_record('mnet_host', array('wwwroot' => $CFG->wwwroot))) {
         global $SITE;
+
         $remote_vhost->name = $SITE->fullname;
         $VDB->update_record('mnet_host', $remote_vhost, 'id');
     }
@@ -255,7 +256,7 @@ foreach ($nodes as $n) {
         }
     }
 
-    if (!empty($n->format)){
+    if (!empty($n->format)) {
         foreach ($n->format as $plugin) {
             mtrace("Setting up format_{$plugin} :\n");
             foreach ($plugin as $setting => $value) {

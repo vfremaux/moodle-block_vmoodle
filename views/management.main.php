@@ -17,33 +17,34 @@
 /**
  * Redirection to a certain page of Vmoodle management.
  *
- * @package block-vmoodle
+ * @package block_vmoodle
  * @category blocks
  * @author Moheissen Fabien (fabien.moheissen@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 // Declaring the page parameter.
-$page = optional_param('page', 'list', PARAM_TEXT);
+$action = optional_param('what', 'list', PARAM_TEXT);
 
 // Templates test, for ADD page.
 $templates = vmoodle_get_available_templates();
-if ($page == 'add' && empty($templates)) {
-    $page = 'list';
+if ($action == 'add' && empty($templates)) {
+    $action = 'list';
 }
 
 // Selecting the page.
-switch($page) {
+switch ($action) {
     case 'list': {
-        $result = include 'management.list.php';
+        $result = include($CFG->dirroot.'/blocks/vmoodle/views/management.list.php');
     }
     break;
-    case 'add' : {
-        $result = include 'management.add.php';
+    case 'add': {
+        $result = include($CFG->dirroot.'/blocks/vmoodle/views/management.add.php');
     }
     break;
-    case 'edit' : {
-        $result = include 'management.edit.php';
+    case 'edit': {
+        $result = include($CFG->dirroot.'/blocks/vmoodle/views/management.edit.php');
     }
     break;
     default: {

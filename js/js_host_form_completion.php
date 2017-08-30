@@ -12,7 +12,7 @@ require_once($CFG->dirroot.'/config.php');
         var element  = document.getElementById("id_vdbprefix");
         var element1 = document.getElementById("id_vdbname");
         var element2 = document.getElementById("id_vdatapath");
-        
+
         dirroot = unescape(dirroot);
 
         while(b == false) {
@@ -37,7 +37,7 @@ require_once($CFG->dirroot.'/config.php');
 
     function modifyfield() {
         var element  = document.getElementById("id_vhostname");
-        element.onkeyup = changeHostName; 
+        element.onkeyup = changeHostName;
         element.onclick = changeHostName;
     }
 
@@ -59,8 +59,8 @@ require_once($CFG->dirroot.'/config.php');
                 if (tab1 != null && tab1.length >= 1) {
                     element.value = "mdl_"+tab1[0];
                     element1.value = "vmoodle_"+tab1[0];
-                    element1.value.replace('-', '_'); // do NOT admit hyphens in db names as dangerous for unescaped SQL syntax
-                    element1.value.replace(' ', '_'); // do NOT admit spaces in db names as dangerous for unescaped SQL syntax
+                    element1.value = element1.value.replace('-', '_'); // do NOT admit hyphens in db names as dangerous for unescaped SQL syntax
+                    element1.value = element1.value.replace(' ', '_'); // do NOT admit spaces in db names as dangerous for unescaped SQL syntax
                 }
 
                 dirroot = unescape(dirroot);

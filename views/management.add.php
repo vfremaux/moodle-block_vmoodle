@@ -22,6 +22,7 @@
  * @author Moheissen Fabien (fabien.moheissen@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+defined('MOODLE_INTERNAL') || die();
 
 // Loading the library.
 Use \block_vmoodle\Host_Form;
@@ -38,6 +39,7 @@ if (isset($SESSION->vmoodle_mg['dataform'])) {
     $platform_form = new \block_vmoodle\Host_Form('add', null);
 
     if ($CFG->block_vmoodle_automatedschema) {
+        $formdata = new StdClass;
         if ($CFG->block_vmoodle_mnet == 'NEW') {
             $lastsubnetwork = $DB->get_field('block_vmoodle', 'MAX(mnet)', array());
             $formdata->mnet = $lastsubnetwork + 1;

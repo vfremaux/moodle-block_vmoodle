@@ -1,40 +1,52 @@
 <?php
-
-namespace vmoodleadminset_test;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Category;
-Use \block_vmoodle\commands\Command_Parameter;
-Use \block_vmoodle\commands\Command_Parameter_Internal;
-Use \block_vmoodle\commands\Command_Exception;
-Use \vmoodleadminset_roles\Command_Role_Sync;
-Use \vmoodleadminset_roles\Command_Role_Compare;
-Use \vmoodleadminset_roles\Command_Role_Capability_Sync;
-Use \vmoodleadminset_upgrade\Command_Upgrade;
-Use \vmoodleadminset_sql\Command_Sql;
-Use \vmoodleadminset_sql\Command_MultiSql;
-Use \vmoodleadminset_test\CommandWrapper;
-Use \Exception;
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Description of assisted commands for testing generic oommands.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  */
+namespace vmoodleadminset_test;
 
-// Creating category
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Category;
+use \block_vmoodle\commands\Command_Parameter;
+use \block_vmoodle\commands\Command_Parameter_Internal;
+use \block_vmoodle\commands\Command_Exception;
+use \vmoodleadminset_roles\Command_Role_Sync;
+use \vmoodleadminset_roles\Command_Role_Compare;
+use \vmoodleadminset_roles\Command_Role_Capability_Sync;
+use \vmoodleadminset_upgrade\Command_Upgrade;
+use \vmoodleadminset_sql\Command_Sql;
+use \vmoodleadminset_sql\Command_MultiSql;
+use \vmoodleadminset_test\CommandWrapper;
+use \Exception;
+
+// Creating category.
 $category = new Command_Category('test');
 
-// Adding commands
+// Adding commands.
 $cmd = new Command_Sql(
     'Command 1',
     'Command without parameter.',
     'SELECT aa FROM bb'
 );
 $category->addCommand($cmd);
-
-/********************************/
 
 $cmd = new Command_Sql(
     'Command 2',
@@ -47,8 +59,6 @@ $cmd = new Command_Sql(
     )
 );
 $category->addCommand($cmd);
-
-/********************************/
 
 $cmd = new Command_Sql(
     'Command 3',
@@ -63,8 +73,6 @@ $cmd = new Command_Sql(
 );
 $category->addCommand($cmd);
 
-/********************************/
-
 $cmd = new Command_Sql(
     'Command 4',
     'Command with a boolean parameter unselected.',
@@ -77,8 +85,6 @@ $cmd = new Command_Sql(
     )
 );
 $category->addCommand($cmd);
-
-/********************************/
 
 $param1 = new Command_Parameter(
     'parameter1',
@@ -99,8 +105,6 @@ $cmd = new Command_Sql(
 );
 $category->addCommand($cmd);
 
-/********************************/
-
 $param1 = new Command_Parameter(
     'parameter1',
     'enum',
@@ -120,8 +124,6 @@ $cmd = new Command_Sql(
 );
 $category->addCommand($cmd);
 
-/*********************************/
-
 $param1 = new Command_Parameter(
     'parameter1',
     'text',
@@ -134,8 +136,6 @@ $cmd = new Command_Sql(
     $param1
 );
 $category->addCommand($cmd);
-
-/************************************/
 
 $param1 = new Command_Parameter(
     'parameter1',
@@ -151,8 +151,6 @@ $cmd = new Command_Sql(
 );
 $category->addCommand($cmd);
 
-/**************************************/
-
 $param1 = new Command_Parameter(
     'parameter1',
     'ltext',
@@ -165,8 +163,6 @@ $cmd = new Command_Sql(
     $param1
 );
 $category->addCommand($cmd);
-
-/*****************************************/
 
 $param1 = new Command_Parameter(
     'parameter1',
@@ -181,8 +177,6 @@ $cmd = new Command_Sql(
     $param1
 );
 $category->addCommand($cmd);
-
-/*****************************/
 
 $param1 = new Command_Parameter(
     'parameter1',
@@ -217,8 +211,6 @@ $cmd = new Command_Sql(
     )
 );
 $category->addCommand($cmd);
-
-/*********************************/
 
 $param1 = new Command_Parameter(
     'parameter1',
@@ -301,6 +293,6 @@ $category->addCommand(new Command_Role_Sync());
 $category->addCommand(new Command_Role_Capability_Sync());
 $category->addCommand(new Command_Role_Compare());
 $category->addCommand(new Command_Upgrade());
-    
-// Returning the category
+
+// Returning the category.
 return $category;

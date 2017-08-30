@@ -19,11 +19,9 @@
  *
  */
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
-}
+defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/blocks/vmoodle/rpclib.php';
+require_once($CFG->dirroot.'/blocks/vmoodle/rpclib.php');
 
 if (!defined('RPC_SUCCESS')) {
     define('RPC_TEST', 100);
@@ -31,7 +29,7 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE', 500);
     define('RPC_FAILURE_USER', 501);
     define('RPC_FAILURE_CONFIG', 502);
-    define('RPC_FAILURE_DATA', 503); 
+    define('RPC_FAILURE_DATA', 503);
     define('RPC_FAILURE_CAPABILITY', 510);
     define('MNET_FAILURE', 511);
     define('RPC_FAILURE_RECORD', 520);
@@ -87,8 +85,10 @@ function mnetadmin_rpc_set_maintenance($user, $message, $hardmaintenance = false
     $response = new stdClass;
     $response->status = RPC_SUCCESS;
 
-    // Keep old hard signalled maintenance mode of 1.9. Can be usefull in case database stops
-    // but needs a patch in config to catch this real case.
+    /*
+     * Keep old hard signalled maintenance mode of 1.9. Can be usefull in case database stops
+     * but needs a patch in config to catch this real case.
+     */
     $filename = $CFG->dataroot.'/maintenance.html';
 
     if ($message != 'OFF') {
@@ -121,13 +121,13 @@ function mnetadmin_rpc_set_maintenance($user, $message, $hardmaintenance = false
 function mnetadmin_rpc_set_config($user, $key, $value, $plugin, $json_response = true) {
     global $CFG, $USER;
 
-    debug_trace('RPC '.json_encode($user));
-
-    if ($auth_response = invoke_local_user((array)$user)) {
-        if ($json_response) {
-            return $auth_response;
-        } else {
-            return json_decode($auth_response);
+    if (!empty($user)) {
+        if ($auth_response = invoke_local_user((array)$user)) {
+            if ($json_response) {
+                return $auth_response;
+            } else {
+                return json_decode($auth_response);
+            }
         }
     }
 
@@ -144,13 +144,43 @@ function mnetadmin_rpc_set_config($user, $key, $value, $plugin, $json_response =
 }
 
 /**
+ * Set some config values.
+ * @param object $user The calling user, containing mnethostroot reference and hostroot reference.
+ * @param string $key the config key.
+ * @param string $value the config value.
+ * @param string $plugin the config plugin, core if empty.
+ */
+function mnetadmin_rpc_runpage($user, $pageurl, $params, $httpmode, $json_response = true) {
+    global $CFG, $USER;
+
+    if (!empty($user)) {
+        if ($auth_response = invoke_local_user((array)$user)) {
+            if ($json_response) {
+                return $auth_response;
+            } else {
+                return json_decode($auth_response);
+            }
+        }
+    }
+
+    if ($httpmode == 'GET') {
+        redirect($CFG->wwwroot.$pageurl.'?'.$params);
+    }
+
+    // Creating response.
+    $response = new stdClass;
+    $response->status = RPC_SUCCESS;
+
+    // Returns response (success or failure).
+    return json_encode($response);
+}
+
+/**
  * Purge internally all caches.
  * @param object $user The calling user, containing mnethostroot reference and hostroot reference.
  */
 function mnetadmin_rpc_purge_caches($user, $json_response = true) {
     global $CFG, $USER;
-
-    debug_trace('RPC '.json_encode($user));
 
     if ($auth_response = invoke_local_user((array)$user)) {
         if ($json_response) {
@@ -166,7 +196,6 @@ function mnetadmin_rpc_purge_caches($user, $json_response = true) {
 
     purge_all_caches();
 
-    debug_trace('RPC Bind : Sending response');
     // Returns response (success or failure).
     return json_encode($response);
 }

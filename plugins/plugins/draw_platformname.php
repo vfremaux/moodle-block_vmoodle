@@ -16,7 +16,7 @@
 
 /**
  * Draw a transparent image with platform name text.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)

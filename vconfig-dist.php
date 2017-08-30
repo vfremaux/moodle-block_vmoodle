@@ -46,14 +46,15 @@ require_once $CFG->dirroot."/blocks/vmoodle/bootlib.php";
 
 // EDIT A CONFIGURATION FOR MASTER MOODLE
 
-$CFG->vmasterdbhost = 'localhost';
-$CFG->vmasterdbtype = 'mysqli';
-$CFG->vmasterdbname = '';
-$CFG->vmasterdblogin = '';
-$CFG->vmasterdbpass = '';
+$CFG->vmasterdbhost    = 'localhost';
+$CFG->vmasterdbtype    = 'mysqli';
+$CFG->vmasterdbname    = '';
+$CFG->vmasterdblogin   = '';
+$CFG->vmasterdbpass    = '';
 $CFG->vmasterdbpersist =  false;
 $CFG->vmasterprefix    = 'mdl_';
-$CFG->vmoodledefault    = 1; // Tells if the default physical config can be used as true host.
+$CFG->vmoodledefault   = 1; // Tells if the default physical config can be used as true host.
+$CFG->vlogfilepattern  = '/var/log/%%VHOSTNAME%%.log';
 
 vmoodle_get_hostname();
 

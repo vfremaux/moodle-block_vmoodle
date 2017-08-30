@@ -27,21 +27,21 @@ list($options, $unrecognized) = cli_get_params(
 
 if ($unrecognized) {
     $unrecognized = implode("\n  ", $unrecognized);
-    cli_error(get_string('cliunknowoption', 'admin', $unrecognized));
+    cli_error($unrecognized.' are not recognized options');
 }
 
 if ($options['help']) {
     $help =
         "Command line MNET Table Consistancy Fixture.
-        
+
         Fixes all surnumerous RPC and Service records, and clean up irrelevnat
         binding records.
-        
+
         Options:
         --verbose               Provides lot of output
         -h, --help          Print out this help
         -H, --host          Set the host (physical or virtual) to operate on
-    
+
         "; //TODO: localize - to be translated later when everything is finished
 
     echo $help;

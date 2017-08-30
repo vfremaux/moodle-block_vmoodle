@@ -1,18 +1,33 @@
 <?php
-
-namespace vmoodleadminset_sql;
-Use \block_vmoodle\commands\Command;
-Use \block_vmoodle\commands\Command_Exception;
-Use \StdClass;
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Describes meta-administration plugin's SQL command.
- * 
+ *
  * @package block-vmoodle
  * @category blocks
  * @author Bruce Bujon (bruce.bujon@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+namespace vmoodleadminset_sql;
+
+use \block_vmoodle\commands\Command;
+use \block_vmoodle\commands\Command_Exception;
+use \StdClass;
+
 class Command_Sql extends Command {
 
     /**
@@ -29,15 +44,15 @@ class Command_Sql extends Command {
      * if commands has place holders, they are converted into Moodle SQL named variables
      */
     private $values;
-    
+
     /**
      * Constructor.
-     * @param    $name                string                Command's name.
-     * @param    $description        string                Command's description.
-     * @param    $sql                string                SQL command.
-     * @param    $parameters            mixed                Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
-     * @param    $rpcommand            Command            Retrieve platforms command (optional / could be null or Command object).
-     * @throws    Command_Exception
+     * @param string $name Command's name.
+     * @param string $description Command's description.
+     * @param string $sql SQL command.
+     * @param mixed $parameters Command's parameters (optional / could be null, Command_Parameter object or Command_Parameter array).
+     * @param Command $rpcommand Retrieve platforms command (optional / could be null or Command object).
+     * @throws Command_Exception
      */
     public function __construct($name, $description, $sql, $parameters = null, $rpcommand = null) {
         global $vmcommands_constants;
@@ -49,7 +64,7 @@ class Command_Sql extends Command {
         if (empty($sql)) {
             throw new Command_Sql_Exception('sqlemtpycommand', $this->name);
         } else {
-            // Looking for parameters
+            // Looking for parameters.
             preg_match_all(Command::placeholder, $sql, $sql_vars);
 
             // Checking parameters to show.
@@ -57,7 +72,7 @@ class Command_Sql extends Command {
                 $is_param = !(empty($sql_vars[1][$key]));
                 if (!$is_param && !array_key_exists($sql_var, $vmcommands_constants)) {
                     throw new Command_Sql_Exception('sqlconstantnotgiven', (object)array('constant_name' => $sql_var, 'command_name' => $this->name));
-                } elseif ($is_param && !array_key_exists($sql_var, $this->parameters)) {
+                } else if ($is_param && !array_key_exists($sql_var, $this->parameters)) {
                     throw new Command_Sql_Exception('sqlparameternotgiven', (object)array('parameter_name' => $sql_var, 'command_name' => $this->name));
                 }
             }
@@ -68,8 +83,8 @@ class Command_Sql extends Command {
 
     /**
      * Execute the command.
-     * @param    $host        mixed            The hosts where run the command (may be wwwroot or an array).
-     * @throws                Command_Sql_Exception
+     * @param mixed $host The hosts where run the command (may be wwwroot or an array).
+     * @throws Command_Sql_Exception
      */
     public function run($hosts) {
         global $CFG, $USER;
@@ -140,9 +155,9 @@ class Command_Sql extends Command {
 
     /**
      * Get the result of command execution for one host.
-     * @param    $host        string            The host to retrieve result (optional, if null, returns general result).
-     * @param    $key        string            The information to retrieve (ie status, error / optional).
-     * @throws                Command_Sql_Exception
+     * @param string $host The host to retrieve result (optional, if null, returns general result).
+     * @param string $key The information to retrieve (ie status, error / optional).
+     * @throws Command_Sql_Exception
      */
     public function getResult($host = null, $key = null) {
 
@@ -160,7 +175,7 @@ class Command_Sql extends Command {
         // Checking key.
         if (is_null($key)) {
             return $result;
-        } elseif (property_exists($result, $key)) {
+        } else if (property_exists($result, $key)) {
             return $result->$key;
         } else {
             return null;
@@ -169,7 +184,7 @@ class Command_Sql extends Command {
 
     /**
      * Get SQL command.
-     * @return                            SQL command.
+     * @return SQL command.
      */
     public function getSql() {
         return $this->sql;
@@ -177,7 +192,7 @@ class Command_Sql extends Command {
 
     /**
      * Get if the command's result is returned.
-     * @return                        boolean                True if the command's result should be returned, false otherwise.
+     * @return boolean True if the command's result should be returned, false otherwise.
      */
     public function isReturned() {
         return $this->returned;
@@ -185,7 +200,7 @@ class Command_Sql extends Command {
 
     /**
      * Set if the command's result is returned.
-     * @param    $returned            boolean                True if the command's result should be returned, false otherwise.
+     * @param boolean $returned True if the command's result should be returned, false otherwise.
      */
     public function setReturned($returned) {
         $this->returned = $returned;
@@ -193,7 +208,7 @@ class Command_Sql extends Command {
 
     /**
      * Get the command to execute.
-     * @return                        string                The final SQL command to execute.
+     * @return string The final SQL command to execute.
      */
     private function _getGeneratedCommand() {
         return preg_replace_callback(self::placeholder, array($this, '_replaceParametersValues'), $this->getSql());
@@ -201,16 +216,16 @@ class Command_Sql extends Command {
 
     /**
      * Bind the replace_parameters_values function to create a callback.
-     * @param    $matches            array                The placeholders found.
-     * @return                        string|array        The parameters' values.
+     * @param array $matches The placeholders found.
+     * @return string|array The parameters' values.
      */
     private function _replaceParametersValues($matches) {
 
         list($paramname, $paramvalue) = replace_parameters_values($matches, $this->getParameters(), true, false);
-    
+
         $this->values[$paramname] = $paramvalue;
 
-        // rReturn the named placeholder.
+        // Return the named placeholder.
         return ':'.$paramname;
     }
 }

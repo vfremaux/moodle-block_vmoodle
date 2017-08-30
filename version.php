@@ -21,13 +21,18 @@
  * @subpackage vmoodle
  * @copyright  2008 onwards Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * Block VMoodle 2.7 should neverpass 2016032900 (M2.8 version with scheme change).
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2014081300; // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version = 2014081301; // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2013111800; // Requires this Moodle version
 $plugin->component = 'block_vmoodle'; // Full name of the plugin (used for diagnostics)
 $plugin->maturity = MATURITY_RC;
-$plugin->release = "2.7.0 (Build 2014081300)";
-$plugin->cron = 5;
+$plugin->release = "2.7.0 (Build 2014081301)";
+$plugin->cron = 1;
+
+// Non moodle attributes.
+$plugin->codeincrement = '2.7.0000';

@@ -24,12 +24,13 @@
  * @copyright 2012 Valery Fremaux
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 $publishes = array(
-	'mnetadmin' => array(
-		'servicename' => 'mnetadmin',
-		'description' => get_string('mnetadmin_name', 'block_vmoodle'),
-		'apiversion' => 1,
+    'mnetadmin' => array(
+        'servicename' => 'mnetadmin',
+        'description' => get_string('mnetadmin_name', 'block_vmoodle'),
+        'apiversion' => 1,
         'classname'  => '',
         'filename'   => 'rpclib.php',
         'methods'    => array(

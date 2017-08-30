@@ -118,7 +118,7 @@ foreach ($nodes as $n) {
 
     $n->forcedns = 0;
     $wwwroot = $n->vhostname;
-    
+
     if (empty($wwwroot)) {
         continue;
     }
@@ -147,7 +147,7 @@ foreach ($nodes as $n) {
             $input = readline("Continue (y/n|r) ?\n");
             if ($input == 'r' || $input == 'R') {
                 $vmoodlestep--;
-            } elseif ($input == 'n' || $input == 'N') {
+            } else if ($input == 'n' || $input == 'N') {
                 echo "finishing\n";
                 exit;
             }
