@@ -3,10 +3,37 @@ VMoodle block
 
 Implements a packaged virtualization control feature for large "Moodle Arrays" 
 
+Version 2015062000
+=============================
+
+This is a major architecture change. All main processes for VMoodling are
+deferered to the local_vmoodle plugin.
+
+
+
 Important requirements for VMoodling :
+
+Version 2014071301 summary
+=============================
+
+Essentially redraws the internal class organization to cope qith 
+core Moodle class loading strategy.
+
+version 2013020801 summary
+=============================
+
+- Fixes security issue when used with local/technicalsignals plugin
+- Adds new remote plugin and equipement control
+- MultiSQL commands fixed
+- Several fixes on meta administration
+- added config file generator (to help cli migrations)
+- impove Command error and success report
+- integrates mahara patches for MNET stability.
 
 Summary of prerequisites
 ################################################################
+
+0. Alter the <moodle>/lib/classes/component.php in lone 48 to let subplugins be used in blocks. (add 'block' to the list).
 
 1. Installing vmoodle block in codebase
 2. Installing the master moodle as usual browsing to Administration -> notifications
@@ -27,17 +54,21 @@ Post install procedure
 ####################################################################
 
 The vmoodle block construction is using subplugins, that are plugins 
-handled inside the vmoodle block scope. 
+handled inside the vmoodle block scope.
 
-New handling of subplugins in Moodle 2.2 : 
+for Moodle 2.2
+--------------
 
 Conversely to version 1.9, now subplugins are handled as "standard architecture feature" for
 any plugin. 
 
-Since 2.4 an architecture flexibility regression caused the subplugin system for blocks to fail. We 
+Since 2.4
+---------
+
+An architecture flexibility regression caused the subplugin system for blocks to fail. We 
 now need an extra patch to get it finding plugin subcomponent path properly again. 
 
-This patch will alter 2 plugin related functions in /lib/moodle.php
+This patch will alter 2 plugin related functions in /lib/moodlelib.php
 
 around L§8030
 
@@ -124,6 +155,15 @@ function get_plugin_list($plugintype) {
     } else if ($plugintype === 'editor') {
 
 
+Since moodle 2.6
+----------------
+
+Subplugin handling has been fluidified, with a very light change in a core library. 
+You'll just have to add the 'block' item in the subplugin capable plugins : lib/classes/component.php at line 48.
+
+    protected static $supportsubplugins = array('mod', 'editor', 'tool', 'local', 'block');
+
+
 0.2 Add possibility for blocks to handle xmlrpc the same way Moodle modules do:
 ###############################################################################
 
@@ -160,6 +200,9 @@ function mnet_get_public_key($uri, $application=null, $force=0) {
         $application = $DB->get_record('mnet_application', array('name'=>'moodle'));
     }
 
+//! PATCH : Mnet automated key renewal
+    $rq = xmlrpc_encode_request('system/keyswap', array($CFG->wwwroot, $mnet->public_key, $application->name, $force), array("encoding" => "utf-8"));
+// /PATCH
 
 
 1. Master configuration changes : Installing the config.php hook to vconfig.php
