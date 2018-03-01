@@ -16,11 +16,11 @@
 
 class block_vmoodle_renderer extends plugin_renderer_base {
 
-    public function image_url($image, $subplugin = null) {
+    public function pix_url($image, $subplugin = null) {
         global $CFG, $OUTPUT;
 
         if (!$subplugin) {
-            return $OUTPUT->image_url($image, 'block_vmoodle');
+            return $OUTPUT->pix_url($image, 'block_vmoodle');
         }
 
         list($type, $plugin) = explode('_', $subplugin);
