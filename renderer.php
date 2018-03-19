@@ -14,6 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @package block_vmoodle
+ * @category blocks
+ * @author Valery Fremaux (valery.fremaux@gmail.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL
+ */
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/local/vmoodle/lib.php');
+
 class block_vmoodle_renderer extends plugin_renderer_base {
 
     public function image_url($image, $subplugin = null) {
@@ -67,5 +77,30 @@ class block_vmoodle_renderer extends plugin_renderer_base {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Return status for all defined virtual moodles.
+     * @return string Status for all defined virtual moodles.
+     */
+    public function print_status() {
+        global $DB;
+
+        $template = new StdClass;
+
+        $vmoodles = $DB->get_records('local_vmoodle');
+
+        if (!empty($vmoodles)) {
+            foreach ($vmoodles as $vmoodle) {
+                $vmoodletpl = new StdClass;
+                $vmoodletpl->url = $vmoodle->vhostname;
+                $vmoodletpl->shortname = $vmoodle->shortname;
+                $vmoodletpl->fullname = $vmoodle->name;
+                $vmoodle->status = vmoodle_print_status($vmoodle, true);
+                $template->vmoodles[] = $vmoodletpl;
+            }
+        }
+
+        return $this->output->render_from_template('block_vmoodle/vmoodles', $template);
     }
 }
