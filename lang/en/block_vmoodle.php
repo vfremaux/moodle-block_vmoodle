@@ -5,6 +5,9 @@
 $string['vmoodle:myaddinstance'] = 'Can add instance to my pages'; // @CORE
 $string['vmoodle:addinstance'] = 'Can add instance'; // @CORE
 
+// Privacy
+$string['privacy:metadata'] = 'The VMoodle block does not store any personal data about any user.';
+
 // Block strings
 
 $string['addall'] = 'Add all';
