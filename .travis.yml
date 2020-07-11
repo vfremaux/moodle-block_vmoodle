@@ -1,14 +1,16 @@
 language: php
 
-sudo: false
+sudo: true
 
 addons:
   firefox: "47.0.1"
-  postgresql: "9.3"
+  postgresql: "9.4"
   apt:
     packages:
-      - oracle-java8-installer
-      - oracle-java8-set-default
+      - openjdk-8-jre-headless
+
+services:
+  - mysql
 
 cache:
   directories:
@@ -19,22 +21,22 @@ php:
  - 7.2
 
 env:
-  global:
-    - MOODLE_BRANCH=MOODLE_36_STABLE
-  matrix:
-    - DB=mysqli
-    - DB=pgsql
+ global:
+  - MOODLE_BRANCH=MOODLE_37_STABLE
+ matrix:
+  - DB=pgsql
+  - DB=mariadb
 
 before_install:
   - phpenv config-rm xdebug.ini
-  - nvm install 8.9
-  - nvm use 8.9
+  - nvm install 14.0
+  - nvm use 14.0
   - cd ../..
-  - composer create-project -n --no-dev moodlerooms/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
-  - moodle-plugin-ci add-plugin --branch $MOODLE_BRANCH vfremaux/moodle-local_vmoodle
+  - moodle-plugin-ci add-plugin --branch $PLUGINS_BRANCH vfremaux/moodle-local_vmoodle
   - moodle-plugin-ci install
 
 script:
@@ -44,7 +46,8 @@ script:
   - moodle-plugin-ci codechecker
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
-  - moodle-plugin-ci mustache
+#  - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
-  - moodle-plugin-ci phpunit
+#  - moodle-plugin-ci phpdoc
+#  - moodle-plugin-ci phpunit
 #  - moodle-plugin-ci behat
